@@ -1,63 +1,64 @@
 package model
 import (
+	"strconv"
 	"squad-3-aceleradev-fs-florianopolis/entity"
-	_ "github.com/go-sql-driver/mysql"
 	"database/sql"
 )
 
 const (
 	host     = "localhost"
 	port     = 3306
-	user     = "root"
-	password = "pass"
-	dbname   = "dbname"
+	user     = "bancouati_user"
+	password = "1234567890"
+	dbname   = "bancouati"
 )
 
 
 func conect() (*sql.DB, error){
-	db, erro := sql.Open("mysql", 
+	db, erro := sql.Open("mysql", //"bancouati_user:1234567890@tcp(localhost:3306)/bancouati")
 						 user + ":" + 
 						 password + "@tcp(" + 
 						 host + ":" + 
-						 string(port) + ")/" + 
+						 strconv.Itoa(port) + ")/" + 
 						 dbname)
-	if erro != nil{
-		panic(erro.Error())
-	}
-	defer db.Close()
 	return db, erro
 }
 
-func Insert (user *entity.Usuario) error{
+func executaComando(comando string) error{
 	db, erro := conect()
-	insere, erro := db.Query("insert into usuario values(" + 
-								string(user.Cpf) +","+
-								"'" + user.Nome + "'," +
-								"'" + user.Senha + "'," +
-								"'" + user.Email + "'," +
-								"'" + user.FuncionarioPuplico +"');");
-	if erro != nil{
-		panic(erro.Error())
-	}
-	insere.Close()
+	retorno, erro := db.Query(comando);
+	retorno.Close()
+	return erro
+}
+
+func Insert (user *entity.Usuario) error{	
+	erro := executaComando("insert into usuario (cpf, nome, senha, email, funcionariopublico) values(" + strconv.FormatInt(user.Cpf, 10) + ",'" + user.Nome + "', '" + user.Senha + "','" + user.Email + "',"+ strconv.FormatBool(user.FuncionarioPuplico) +");")
+	return erro
+}
+
+func Delete(id int) error {
+	erro := executaComando("delete from usuario where id = " + strconv.Itoa(id))
+	return erro
+}
+
+func Update (user *entity.Usuario) error{
+	erro := executaComando("update usuario set cpf = "+strconv.FormatInt(user.Cpf, 10) + ", nome = '" + user.Nome + "', senha = '" + user.Senha + "', email = '" + user.Email + "', funcionariopublico = " + strconv.FormatBool(user.FuncionarioPuplico) + " where id = " + strconv.Itoa(user.ID))
 	return erro
 }
 
 func GetUsuario(id int) (*entity.Usuario, error){
 	db, erro := conect()
-	seleciona, erro := db.Query("select * from usuario where id = " + string(id))
-	
-	if erro != nil{
-		panic(erro.Error())
-	}
-
-	var user  *entity.Usuario
-	for seleciona.Next() {
-		erro := seleciona.Scan(&user.Cpf, &user.Nome, &user.Senha, &user.Email, &user.FuncionarioPuplico)	
-		if erro != nil{
-			panic(erro.Error())
+	seleciona, erro := db.Query("select * from usuario where id = " +  strconv.Itoa(id))
+	var user entity.Usuario
+	if erro == nil{
+		
+		for seleciona.Next() {
+			erro := seleciona.Scan(&user.ID, &user.Cpf, &user.Nome, &user.Senha, &user.Email, &user.FuncionarioPuplico)	
+			if erro != nil{
+				panic(erro.Error())
+			}
 		}
 	}
-	
-	return user, erro
+	defer db.Close()
+	return &user, erro
 }
