@@ -54,6 +54,7 @@ func DownloadFile(URLFile, fileName string) error {
 	log.Println("Writen response file into new file")
 	io.Copy(file, response.Body)
 	return erro
+	
 }
 
 func getFileName() (string, error)  {
