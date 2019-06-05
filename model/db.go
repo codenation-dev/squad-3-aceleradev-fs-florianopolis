@@ -3,6 +3,7 @@ import (
 	"strconv"
 	"squad-3-aceleradev-fs-florianopolis/entity"
 	"database/sql"
+	
 )
 
 const (
@@ -32,7 +33,7 @@ func executaComando(comando string) error{
 }
 
 func Insert (user *entity.Usuario) error{	
-	erro := executaComando("insert into usuario (cpf, nome, senha, email, funcionariopublico) values(" + strconv.FormatInt(user.Cpf, 10) + ",'" + user.Nome + "', '" + user.Senha + "','" + user.Email + "',"+ strconv.FormatBool(user.FuncionarioPuplico) +");")
+	erro := executaComando("insert into usuario (cpf, nome, senha, email, funcionariopublico) values(" + strconv.FormatInt(user.Cpf, 10) + ",'" + user.Nome + "', '" + user.Senha + "','" + user.Email + "'," + strconv.FormatBool(user.FuncionarioPuplico) +");")
 	return erro
 }
 
