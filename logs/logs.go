@@ -35,22 +35,28 @@ func NewLog(LogPath string) Logger {
 
 // Errorf formated
 func (L Logger) Errorf(errorString string) {
-	t := time.Now()
-	f, _ := os.OpenFile(L.errorfile, os.O_APPEND | os.O_WRONLY, os.ModeAppend)
-	s := fmt.Sprintf("%s : [ERROR] : %s",t,errorString)
-	writeFile(s,f)
+	s := fmt.Sprintf(" [ERROR] : %s",errorString)
+	logIt(L.errorfile,s)
 }
 
 // Warning formated
 func (L Logger) Warning(warnString string) {
-	t := time.Now()
-	f, _ := os.OpenFile(L.warningfile, os.O_APPEND | os.O_WRONLY, os.ModeAppend)
-	s := fmt.Sprintf("%s : [ERROR] : %s",t,warnString)
-	writeFile(s,f)
+	s := fmt.Sprintf(" [ERROR] : %s",warnString)
+	logIt(L.warningfile,s)
 }
 
 // Request formated
-func (L Logger) Request(htmlString string){}
+func (L Logger) Request(requestString string){
+	s := fmt.Sprintf(" [ERROR] : %s",requestString)
+	logIt(L.requestfile,s)
+}
+
+func logIt(file string,message string){
+	t := time.Now()
+	message = fmt.Sprintf("%s : %s ",t,message)
+	f,_ := os.OpenFile(file, os.O_APPEND | os.O_WRONLY, os.ModeAppend)
+	writeFile(message, f)
+}
 
 func writeFile(s string,f *os.File) {
 	_,err := fmt.Fprintln(f,s)
