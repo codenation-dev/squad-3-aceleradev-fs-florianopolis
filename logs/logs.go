@@ -5,56 +5,44 @@ import ("os"
 	"fmt"
 )
 
-// Logger log structure
-type Logger struct {
-	LogPath string
-	warningfile string
-	errorfile string
-	requestfile string
-}
-
-// NewLog Generate Logger
-func NewLog(LogPath string) Logger {
+func getFileName(name string) string {
+	LogPath := os.Getenv("LOG_PATH")
 	t := time.Now()
-	errorfile := fmt.Sprintf("%s%s_%d_%s_%d.log", LogPath,"error",t.Year(),t.Month(),t.Day())
-	warningfile := fmt.Sprintf("%s%s_%d_%s_%d.log", LogPath,"warning",t.Year(),t.Month(),t.Day())
-	requestfile := fmt.Sprintf("%s%s_%d_%s_%d.log", LogPath,"html_interations",t.Year(),t.Month(),t.Day())
-	NwLog := Logger{
-		LogPath: LogPath,
-		errorfile: errorfile,
-		warningfile: warningfile,
-		requestfile: requestfile}
-	e,_ := os.Create(NwLog.errorfile)
-	w,_ := os.Create(NwLog.warningfile)
-	r,_ := os.Create(NwLog.requestfile)
-	e.Close()
-	w.Close()
-	r.Close()
-	return NwLog
+	var filename string
+	switch name {
+	case "error":
+		filename = fmt.Sprintf("%s%s_%d_%s_%d.log", LogPath,"error",t.Year(),t.Month(),t.Day()) 
+	case "warning":
+		filename = fmt.Sprintf("%s%s_%d_%s_%d.log", LogPath,"warning",t.Year(),t.Month(),t.Day())
+	case "request":
+		filename = fmt.Sprintf("%s%s_%d_%s_%d.log", LogPath,"html_interations",t.Year(),t.Month(),t.Day())
+	}
+	return filename
 }
 
 // Errorf formated
-func (L Logger) Errorf(errorString string) {
+func Errorf(errorString string) {
 	s := fmt.Sprintf(" [ERROR] : %s",errorString)
-	logIt(L.errorfile,s)
+	logIt(getFileName("error"),s)
 }
 
 // Warning formated
-func (L Logger) Warning(warnString string) {
+func Warning(warnString string) {
 	s := fmt.Sprintf(" [ERROR] : %s",warnString)
-	logIt(L.warningfile,s)
+	logIt(getFileName("warning"),s)
 }
 
 // Request formated
-func (L Logger) Request(requestString string){
+func Request(requestString string){
 	s := fmt.Sprintf(" [ERROR] : %s",requestString)
-	logIt(L.requestfile,s)
+	logIt(getFileName("request"),s)
 }
 
 func logIt(file string,message string){
+	
 	t := time.Now()
 	message = fmt.Sprintf("%s : %s ",t,message)
-	f,_ := os.OpenFile(file, os.O_APPEND | os.O_WRONLY, os.ModeAppend)
+	f,_ := os.OpenFile(file, os.O_APPEND | os.O_CREATE | os.O_WRONLY, os.ModeAppend)
 	writeFile(message, f)
 }
 
