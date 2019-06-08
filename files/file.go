@@ -1,6 +1,10 @@
 package main
 
 import (
+	"sort"
+	"io/ioutil"
+	"encoding/hex"
+	"crypto/sha1"
 	"path/filepath"
 	"archive/zip"
 	"log"
@@ -13,16 +17,40 @@ import (
 
 func main()  {
 	
-	zipFileName, erro := getFileName()
+	workPath, erro := getFileName()
+	zipFileName := workPath.FullPath
 	if erro == nil{
 		DownloadFile("http://www.transparencia.sp.gov.br/PortalTransparencia-Report/Remuneracao.aspx", zipFileName)
-		extractFile(zipFileName)
+	
+		filesName := getLastTwoFiles(workPath.Directory)
+		if len(filesName) == 2{
+			hashExistFile, erro := getHashFromFile(workPath.Directory + filesName[0])
+			
+			if erro != nil{
+				log.Println(erro.Error())
+			}
+			hashNewFile, erro := getHashFromFile(workPath.Directory + filesName[1])
+			if erro != nil{
+				log.Println(erro.Error())
+			}
+			if hashExistFile == hashNewFile{
+				log.Println("The files are the same. Nothing was done")
+			}else{
+				extractFile(zipFileName)
+			}
+		}else {
+			extractFile(zipFileName)
+		}
+				
+		//log.Println(zipFileName)
+		//getTwoLastFiles("/home/rodrigo/go/src/squad-3-aceleradev-fs-florianopolis/files/download/")
 	}
 	
 }
 
 //download file from url
 func DownloadFile(URLFile, fileName string) error {
+	log.Println("Start Download File")
 	_, erro := os.Stat(fileName)
 	if os.IsNotExist(erro){
 		client := http.Client{}
@@ -56,34 +84,39 @@ func DownloadFile(URLFile, fileName string) error {
 		}
 
 		defer file.Close()
-		log.Println("Writen Response File into new file")
+		log.Println("Writing Response File into New File")
 		_, erro = io.Copy(file, response.Body)
 		if erro != nil{
 			log.Println(erro.Error())
 			return erro
 		}
+	}else{
+		log.Println("The file already exists. Nothing was done")
 	}
-	return nil
+	return erro
 
 }
 
-func getFileName() (string, error)  {
+func getFileName() (*WorkPath, error)  {
+	wp := new(WorkPath)
 	currentTime := time.Now()
-
 	dir, erro := os.Getwd()
 	if erro != nil{
 		log.Println("Error when tried to get directory:",erro.Error())
-		return "", erro
+		return wp, erro
 	}
 	formatTime := currentTime.Format("01-02-2006")
-	nameFile := "Transparencia-" + formatTime + ".zip"
-	nameFile = dir + "/download/" + nameFile
-	return nameFile, erro
+	dir += "/download/"
+	wp.Directory = dir
+	fileName := "Transparencia-" + formatTime + ".zip"
+	wp.FileName = fileName
+	wp.FullPath = filepath.Join(dir, fileName)
+	return wp, erro
 }
 
 func extractFile(pathFile string)  {
 	reader, erro := zip.OpenReader(pathFile)
-	log.Println("Get reader to file:",pathFile)
+	log.Println("OPen reader to file:",pathFile)
 	if erro != nil{
 		log.Println("Error to OpenReader:", erro.Error());
 	}
@@ -126,6 +159,52 @@ func extractFile(pathFile string)  {
 
 }
 
-func checkFile() bool {
-	return false
+func getHashFromFile(filePath string) (string, error) {
+	var stringHashSHA1 string
+	file, erro := os.Open(filePath)
+	if erro != nil{
+		log.Println(erro.Error())
+		return stringHashSHA1, erro
+	}
+	defer file.Close()
+	hashSHA1 := sha1.New()
+	_, erro = io.Copy(hashSHA1, file)
+	if erro != nil{
+		log.Println(erro.Error())
+		return stringHashSHA1, erro
+	}
+	stringHashSHA1 = hex.EncodeToString(hashSHA1.Sum(nil))
+	return stringHashSHA1, erro
+}
+
+type WorkPath struct{
+	Directory string
+	FileName string
+	FullPath string
+}
+
+func getLastTwoFiles(pathDir string) []string {
+	var filesName []string
+	files, erro := ioutil.ReadDir(pathDir)
+
+	if erro != nil{
+		log.Println(erro.Error())
+	}
+	sort.Slice(files, func(i,j int) bool{
+    	return files[i].ModTime().Unix() > files[j].ModTime().Unix()
+	})
+	
+	for i, file := range files {
+		if file.Mode().IsRegular() {
+			if filepath.Ext(file.Name()) == ".zip" {
+				if len(filesName) < 3{
+					filesName = append(filesName, files[i].Name()) 					
+				}else{
+					break
+				}
+			}
+		}
+	}
+    
+	return filesName
 }
