@@ -12,7 +12,6 @@ const (
 	dbname   = "bancouati"
 )
 
-
 func Conect() (*sql.DB, error){
 	db, erro := sql.Open("mysql", //"bancouati_user:1234567890@tcp(localhost:3306)/bancouati")
 						 user + ":" + 
