@@ -14,42 +14,57 @@ import (
 	"os"
 	"net/http"
 )
+const(
+	//URLService is the address to download the zip file
+	URLService = "http://www.transparencia.sp.gov.br/PortalTransparencia-Report/Remuneracao.aspx"
+)
 
 func main()  {
-	
+	DownloadAndExtractFile()	
+}
+
+//DownloadAndExtractFile from URLService
+func DownloadAndExtractFile()  {
 	workPath, erro := getFileName()
 	zipFileName := workPath.FullPath
 	if erro == nil{
-		DownloadFile("http://www.transparencia.sp.gov.br/PortalTransparencia-Report/Remuneracao.aspx", zipFileName)
-	
+		wasDownload, erro := DownloadFile(URLService, zipFileName)
+		if erro != nil{
+			log.Println(erro.Error())
+		}
 		filesName := getLastTwoFiles(workPath.Directory)
-		if len(filesName) == 2{
-			hashExistFile, erro := getHashFromFile(workPath.Directory + filesName[0])
-			
-			if erro != nil{
-				log.Println(erro.Error())
-			}
-			hashNewFile, erro := getHashFromFile(workPath.Directory + filesName[1])
-			if erro != nil{
-				log.Println(erro.Error())
-			}
-			if hashExistFile == hashNewFile{
-				log.Println("The files are the same. Nothing was done")
-			}else{
-				extractFile(zipFileName)
+		if wasDownload{
+			switch {
+			case len(filesName) < 2:
+				ExtractFile(zipFileName)
+			case len(filesName) == 2:
+				hashNewFile, erro := getHashFromFile(workPath.Directory + filesName[0])
+				if erro != nil{
+					log.Println(erro.Error())
+				}
+				hashExistFile, erro := getHashFromFile(workPath.Directory + filesName[1])				
+				if erro != nil{
+					log.Println(erro.Error())
+				}
+				if hashExistFile == hashNewFile{
+					log.Println("Files are the same. Old file was removed.")
+					erro = os.Remove(workPath.Directory + filesName[1])
+					if erro != nil{
+						log.Println(erro.Error())
+					}
+				}else{
+					ExtractFile(zipFileName)
+				}
 			}
 		}else {
-			extractFile(zipFileName)
+			log.Println("New file was not downloaded. Nothing was done")
 		}
-				
-		//log.Println(zipFileName)
-		//getTwoLastFiles("/home/rodrigo/go/src/squad-3-aceleradev-fs-florianopolis/files/download/")
 	}
-	
 }
 
-//download file from url
-func DownloadFile(URLFile, fileName string) error {
+// DownloadFile from url
+func DownloadFile(URLFile, fileName string) (bool, error ){
+	wasDownload := false
 	log.Println("Start Download File")
 	_, erro := os.Stat(fileName)
 	if os.IsNotExist(erro){
@@ -71,7 +86,7 @@ func DownloadFile(URLFile, fileName string) error {
 		log.Println("Response from POST Request was receveid")
 		if erro != nil{
 			log.Println("Error when tried to get Response:",erro.Error())
-			return erro
+			return wasDownload, erro
 		}
 
 		defer response.Body.Close()
@@ -80,20 +95,21 @@ func DownloadFile(URLFile, fileName string) error {
 		
 		if erro != nil{
 			log.Println("Error when tried to create file:",erro.Error())
-			return erro
+			return wasDownload, erro
 		}
 
 		defer file.Close()
-		log.Println("Writing Response File into New File")
+		log.Println("Writing Response File into New Empty File")
 		_, erro = io.Copy(file, response.Body)
 		if erro != nil{
 			log.Println(erro.Error())
-			return erro
+			return wasDownload, erro
 		}
+		wasDownload = true
 	}else{
 		log.Println("The file already exists. Nothing was done")
 	}
-	return erro
+	return wasDownload, nil
 
 }
 
@@ -114,7 +130,8 @@ func getFileName() (*WorkPath, error)  {
 	return wp, erro
 }
 
-func extractFile(pathFile string)  {
+// ExtractFile from zip path
+func ExtractFile(pathFile string)  {
 	reader, erro := zip.OpenReader(pathFile)
 	log.Println("OPen reader to file:",pathFile)
 	if erro != nil{
@@ -177,6 +194,7 @@ func getHashFromFile(filePath string) (string, error) {
 	return stringHashSHA1, erro
 }
 
+//WorkPath store the files path
 type WorkPath struct{
 	Directory string
 	FileName string
@@ -197,7 +215,7 @@ func getLastTwoFiles(pathDir string) []string {
 	for i, file := range files {
 		if file.Mode().IsRegular() {
 			if filepath.Ext(file.Name()) == ".zip" {
-				if len(filesName) < 3{
+				if len(filesName) < 2{
 					filesName = append(filesName, files[i].Name()) 					
 				}else{
 					break
