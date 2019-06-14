@@ -28,7 +28,7 @@ func DownloadAndExtractFile()  {
 	workPath, erro := getFileName()
 	zipFileName := workPath.FullPath
 	if erro == nil{
-		wasDownload, erro := DownloadFile(URLService, zipFileName)
+		wasDownload, _ := DownloadFile(URLService, zipFileName)
 		if erro != nil{
 			log.Println(erro.Error())
 		}
@@ -47,18 +47,20 @@ func DownloadAndExtractFile()  {
 					log.Println(erro.Error())
 				}
 				if hashExistFile == hashNewFile{
-					log.Println("Files are the same. Old file was removed.")
-					erro = os.Remove(workPath.Directory + filesName[1])
+					erro = os.Remove(workPath.Directory + filesName[0])
 					if erro != nil{
 						log.Println(erro.Error())
 					}
+					log.Println("Files are the same. New file was removed.")
 				}else{
 					ExtractFile(zipFileName)
 				}
 			}
 		}else {
-			log.Println("New file was not downloaded. Nothing was done")
+			log.Println("New file was not downloaded. File was not extract.")
 		}
+	}else{
+		log.Println(erro.Error())
 	}
 }
 
@@ -83,28 +85,27 @@ func DownloadFile(URLFile, fileName string) (bool, error ){
 		request.Header.Set("Upgrade-Insecure-Requests","1")
 		log.Println("POST Request was sent...")
 		response, erro := client.Do(request)
-		log.Println("Response from POST Request was receveid")
 		if erro != nil{
 			log.Println("Error when tried to get Response:",erro.Error())
 			return wasDownload, erro
 		}
-
+		log.Println("Response from POST Request was receveid")
 		defer response.Body.Close()
-		log.Println("Create new file into: "+ fileName)
 		file, erro := os.Create(fileName)
 		
 		if erro != nil{
 			log.Println("Error when tried to create file:",erro.Error())
 			return wasDownload, erro
 		}
+		log.Println("Create new file into: "+ fileName)
 
 		defer file.Close()
-		log.Println("Writing Response File into New Empty File")
 		_, erro = io.Copy(file, response.Body)
 		if erro != nil{
 			log.Println(erro.Error())
 			return wasDownload, erro
 		}
+		log.Println("Writing Response File into New Empty File")
 		wasDownload = true
 	}else{
 		log.Println("The file already exists. Nothing was done")
@@ -133,7 +134,7 @@ func getFileName() (*WorkPath, error)  {
 // ExtractFile from zip path
 func ExtractFile(pathFile string)  {
 	reader, erro := zip.OpenReader(pathFile)
-	log.Println("OPen reader to file:",pathFile)
+	log.Println("Open reader to file:",pathFile)
 	if erro != nil{
 		log.Println("Error to OpenReader:", erro.Error());
 	}
@@ -152,7 +153,7 @@ func ExtractFile(pathFile string)  {
 		dir = dir + "/download/"
 		// get the individual file name and extract
 		path := filepath.Join(dir, file.Name)
-		log.Println("Files will be extract to", path)
+		log.Println("Files will be extract to...", path)
 		if file.FileInfo().IsDir(){
 			log.Println("Creating directory", path)
 			erro := os.MkdirAll(path, file.Mode())
