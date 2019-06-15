@@ -1,4 +1,4 @@
-package Router
+package router
 
 import ("github.com/codenation-dev/squad-3-aceleradev-fs-florianopolis/entities/logs"
 		"github.com/codenation-dev/squad-3-aceleradev-fs-florianopolis/interfaces/db"
@@ -23,6 +23,7 @@ type Credentials struct {
 	Username string `json:"username"`
 }
 
+//GenerateJWT Generate Token
 func GenerateJWT(Username string) (string,error) {
 	token := jwt.New(jwt.SigningMethodHS256)
 
@@ -76,6 +77,7 @@ func (a *App) LoginHandler(w http.ResponseWriter,r *http.Request) {
 
 }
 
+// MainMiddleware Token Verify and Authenticate
 func (a *App) MainMiddleware(w http.ResponseWriter, r *http.Request) {
 
 }
