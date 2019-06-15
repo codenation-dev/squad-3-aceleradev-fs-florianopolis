@@ -8,7 +8,12 @@ import(
 	"encoding/hex"
 	"crypto/sha1"
 	"path/filepath"
+	//"squad-3-aceleradev-fs-florianopolis/entity"
 )
+
+func openFileCSV()  {
+	//entity.Pessoa
+}
 
 func getHashFromFile(filePath string) (string, error) {
 	var stringHashSHA1 string
