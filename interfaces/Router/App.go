@@ -1,21 +1,20 @@
-package main
+package Router
 
-import ("github.com/codenation-dev/squad-3-aceleradev-fs-florianopolis/logs"
-		"github.com/codenation-dev/squad-3-aceleradev-fs-florianopolis/model"
-		//"github.com/codenation-dev/squad-3-aceleradev-fs-florianopolis/entity"
+import ("github.com/codenation-dev/squad-3-aceleradev-fs-florianopolis/entities/logs"
+		"github.com/codenation-dev/squad-3-aceleradev-fs-florianopolis/interfaces/db"
 		"github.com/gorilla/mux"
 		jwt "github.com/dgrijalva/jwt-go"
 		"net/http"
 		"golang.org/x/crypto/bcrypt"
-		//"encoding/json"
 		"fmt"
 		"time"
+		"os"
 	)
 
 // App references Dependecies
 type App struct {
 	Router *mux.Router
-	Database model.DatabaseInterface
+	Database database.InterfaceDatabase
 }
 
 // Credentials struct
@@ -33,13 +32,19 @@ func GenerateJWT(Username string) (string,error) {
 	claims["user"] = Username
 	claims["exp"] = time.Now().Add(time.Minute *5).Unix()
 
-	tokenString = 
-	return "",nil
+	tokenString,err := token.SignedString(os.Getenv("JWT_TOKEN"))
+
+	if(err!=nil){
+		logs.Errorf("GenerateJWT Error",fmt.Sprintf("%s",err))
+		return "",nil
+	}
+
+	return tokenString, nil
 }
 
 func (a *App) loginAttempt(c *Credentials) bool {
 	
-	Hash, err := a.Database.GetHashPassword(c.Username)
+	Hash, err := a.Database.GetPasswordHash(c.Username)
 	
 	if(err != nil){
 		logs.Errorf("App Login Attempt", fmt.Sprintf("%s",err))
