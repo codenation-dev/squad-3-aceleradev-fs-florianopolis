@@ -1,24 +1,38 @@
 package entity
 
+import (
+	"time"
+)
+
 type Usuario struct{
 	ID int `json:id`
-	Cpf int64 `json:cpf`
-	Nome string `json:nome`
-	Senha string `json:senha`
-	Email string `json:email`
-	FuncionarioPuplico bool `json:funcionariopublico`
+  	Cpf uint64 `json:cpf`
+  	Nome string `json:nome`
+  	Senha string `json:senha`
+  	Email string `json:email`
+  	Recebeemail bool `json:recebeemail`
 }
 
-/*
-CREATE DATABASE `bancouati`;
-CREATE TABLE `bancouati`.`usuario` (
-	`id` `id` INT(11) NOT NULL AUTO_INCREMENT,
-	`cpf` BIGINT NOT NULL,
-	`nome` VARCHAR(100) NOT NULL,
-	`senha` VARCHAR(100) NOT NULL,
-	`email` VARCHAR(100) NOT NULL,
-	`funcionariopublico` TINYINT NOT NULL DEFAULT 0,
-	PRIMARY KEY (`id`, `cpf`));
+type Pessoa struct{
+	ID int `json:id`
+	IdArquivoTransparencia int `json:idarquivotransparencia`
+	Nome string `json:nome`
+	Cargo string `json:cargo`
+	Orgao string `json:orgao`
+	Remuneracaodomes float64 `json:remuneracaodomes`
+	RedutorSalaria float64 `json:redutorsalarial`
+	TotalLiquido float64 `json:totalliquido`
+	Update bool `json:update`
+	ClientedoBanco bool`json:clientedobanco`
+}
 
-INSERT INTO `bancouati`.`usuario` (`cpf`, `nome`, `senha`, `email`, `funcionariopublico`) VALUES ('33333333333', 'Joao da Silva', '12345', 't@t.com', '0');
-  */
+type Notificacao struct{
+	Id int `json:id`
+	IdPessoa int `json:idpessoa`
+}
+
+type NotificacaoUsuario struct{
+	IdUsuario int `json:idusuario`
+	IdNotificacao int `json:idnotificacao`
+	Data time.Time `json:data`
+}
