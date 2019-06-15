@@ -1,67 +1,36 @@
 package main
-
 import (
-	"sort"
-	"io/ioutil"
-	"encoding/hex"
-	"crypto/sha1"
-	"path/filepath"
-	"archive/zip"
-	"log"
 	"time"
+	"os"
+	"log"
+	"path/filepath"
+	"net/http"
 	"bytes"
 	"io"
-	"os"
-	"net/http"
-)
-const(
-	//URLService is the address to download the zip file
-	URLService = "http://www.transparencia.sp.gov.br/PortalTransparencia-Report/Remuneracao.aspx"
 )
 
-func main()  {
-	DownloadAndExtractFile()	
+//WorkPath store the files path
+type WorkPath struct{
+	Directory string
+	FileName string
+	FullPath string
 }
 
-//DownloadAndExtractFile from URLService
-func DownloadAndExtractFile()  {
-	workPath, erro := getFileName()
-	zipFileName := workPath.FullPath
-	if erro == nil{
-		wasDownload, _ := DownloadFile(URLService, zipFileName)
-		if erro != nil{
-			log.Println(erro.Error())
-		}
-		filesName := getLastTwoFiles(workPath.Directory)
-		if wasDownload{
-			switch {
-			case len(filesName) < 2:
-				ExtractFile(zipFileName)
-			case len(filesName) == 2:
-				hashNewFile, erro := getHashFromFile(workPath.Directory + filesName[0])
-				if erro != nil{
-					log.Println(erro.Error())
-				}
-				hashExistFile, erro := getHashFromFile(workPath.Directory + filesName[1])				
-				if erro != nil{
-					log.Println(erro.Error())
-				}
-				if hashExistFile == hashNewFile{
-					erro = os.Remove(workPath.Directory + filesName[0])
-					if erro != nil{
-						log.Println(erro.Error())
-					}
-					log.Println("Files are the same. New file was removed.")
-				}else{
-					ExtractFile(zipFileName)
-				}
-			}
-		}else {
-			log.Println("New file was not downloaded. File was not extract.")
-		}
-	}else{
-		log.Println(erro.Error())
+func getFileName() (*WorkPath, error)  {
+	wp := new(WorkPath)
+	currentTime := time.Now()
+	dir, erro := os.Getwd()
+	if erro != nil{
+		log.Println("Error when tried to get directory:",erro.Error())
+		return wp, erro
 	}
+	formatTime := currentTime.Format("01-02-2006")
+	dir += "/download/"
+	wp.Directory = dir
+	fileName := "Transparencia-" + formatTime + ".zip"
+	wp.FileName = fileName
+	wp.FullPath = filepath.Join(dir, fileName)
+	return wp, erro
 }
 
 // DownloadFile from url
@@ -112,118 +81,4 @@ func DownloadFile(URLFile, fileName string) (bool, error ){
 	}
 	return wasDownload, nil
 
-}
-
-func getFileName() (*WorkPath, error)  {
-	wp := new(WorkPath)
-	currentTime := time.Now()
-	dir, erro := os.Getwd()
-	if erro != nil{
-		log.Println("Error when tried to get directory:",erro.Error())
-		return wp, erro
-	}
-	formatTime := currentTime.Format("01-02-2006")
-	dir += "/download/"
-	wp.Directory = dir
-	fileName := "Transparencia-" + formatTime + ".zip"
-	wp.FileName = fileName
-	wp.FullPath = filepath.Join(dir, fileName)
-	return wp, erro
-}
-
-// ExtractFile from zip path
-func ExtractFile(pathFile string)  {
-	reader, erro := zip.OpenReader(pathFile)
-	log.Println("Open reader to file:",pathFile)
-	if erro != nil{
-		log.Println("Error to OpenReader:", erro.Error());
-	}
-	defer reader.Close()
-	for _, file := range reader.Reader.File{
-		log.Println("Open zipfile...")
-		zipfile, erro := file.Open()
-		if erro != nil{
-			log.Println("Error to open zipfile:", erro.Error())
-		}
-		defer zipfile.Close()
-		dir, erro := os.Getwd()
-		if erro != nil{
-			log.Println("Error when tried to get directory:", erro.Error())
-		}
-		dir = dir + "/download/"
-		// get the individual file name and extract
-		path := filepath.Join(dir, file.Name)
-		log.Println("Files will be extract to...", path)
-		if file.FileInfo().IsDir(){
-			log.Println("Creating directory", path)
-			erro := os.MkdirAll(path, file.Mode())
-			if erro != nil{
-				log.Println("Error when tried to create directory" , erro.Error())
-			}
-			
-		}else{
-			log.Println("Extracting files, please wait...")
-			write, erro := os.OpenFile(path, os.O_WRONLY|os.O_CREATE, file.Mode())
-			if erro != nil{
-				log.Println(erro.Error())
-			}
-			_, erro = io.Copy(write, zipfile)
-			log.Println("Extract complete!")
-			if erro != nil{
-				log.Println(erro.Error())
-			}
-		}
-	}
-
-}
-
-func getHashFromFile(filePath string) (string, error) {
-	var stringHashSHA1 string
-	file, erro := os.Open(filePath)
-	if erro != nil{
-		log.Println(erro.Error())
-		return stringHashSHA1, erro
-	}
-	defer file.Close()
-	hashSHA1 := sha1.New()
-	_, erro = io.Copy(hashSHA1, file)
-	if erro != nil{
-		log.Println(erro.Error())
-		return stringHashSHA1, erro
-	}
-	stringHashSHA1 = hex.EncodeToString(hashSHA1.Sum(nil))
-	return stringHashSHA1, erro
-}
-
-//WorkPath store the files path
-type WorkPath struct{
-	Directory string
-	FileName string
-	FullPath string
-}
-
-func getLastTwoFiles(pathDir string) []string {
-	var filesName []string
-	files, erro := ioutil.ReadDir(pathDir)
-
-	if erro != nil{
-		log.Println(erro.Error())
-	}
-	sort.Slice(files, func(i,j int) bool{
-    	return files[i].ModTime().Unix() > files[j].ModTime().Unix()
-	})
-	
-	for i, file := range files {
-		if file.Mode().IsRegular() {
-			if filepath.Ext(file.Name()) == ".zip" {
-				if len(filesName) < 2{
-					filesName = append(filesName, files[i].Name()) 					
-				}else{
-					break
-				}
-			}
-		}
-	}
-    
-	return filesName
 }
