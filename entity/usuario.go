@@ -1,12 +1,12 @@
 package entity
 
 type Usuario struct{
-	ID int
-	Cpf int64
-	Nome string
-	Senha string
-	Email string
-	FuncionarioPuplico bool
+	ID int `json:id`
+	Cpf int64 `json:cpf`
+	Nome string `json:nome`
+	Senha string `json:senha`
+	Email string `json:email`
+	FuncionarioPuplico bool `json:funcionariopublico`
 }
 
 /*
