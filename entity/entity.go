@@ -3,7 +3,7 @@ package entity
 import (
 	"time"
 )
-
+//Usuario entity
 type Usuario struct{
 	ID int `json:id`
   	Cpf uint64 `json:cpf`
@@ -13,6 +13,7 @@ type Usuario struct{
   	Recebeemail bool `json:recebeemail`
 }
 
+//Pessoa entity
 type Pessoa struct{
 	ID int `json:id`
 	IdArquivoTransparencia int `json:idarquivotransparencia`
@@ -26,11 +27,13 @@ type Pessoa struct{
 	ClientedoBanco bool`json:clientedobanco`
 }
 
+//Notificacao entity
 type Notificacao struct{
 	Id int `json:id`
 	IdPessoa int `json:idpessoa`
 }
 
+//NotificacaoUsuario entity
 type NotificacaoUsuario struct{
 	IdUsuario int `json:idusuario`
 	IdNotificacao int `json:idnotificacao`
