@@ -1,4 +1,4 @@
-files/download/*
+interfaces/files/download/*
 .gitignore
 .vscode
-files/file
+interfaces/files/file
