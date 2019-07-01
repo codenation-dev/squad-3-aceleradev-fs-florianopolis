@@ -8,11 +8,88 @@ import(
 	"encoding/hex"
 	"crypto/sha1"
 	"path/filepath"
-	//"squad-3-aceleradev-fs-florianopolis/entity"
+	"encoding/csv"
+	"squad-3-aceleradev-fs-florianopolis/entities"
+	"strconv"
+	"encoding/json"
+	"strings"
 )
 
-func openFileCSV()  {
-	//entity.Pessoa
+
+func openFileCSV() error {
+	Pessoa := new(entity.Pessoa)
+	workPath, erro := getFileName()
+	fileName := getLastFiles(workPath.Directory, 1 ,".txt")
+	fullPath := workPath.Directory + fileName[0]
+	csvfile, erro := os.Open(fullPath)
+	if erro != nil {
+		log.Println(erro.Error())
+		return erro
+	}
+	defer csvfile.Close()
+	
+	reader := csv.NewReader(csvfile)
+	reader.Comma = ';'
+	rawdata, err := reader.ReadAll()
+	if err != nil {
+		log.Println(erro.Error())
+		return erro
+	}
+	
+	for i, column := range rawdata {
+		if (i > 0){			
+			Remuneracaodomes, err := strconv.ParseFloat(changeComma(column[3]), 64); if err != nil {
+				log.Println(err.Error())
+				return err
+			}
+			Redutorsalarial, err := strconv.ParseFloat(changeComma(column[8]),64);if err != nil {
+				log.Println(err.Error())
+				return err
+			}
+			Totalliquido, err := strconv.ParseFloat(changeComma(column[9]),64);if err != nil {
+				log.Println(err.Error())
+				return err
+			}
+			if Totalliquido > 20000{
+				Pessoa.Nome  = column[0]
+				Pessoa.Cargo = column[1]
+				Pessoa.Orgao = column[2]
+				Pessoa.Remuneracaodomes = Remuneracaodomes
+				Pessoa.RedutorSalarial = Redutorsalarial
+				Pessoa.TotalLiquido = Totalliquido
+				
+				if true{//verifica se é cliente do banco na api e pega o ID da pessoa
+					Pessoa.Update = true
+					Pessoa.ClientedoBanco = true//pega o valor do json do cliente
+					jsonData, err := json.Marshal(Pessoa);if err != nil {
+						log.Println(err.Error())
+						return err
+					}
+					log.Println(string(jsonData))
+					//insere no banco
+				}else{
+					Pessoa.ClientedoBanco = false
+					Pessoa.TotalLiquido = 0
+					//atualiza no banco
+				}
+
+				/*
+				- Caso salário líquido > 20k, 
+				- Verifica se nome já é cliente
+				- Caso cliente, update dos dados e update = true
+				- Caso não cliente, insere os dados e seta update = true
+				- Caso update = false, set valorliquido = 0
+				- Ao final, setar novamente update = false em todos os clientes da tabela*/
+			}
+
+		}
+		 
+	}
+	return erro
+}
+
+func changeComma(pFloatNumber string) string{
+	return strings.ReplaceAll(strings.ReplaceAll(strings.ReplaceAll(strings.ReplaceAll(pFloatNumber,",",";"),".",":"),";","."),":",",")
 }
 
 func getHashFromFile(filePath string) (string, error) {
@@ -33,7 +110,7 @@ func getHashFromFile(filePath string) (string, error) {
 	return stringHashSHA1, erro
 }
 
-func getLastTwoFiles(pathDir string) []string {
+func getLastFiles(pathDir string, countFiles int, extension string) []string {
 	var filesName []string
 	files, erro := ioutil.ReadDir(pathDir)
 
@@ -43,14 +120,15 @@ func getLastTwoFiles(pathDir string) []string {
 	sort.Slice(files, func(i,j int) bool{
     	return files[i].ModTime().Unix() > files[j].ModTime().Unix()
 	})
-	
-	for i, file := range files {
-		if file.Mode().IsRegular() {
-			if filepath.Ext(file.Name()) == ".zip" {
-				if len(filesName) < 2{
-					filesName = append(filesName, files[i].Name()) 					
-				}else{
-					break
+	if (countFiles > 0 && extension != ""){
+		for i, file := range files {
+			if file.Mode().IsRegular() {
+				if filepath.Ext(file.Name()) == extension {
+					if len(filesName) < countFiles{
+						filesName = append(filesName, files[i].Name()) 					
+					}else{
+						break
+					}
 				}
 			}
 		}
