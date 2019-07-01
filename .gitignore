@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 
 # Created by https://www.gitignore.io/api/go,visualstudiocode
 # Edit at https://www.gitignore.io/?templates=go,visualstudiocode
@@ -33,10 +32,4 @@
 .history
 
 # End of https://www.gitignore.io/api/go,visualstudiocode
-files/download/
-=======
 interfaces/files/download/*
-.gitignore
-.vscode
-interfaces/files/file
->>>>>>> develop
