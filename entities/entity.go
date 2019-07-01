@@ -17,7 +17,6 @@ type Usuario struct {
 //Pessoa entity
 type Pessoa struct {
 	ID                     int     `json:"id"`
-	IDArquivoTransparencia int     `json:"idarquivotransparencia"`
 	Nome                   string  `json:"nome"`
 	Cargo                  string  `json:"cargo"`
 	Orgao                  string  `json:"orgao"`
