@@ -18,74 +18,78 @@ import(
 
 func openFileCSV() error {
 	Pessoa := new(entity.Pessoa)
-	workPath, erro := getFileName()
+	workPath, err := getFileName(); if err != nil {
+		log.Println(err.Error())
+		return err
+	}
 	fileName := getLastFiles(workPath.Directory, 1 ,".txt")
 	fullPath := workPath.Directory + fileName[0]
-	csvfile, erro := os.Open(fullPath)
-	if erro != nil {
+	csvfile, err := os.Open(fullPath); if err != nil {
 		log.Println(erro.Error())
-		return erro
+		return err
 	}
 	defer csvfile.Close()
 	
 	reader := csv.NewReader(csvfile)
 	reader.Comma = ';'
-	rawdata, err := reader.ReadAll()
-	if err != nil {
-		log.Println(erro.Error())
-		return erro
+	rawdata, err := reader.ReadAll(); if err != nil {
+		log.Println(err.Error())
+		return err
 	}
-	
-	for i, column := range rawdata {
-		if (i > 0){			
-			Remuneracaodomes, err := strconv.ParseFloat(changeComma(column[3]), 64); if err != nil {
-				log.Println(err.Error())
-				return err
-			}
-			Redutorsalarial, err := strconv.ParseFloat(changeComma(column[8]),64);if err != nil {
-				log.Println(err.Error())
-				return err
-			}
-			Totalliquido, err := strconv.ParseFloat(changeComma(column[9]),64);if err != nil {
-				log.Println(err.Error())
-				return err
-			}
-			if Totalliquido > 20000{
-				Pessoa.Nome  = column[0]
-				Pessoa.Cargo = column[1]
-				Pessoa.Orgao = column[2]
-				Pessoa.Remuneracaodomes = Remuneracaodomes
-				Pessoa.RedutorSalarial = Redutorsalarial
-				Pessoa.TotalLiquido = Totalliquido
-				
-				if true{//verifica se é cliente do banco na api e pega o ID da pessoa
-					Pessoa.Update = true
-					Pessoa.ClientedoBanco = true//pega o valor do json do cliente
-					jsonData, err := json.Marshal(Pessoa);if err != nil {
-						log.Println(err.Error())
-						return err
+}
+
+func insertIntoPessoa(rawdata [][]string ) error{
+	if len(rawdata) > 0{
+		for i, column := range rawdata {
+			if (i > 0){			
+				Remuneracaodomes, err := strconv.ParseFloat(changeComma(column[3]), 64); if err != nil {
+					log.Println(err.Error())
+					return err
+				}
+				Redutorsalarial, err := strconv.ParseFloat(changeComma(column[8]),64);if err != nil {
+					log.Println(err.Error())
+					return err
+				}
+				Totalliquido, err := strconv.ParseFloat(changeComma(column[9]),64);if err != nil {
+					log.Println(err.Error())
+					return err
+				}
+				if Totalliquido > 20000{
+					Pessoa.Nome  = column[0]
+					Pessoa.Cargo = column[1]
+					Pessoa.Orgao = column[2]
+					Pessoa.Remuneracaodomes = Remuneracaodomes
+					Pessoa.RedutorSalarial = Redutorsalarial
+					Pessoa.TotalLiquido = Totalliquido
+					
+					if true{//verifica se é cliente do banco na api e pega o ID da pessoa
+						Pessoa.Update = true
+						Pessoa.ClientedoBanco = true//pega o valor do json do cliente
+						jsonData, err := json.Marshal(Pessoa);if err != nil {
+							log.Println(err.Error())
+							return err
+						}
+						log.Println(string(jsonData))
+						//insere no banco
+					}else{
+						Pessoa.ClientedoBanco = false
+						Pessoa.TotalLiquido = 0
+						//atualiza no banco
 					}
-					log.Println(string(jsonData))
-					//insere no banco
-				}else{
-					Pessoa.ClientedoBanco = false
-					Pessoa.TotalLiquido = 0
-					//atualiza no banco
+
+					/*
+					- Caso salário líquido > 20k, 
+					- Verifica se nome já é cliente
+					- Caso cliente, update dos dados e update = true
+					- Caso não cliente, insere os dados e seta update = true
+					- Caso update = false, set valorliquido = 0
+					- Ao final, setar novamente update = false em todos os clientes da tabela*/
 				}
 
-				/*
-				- Caso salário líquido > 20k, 
-				- Verifica se nome já é cliente
-				- Caso cliente, update dos dados e update = true
-				- Caso não cliente, insere os dados e seta update = true
-				- Caso update = false, set valorliquido = 0
-				- Ao final, setar novamente update = false em todos os clientes da tabela*/
 			}
-
+			
 		}
-		 
 	}
-	return erro
 }
 
 func changeComma(pFloatNumber string) string{
