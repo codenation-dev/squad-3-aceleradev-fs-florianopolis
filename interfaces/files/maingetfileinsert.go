@@ -5,12 +5,13 @@ import (
 	"os"
 )
 const(
-	//URLService is the address to download the zip file
+	URLService is the address to download the zip file
 	URLService = "http://www.transparencia.sp.gov.br/PortalTransparencia-Report/Remuneracao.aspx"
 )
 
 func main()  {
-	DownloadAndExtractFile()
+	//DownloadAndExtractFile()
+	openFileCSV()
 }
 
 //DownloadAndExtractFile from URLService
@@ -22,7 +23,7 @@ func DownloadAndExtractFile()  {
 		if erro != nil{
 			log.Println(erro.Error())
 		}
-		filesName := getLastTwoFiles(workPath.Directory)
+		filesName := getLastFiles(workPath.Directory, 2 ,".zip")
 		if wasDownload{
 			switch {
 			case len(filesName) < 2:
