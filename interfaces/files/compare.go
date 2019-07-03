@@ -30,9 +30,10 @@ func openFileCSV() error {
 		return err
 	}
 	defer csvfile.Close()
-	
+	logs.Info("openFileCSV", "Opening file: " + fullPath)
 	reader := csv.NewReader(csvfile)
 	reader.Comma = ';'
+	logs.Info("openFileCSV", "Reading file...")
 	rawdata, err := reader.ReadAll(); if err != nil {
 		logs.Errorf("openFileCSV", err.Error())
 		return err
