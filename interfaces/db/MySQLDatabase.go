@@ -1,6 +1,6 @@
 package database
 import (
-	"github.com/codenation-dev/squad-3-aceleradev-fs-florianopolis/entities/logs"
+	"squad-3-aceleradev-fs-florianopolis/entities/logs"
 	"database/sql"
 	"os"
 	"fmt"
