@@ -5,12 +5,12 @@ import (
 	"os"
 )
 const(
-	URLService is the address to download the zip file
+	//URLService is the address to download the zip file
 	URLService = "http://www.transparencia.sp.gov.br/PortalTransparencia-Report/Remuneracao.aspx"
 )
 
 func main()  {
-	//DownloadAndExtractFile()
+	DownloadAndExtractFile()
 	openFileCSV()
 }
 
