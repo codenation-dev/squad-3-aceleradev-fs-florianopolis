@@ -8,8 +8,8 @@ import (
 
 //Insert new pessoa
 func Insert(person *entity.Pessoa) error {
-	erro := db.ExecutaComando("insert into pessoa (idarquivotransparencia, nome, cargo, orgao, remuneracaodomes, 
-		redutorsalarial, totalliquido, update, clientedobanco) values(" + strconv.Itoa(person.IDArquivoTransparencia) + ",'" 
+	erro := db.ExecutaComando("insert into pessoa ( nome, cargo, orgao, remuneracaodomes, 
+		redutorsalarial, totalliquido, update, clientedobanco) values(" 
 		+ person.Nome + "', '" + person.Cargo + "','" + person.Orgao + "'," + strconv.FormatFloat(person.Remuneracaodomes) + "'," 
 		+ strconv.FormatFloat(person.RedutorSalarial) + "'," + strconv.FormatFloat(person.TotalLiquido) + "',"
 		+ strconv.FormatBool(person.Update) + "',"+ strconv.FormatBool(person.ClientedoBanco) + "'," + ");")
