@@ -1,7 +1,7 @@
 package main
 
 import (
-	"log"
+	"squad-3-aceleradev-fs-florianopolis/entities/logs"
 	"os"
 )
 const(
@@ -19,9 +19,8 @@ func DownloadAndExtractFile()  {
 	workPath, erro := getFileName()
 	zipFileName := workPath.FullPath
 	if erro == nil{
-		wasDownload, _ := DownloadFile(URLService, zipFileName)
-		if erro != nil{
-			log.Println(erro.Error())
+		wasDownload, _ := DownloadFile(URLService, zipFileName);if erro != nil{
+			logs.Errorf("DownloadAndExtractFile", erro.Error())
 		}
 		filesName := getLastFiles(workPath.Directory, 2 ,".zip")
 		if wasDownload{
@@ -29,28 +28,25 @@ func DownloadAndExtractFile()  {
 			case len(filesName) < 2:
 				ExtractFile(zipFileName)
 			case len(filesName) == 2:
-				hashNewFile, erro := getHashFromFile(workPath.Directory + filesName[0])
-				if erro != nil{
-					log.Println(erro.Error())
+				hashNewFile, erro := getHashFromFile(workPath.Directory + filesName[0]);if erro != nil{
+					logs.Errorf("DownloadAndExtractFile", erro.Error())
 				}
-				hashExistFile, erro := getHashFromFile(workPath.Directory + filesName[1])				
-				if erro != nil{
-					log.Println(erro.Error())
+				hashExistFile, erro := getHashFromFile(workPath.Directory + filesName[1]);if erro != nil{
+					logs.Errorf("DownloadAndExtractFile", erro.Error())
 				}
 				if hashExistFile == hashNewFile{
-					erro = os.Remove(workPath.Directory + filesName[0])
-					if erro != nil{
-						log.Println(erro.Error())
+					erro = os.Remove(workPath.Directory + filesName[0]);if erro != nil{
+						logs.Errorf("DownloadAndExtractFile", erro.Error())
 					}
-					log.Println("Files are the same. New file was removed.")
+					logs.Info("DownloadAndExtractFile", "Files are the same. New file was removed.")
 				}else{
 					ExtractFile(zipFileName)
 				}
 			}
 		}else {
-			log.Println("New file was not downloaded. File was not extract.")
+			logs.Info("DownloadAndExtractFile", "New file was not downloaded. File was not extract.")
 		}
 	}else{
-		log.Println(erro.Error())
+		logs.Errorf("DownloadAndExtractFile", erro.Error())
 	}
 }
