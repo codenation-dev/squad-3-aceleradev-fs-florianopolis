@@ -13,6 +13,7 @@ import(
 	"strconv"
 	"encoding/json"
 	"strings"
+	"errors"
 )
 
 
@@ -24,7 +25,7 @@ func openFileCSV() error {
 	fileName := getLastFiles(workPath.Directory, 1 ,".txt")
 	fullPath := workPath.Directory + fileName[0]
 	csvfile, err := os.Open(fullPath); if err != nil {
-		log.Println(erro.Error())
+		log.Println(err.Error())
 		return err
 	}
 	defer csvfile.Close()
@@ -35,10 +36,16 @@ func openFileCSV() error {
 		log.Println(err.Error())
 		return err
 	}
+	err = insertIntoPessoa(rawdata);if err != nil {
+		log.Println(err.Error())
+		return err
+	}
+	return err
 }
 
 func insertIntoPessoa(rawdata [][]string ) error{
 	if len(rawdata) > 0{
+		Pessoa := new(entity.Pessoa)
 		for i, column := range rawdata {
 			if (i > 0){			
 				Remuneracaodomes, err := strconv.ParseFloat(changeComma(column[3]), 64); if err != nil {
@@ -88,7 +95,12 @@ func insertIntoPessoa(rawdata [][]string ) error{
 			}
 			
 		}
+	}else {
+		err := errors.New("the csv file is empty")
+		log.Println(err.Error())
+		return err
 	}
+	return nil
 }
 
 func changeComma(pFloatNumber string) string{
