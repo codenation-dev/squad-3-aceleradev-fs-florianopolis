@@ -34,3 +34,4 @@
 # End of https://www.gitignore.io/api/go,visualstudiocode
 interfaces/files/download/*
 !interfaces/files/download/.gitkeep 
+interfaces/files/logs/*
