@@ -17,7 +17,6 @@ import(
 
 
 func openFileCSV() error {
-	Pessoa := new(entity.Pessoa)
 	workPath, err := getFileName(); if err != nil {
 		log.Println(err.Error())
 		return err
