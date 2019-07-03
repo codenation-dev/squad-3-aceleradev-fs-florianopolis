@@ -10,6 +10,7 @@ import(
 	"path/filepath"
 	"encoding/csv"
 	"squad-3-aceleradev-fs-florianopolis/entities"
+	"squad-3-aceleradev-fs-florianopolis/entities/logs"
 	"strconv"
 	"encoding/json"
 	"strings"
@@ -19,13 +20,13 @@ import(
 
 func openFileCSV() error {
 	workPath, err := getFileName(); if err != nil {
-		log.Println(err.Error())
+		logs.Errorf("openFileCSV", err.Error())
 		return err
 	}
 	fileName := getLastFiles(workPath.Directory, 1 ,".txt")
 	fullPath := workPath.Directory + fileName[0]
 	csvfile, err := os.Open(fullPath); if err != nil {
-		log.Println(err.Error())
+		logs.Errorf("openFileCSV", err.Error())
 		return err
 	}
 	defer csvfile.Close()
@@ -33,11 +34,11 @@ func openFileCSV() error {
 	reader := csv.NewReader(csvfile)
 	reader.Comma = ';'
 	rawdata, err := reader.ReadAll(); if err != nil {
-		log.Println(err.Error())
+		logs.Errorf("openFileCSV", err.Error())
 		return err
 	}
 	err = insertIntoPessoa(rawdata);if err != nil {
-		log.Println(err.Error())
+		logs.Errorf("openFileCSV", err.Error())
 		return err
 	}
 	return err
@@ -49,15 +50,15 @@ func insertIntoPessoa(rawdata [][]string ) error{
 		for i, column := range rawdata {
 			if (i > 0){			
 				Remuneracaodomes, err := strconv.ParseFloat(changeComma(column[3]), 64); if err != nil {
-					log.Println(err.Error())
+					logs.Errorf("insertIntoPessoa", err.Error())
 					return err
 				}
 				Redutorsalarial, err := strconv.ParseFloat(changeComma(column[8]),64);if err != nil {
-					log.Println(err.Error())
+					logs.Errorf("insertIntoPessoa", err.Error())
 					return err
 				}
 				Totalliquido, err := strconv.ParseFloat(changeComma(column[9]),64);if err != nil {
-					log.Println(err.Error())
+					logs.Errorf("insertIntoPessoa", err.Error())
 					return err
 				}
 				if Totalliquido > 20000{
@@ -72,7 +73,7 @@ func insertIntoPessoa(rawdata [][]string ) error{
 						Pessoa.Update = true
 						Pessoa.ClientedoBanco = true//pega o valor do json do cliente
 						jsonData, err := json.Marshal(Pessoa);if err != nil {
-							log.Println(err.Error())
+							logs.Errorf("insertIntoPessoa", err.Error())
 							return err
 						}
 						log.Println(string(jsonData))
@@ -97,7 +98,7 @@ func insertIntoPessoa(rawdata [][]string ) error{
 		}
 	}else {
 		err := errors.New("the csv file is empty")
-		log.Println(err.Error())
+		logs.Errorf("insertIntoPessoa", err.Error())
 		return err
 	}
 	return nil
@@ -109,28 +110,24 @@ func changeComma(pFloatNumber string) string{
 
 func getHashFromFile(filePath string) (string, error) {
 	var stringHashSHA1 string
-	file, erro := os.Open(filePath)
-	if erro != nil{
-		log.Println(erro.Error())
-		return stringHashSHA1, erro
+	file, err := os.Open(filePath);if err != nil{
+		logs.Errorf("getHashFromFile", err.Error())
+		return stringHashSHA1, err
 	}
 	defer file.Close()
 	hashSHA1 := sha1.New()
-	_, erro = io.Copy(hashSHA1, file)
-	if erro != nil{
-		log.Println(erro.Error())
-		return stringHashSHA1, erro
+	_, err = io.Copy(hashSHA1, file);if err != nil{
+		logs.Errorf("getHashFromFile", err.Error())
+		return stringHashSHA1, err
 	}
 	stringHashSHA1 = hex.EncodeToString(hashSHA1.Sum(nil))
-	return stringHashSHA1, erro
+	return stringHashSHA1, err
 }
 
 func getLastFiles(pathDir string, countFiles int, extension string) []string {
 	var filesName []string
-	files, erro := ioutil.ReadDir(pathDir)
-
-	if erro != nil{
-		log.Println(erro.Error())
+	files, err := ioutil.ReadDir(pathDir);if err != nil{
+		logs.Errorf("getHashFromFile", err.Error())
 	}
 	sort.Slice(files, func(i,j int) bool{
     	return files[i].ModTime().Unix() > files[j].ModTime().Unix()
