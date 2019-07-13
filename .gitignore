@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 
 # Created by https://www.gitignore.io/api/go,visualstudiocode
 # Edit at https://www.gitignore.io/?templates=go,visualstudiocode
@@ -16,6 +15,8 @@
 
 # Output of the go coverage tool, specifically when used with LiteIDE
 *.out
+### Git
+.git/*
 
 ### Go Patch ###
 /vendor/
@@ -33,10 +34,6 @@
 .history
 
 # End of https://www.gitignore.io/api/go,visualstudiocode
-files/download/
-=======
 interfaces/files/download/*
-.gitignore
-.vscode
-interfaces/files/file
->>>>>>> develop
+!interfaces/files/download/.gitkeep 
+interfaces/files/logs/*

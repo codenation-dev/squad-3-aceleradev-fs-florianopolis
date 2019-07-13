@@ -2,11 +2,11 @@ package main
 import (
 	"time"
 	"os"
-	"log"
 	"path/filepath"
 	"net/http"
 	"bytes"
 	"io"
+	"squad-3-aceleradev-fs-florianopolis/entities/logs"
 )
 
 //WorkPath store the files path
@@ -19,10 +19,9 @@ type WorkPath struct{
 func getFileName() (*WorkPath, error)  {
 	wp := new(WorkPath)
 	currentTime := time.Now()
-	dir, erro := os.Getwd()
-	if erro != nil{
-		log.Println("Error when tried to get directory:",erro.Error())
-		return wp, erro
+	dir, err := os.Getwd(); if err != nil{
+		logs.Errorf("getFileName", "Error when tried to get directory: " + err.Error())
+		return wp, err
 	}
 	formatTime := currentTime.Format("01-02-2006")
 	dir += "/download/"
@@ -30,13 +29,13 @@ func getFileName() (*WorkPath, error)  {
 	fileName := "Transparencia-" + formatTime + ".zip"
 	wp.FileName = fileName
 	wp.FullPath = filepath.Join(dir, fileName)
-	return wp, erro
+	return wp, err
 }
 
 // DownloadFile from url
 func DownloadFile(URLFile, fileName string) (bool, error ){
 	wasDownload := false
-	log.Println("Start Download File")
+	logs.Info("DownloadFile", "Start Download File")
 	_, erro := os.Stat(fileName)
 	if os.IsNotExist(erro){
 		client := http.Client{}
@@ -52,32 +51,28 @@ func DownloadFile(URLFile, fileName string) (bool, error ){
 		request.Header.Set("Connection","keep-alive")
 		request.Header.Set("Referer","http://www.transparencia.sp.gov.br/PortalTransparencia-Report/Remuneracao.aspx")
 		request.Header.Set("Upgrade-Insecure-Requests","1")
-		log.Println("POST Request was sent...")
-		response, erro := client.Do(request)
-		if erro != nil{
-			log.Println("Error when tried to get Response:",erro.Error())
+		logs.Info("DownloadFile", "POST Request was sent...")
+		response, erro := client.Do(request);if erro != nil{
+			logs.Errorf("DownloadFile", "Error when tried to get Response: " + erro.Error())
 			return wasDownload, erro
 		}
-		log.Println("Response from POST Request was receveid")
+		logs.Info("DownloadFile", "Response from POST Request was receveid")
 		defer response.Body.Close()
-		file, erro := os.Create(fileName)
-		
-		if erro != nil{
-			log.Println("Error when tried to create file:",erro.Error())
+		file, erro := os.Create(fileName);if erro != nil{
+			logs.Errorf("DownloadFile", "Error when tried to create file: " + erro.Error())
 			return wasDownload, erro
 		}
-		log.Println("Create new file into: "+ fileName)
+		logs.Info("DownloadFile", "Create new file into: "+ fileName)
 
 		defer file.Close()
-		_, erro = io.Copy(file, response.Body)
-		if erro != nil{
-			log.Println(erro.Error())
+		_, erro = io.Copy(file, response.Body);	if erro != nil{
+			logs.Errorf("DownloadFile", erro.Error())
 			return wasDownload, erro
 		}
-		log.Println("Writing Response File into New Empty File")
+		logs.Info("DownloadFile", "Writing Response File into New Empty File")
 		wasDownload = true
 	}else{
-		log.Println("The file already exists. Nothing was done")
+		logs.Info("DownloadFile", "The file already exists. Nothing was done")
 	}
 	return wasDownload, nil
 
