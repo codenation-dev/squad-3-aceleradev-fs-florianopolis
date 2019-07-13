@@ -75,7 +75,11 @@ func getNow() string {
 }
 
 func logIt(file string, message string){
+<<<<<<< HEAD:logs/logs.go
 	f,_ := os.OpenFile(file, os.O_APPEND | os.O_CREATE | os.O_WRONLY, 0664)
+=======
+	f,_ := os.OpenFile(file, os.O_APPEND | os.O_CREATE | os.O_WRONLY, 0644)
+>>>>>>> 06bb0e24fa28cd6d3361ea074b1c9e52bfa99bcb:entities/logs/logs.go
 	writeFile(message, f)
 }
 
