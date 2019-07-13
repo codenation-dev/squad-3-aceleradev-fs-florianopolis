@@ -75,7 +75,7 @@ func getNow() string {
 }
 
 func logIt(file string, message string){
-	f,_ := os.OpenFile(file, os.O_APPEND | os.O_CREATE | os.O_WRONLY, os.ModeAppend)
+	f,_ := os.OpenFile(file, os.O_APPEND | os.O_CREATE | os.O_WRONLY, 0664)
 	writeFile(message, f)
 }
 
