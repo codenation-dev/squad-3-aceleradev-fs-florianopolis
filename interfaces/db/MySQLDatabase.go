@@ -3,6 +3,7 @@ package database
 import (
 	"os"
 	"squad-3-aceleradev-fs-florianopolis/entities/logs"
+
 	//"github.com/codenation-dev/squad-3-aceleradev-fs-florianopolis/entities/logs"
 	"database/sql"
 	"fmt"
@@ -29,7 +30,7 @@ type MySQLDatabase struct {
 
 // Init the MySQL DB and return the struct reference
 func Init() (*MySQLDatabase, error) {
-	//fmt.Println("CONEXÃO...")
+	fmt.Println("CONEXÃO...")
 	//db, err := sql.Open("mysql", "user:password@/dbname")
 	ConnectionString := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s", userDB, passwordDB, hostAddress, portAddress, databaseName)
 	dbConnection, erro := sql.Open("mysql", ConnectionString)
@@ -48,7 +49,9 @@ func Init() (*MySQLDatabase, error) {
 //Alterado para retornar o resultado da query (junto com o erro), para casos de Select
 func (MyDB MySQLDatabase) ExecQuery(comando string) (error, *sql.Rows) {
 	retorno, erro := MyDB.Database.Query(comando)
-	//fmt.Println("Erro (ExecQuery): ", erro)
+	if erro != nil {
+		fmt.Println("Erro (ExecQuery): ", erro)
+	}
 	//defer MyDB.Database.Close()
 	return erro, retorno
 }

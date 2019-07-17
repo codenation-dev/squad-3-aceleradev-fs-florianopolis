@@ -7,49 +7,51 @@ import (
 )
 
 //Insert new funcionário público
-//Alterado para receber conexão como parâmetro, para não ficar dando Db.Init() em cada chamada
-func Insert(person *entity.FuncPublico, dbi *db.MySQLDatabase) error {
-	//dbi, erro := db.Init()
+//func Insert(person *entity.FuncPublico, dbi *db.MySQLDatabase) error {
+func Insert(person *entity.FuncPublico) error {
+	dbi, erro := db.Init()
+	defer dbi.Database.Close()
 	squery := "INSERT INTO FUNCPUBLICO (nome, cargo, orgao, remuneracaodomes, " +
 		"redutorsalarial, totalliquido, updated, clientedobanco) VALUES('" +
 		person.Nome + "', '" + person.Cargo + "','" + person.Orgao + "'," + strconv.FormatFloat(person.Remuneracaodomes, 'E', -1, 64) + " ," +
 		strconv.FormatFloat(person.RedutorSalarial, 'E', -1, 64) + "," + strconv.FormatFloat(person.TotalLiquido, 'E', -1, 64) + "," +
 		strconv.FormatBool(person.Updated) + "," + strconv.FormatBool(person.ClientedoBanco) + ");"
-	erro, _ := dbi.ExecQuery(squery)
+	erro, _ = dbi.ExecQuery(squery)
 	return erro
 }
 
 //Delete funcionário público by ID
-//Alterado para receber conexão como parâmetro, para não ficar dando Db.Init() em cada chamada
-func Delete(id int, dbi *db.MySQLDatabase) error {
-	//dbi, erro := db.Init()
-	erro, _ := dbi.ExecQuery("DELETE FROM FUNCPUBLICO WHERE id = " + strconv.Itoa(id))
-	//defer dbi.Database.Close()
+//func Delete(id int, dbi *db.MySQLDatabase) error {
+func Delete(id int) error {
+	dbi, erro := db.Init()
+	defer dbi.Database.Close()
+	erro, _ = dbi.ExecQuery("DELETE FROM FUNCPUBLICO WHERE id = " + strconv.Itoa(id))
 	return erro
 }
 
 //Update funcionário público
-//Alterado para receber conexão como parâmetro, para não ficar dando Db.Init() em cada chamada
-func Update(person *entity.FuncPublico, dbi *db.MySQLDatabase) error {
-	//dbi, erro := db.Init()
+//func Update(person *entity.FuncPublico, dbi *db.MySQLDatabase) error {
+func Update(person *entity.FuncPublico) error {
+	dbi, erro := db.Init()
+	defer dbi.Database.Close()
 	squery := "UPDATE FUNCPUBLICO SET nome = '" + person.Nome + "', cargo = '" + person.Cargo +
 		"', orgao = '" + person.Orgao + "', remuneracaodomes = " + strconv.FormatFloat(person.Remuneracaodomes, 'E', -1, 64) +
 		", redutorsalarial = " + strconv.FormatFloat(person.RedutorSalarial, 'E', -1, 64) +
 		", totalliquido = " + strconv.FormatFloat(person.TotalLiquido, 'E', -1, 64) + ", updated = " + strconv.FormatBool(person.Updated) +
 		", clientedobanco = " + strconv.FormatBool(person.ClientedoBanco) + " WHERE id = " + strconv.Itoa(person.ID)
-	erro, _ := dbi.ExecQuery(squery)
-	//defer dbi.Database.Close()
+	erro, _ = dbi.ExecQuery(squery)
 	return erro
 }
 
 //Get funcionário público by ID
-//Alterado para receber conexão como parâmetro, para não ficar dando Db.Init() em cada chamada
-func Get(id int, dbi *db.MySQLDatabase) (*entity.FuncPublico, error) {
-	//dbi, erro := db.Init()
+//func Get(id int, dbi *db.MySQLDatabase) (*entity.FuncPublico, error) {
+func Get(id int) (*entity.FuncPublico, error) {
+	dbi, erro := db.Init()
+	defer dbi.Database.Close()
 	squery := "SELECT * FROM FUNCPUBLICO WHERE id = " + strconv.Itoa(id)
 	erro, seleciona := dbi.ExecQuery(squery)
 	var person entity.FuncPublico
-	//defer dbi.Database.Close()
+
 	if erro == nil {
 		for seleciona.Next() {
 			erro := seleciona.Scan(&person.ID, &person.Nome, &person.Cargo, &person.Orgao,
@@ -63,12 +65,13 @@ func Get(id int, dbi *db.MySQLDatabase) (*entity.FuncPublico, error) {
 }
 
 //Get funcionário público by name
-//Alterado para receber conexão como parâmetro, para não ficar dando Db.Init() em cada chamada
-func GetByName(name string, dbi *db.MySQLDatabase) (*entity.FuncPublico, error) {
-	//dbi, erro := db.Init()
+//func GetByName(name string, dbi *db.MySQLDatabase) (*entity.FuncPublico, error) {
+func GetByName(name string) (*entity.FuncPublico, error) {
+	dbi, erro := db.Init()
+	defer dbi.Database.Close()
 	squery := "SELECT * FROM FUNCPUBLICO WHERE nome = '" + name + "'"
 	erro, seleciona := dbi.ExecQuery(squery)
-	//defer dbi.Database.Close()
+
 	var person entity.FuncPublico
 	if erro == nil {
 		for seleciona.Next() {

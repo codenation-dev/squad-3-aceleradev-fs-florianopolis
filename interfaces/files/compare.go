@@ -4,16 +4,17 @@ import (
 	"crypto/sha1"
 	"encoding/csv"
 	"encoding/hex"
+	"encoding/json"
 	"errors"
 	"io"
 	"io/ioutil"
+	"log"
 	"os"
 	"path/filepath"
 	"sort"
 	entity "squad-3-aceleradev-fs-florianopolis/entities"
 	"squad-3-aceleradev-fs-florianopolis/entities/logs"
 	"squad-3-aceleradev-fs-florianopolis/interfaces/crud/funcpublico"
-	db "squad-3-aceleradev-fs-florianopolis/interfaces/db"
 	"strconv"
 	"strings"
 )
@@ -41,9 +42,10 @@ func openFileCSV() error {
 		logs.Errorf("openFileCSV", err.Error())
 		return err
 	}
-	dbi, _ := db.Init() //CONEXÃO COM DB INICIADA AQUI
-	defer dbi.Database.Close()
-	err = insertIntoPessoa(rawdata, dbi)
+	//dbi, _ := db.Init()
+	//defer dbi.Database.Close()
+	//err = insertIntoPessoa(rawdata, dbi)
+	err = insertIntoPessoa(rawdata)
 	if err != nil {
 		logs.Errorf("openFileCSV", err.Error())
 		return err
@@ -53,17 +55,20 @@ func openFileCSV() error {
 }
 
 //Check if person already exists in DB (by name)
-func checkPersonInDB(name string, dbi *db.MySQLDatabase) (bool, int) {
+//func checkPersonInDB(name string, dbi *db.MySQLDatabase) (bool, int) {
+func checkPersonInDB(name string) (bool, int) {
 	Pessoa := new(entity.FuncPublico)
 	alreadyInDB := false
-	Pessoa, _ = funcpublico.GetByName(name, dbi)
+	//Pessoa, _ = funcpublico.GetByName(name, dbi)
+	Pessoa, _ = funcpublico.GetByName(name)
 	if Pessoa.Nome == name {
 		alreadyInDB = true
 	}
 	return alreadyInDB, Pessoa.ID
 }
 
-func insertIntoPessoa(rawdata [][]string, dbi *db.MySQLDatabase) error {
+//func insertIntoPessoa(rawdata [][]string, dbi *db.MySQLDatabase) error {
+func insertIntoPessoa(rawdata [][]string) error {
 	if len(rawdata) > 0 {
 		Pessoa := new(entity.FuncPublico)
 		for i, column := range rawdata {
@@ -103,7 +108,8 @@ func insertIntoPessoa(rawdata [][]string, dbi *db.MySQLDatabase) error {
 					Pessoa.TotalLiquido = Totalliquido
 
 					//Funcao para procurar pelo nome (Pessoa.Nome)
-					alreadyExists, existingID := checkPersonInDB(Pessoa.Nome, dbi)
+					//alreadyExists, existingID := checkPersonInDB(Pessoa.Nome, dbi)
+					alreadyExists, existingID := checkPersonInDB(Pessoa.Nome)
 
 					/*REVER: PROCURA PELO NOME COMPLETO DA PESSOA
 					CASO JÁ EXISTA NO BANCO, FAZ O UPDATE DOS DADOS NA TABELA FUNCPUBLICO
@@ -117,14 +123,15 @@ func insertIntoPessoa(rawdata [][]string, dbi *db.MySQLDatabase) error {
 						Pessoa.ID = existingID
 						Pessoa.Updated = true
 						Pessoa.ClientedoBanco = true //pega o valor do json do cliente
-						//jsonData, err := json.Marshal(Pessoa)
+						jsonData, err := json.Marshal(Pessoa)
 						if err != nil {
 							logs.Errorf("insertIntoPessoa", err.Error())
 							return err
 						}
-						//log.Println(string(jsonData))
+						log.Println(string(jsonData))
 						//atualiza no banco
-						erro := funcpublico.Update(Pessoa, dbi)
+						//erro := funcpublico.Update(Pessoa, dbi)
+						erro := funcpublico.Update(Pessoa)
 						if erro != nil {
 							logs.Errorf("insertIntoPessoa", erro.Error())
 						}
@@ -135,7 +142,8 @@ func insertIntoPessoa(rawdata [][]string, dbi *db.MySQLDatabase) error {
 						Pessoa.TotalLiquido = 0
 						//Insere no banco
 
-						erro := funcpublico.Insert(Pessoa, dbi)
+						//erro := funcpublico.Insert(Pessoa, dbi)
+						erro := funcpublico.Insert(Pessoa)
 						if erro != nil {
 							logs.Errorf("insertIntoPessoa", erro.Error())
 						}
