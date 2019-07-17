@@ -1,0 +1,13 @@
+<body style="background-color: #333;color: #fff">
+    <h1 style="color:rgb(225,180,0)">Uati!</h1>
+    <br>
+    <h2>Olha o que separamos para você {{ .TargetName }}</h2>
+<ul>{{ range .TopNames}}
+        <li>{{.}}</li>
+        {{end}}
+</ul>
+<ul>{{ range .Names }}
+        <li>{{.}}</li>
+        {{end}}
+ </ul>
+</body>
