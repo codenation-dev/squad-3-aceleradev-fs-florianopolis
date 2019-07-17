@@ -139,7 +139,6 @@ func insertIntoPessoa(rawdata [][]string) error {
 						//Caso não cliente, insere os dados e seta update = true
 					} else {
 						Pessoa.ClientedoBanco = false
-						Pessoa.TotalLiquido = 0
 						//Insere no banco
 
 						//erro := funcpublico.Insert(Pessoa, dbi)
@@ -162,6 +161,18 @@ func insertIntoPessoa(rawdata [][]string) error {
 			}
 
 		}
+		//Setar todos os TotalLiquido para 0 de todos os clientes que o update=false
+		erro := funcpublico.UpdateAllSetTotalLiquido(0); if erro != nil {
+			logs.Errorf("insertIntoPessoa", erro.Error())
+			return erro
+		}
+		
+		//- Ao final, setar novamente update = false em todos os clientes da tabela*/
+		erro = funcpublico.UpdateAllSetFlagUpdated(false); if erro != nil {
+			logs.Errorf("insertIntoPessoa", erro.Error())
+			return erro
+		}
+		
 	} else {
 		err := errors.New("the csv file is empty")
 		logs.Errorf("insertIntoPessoa", err.Error())
