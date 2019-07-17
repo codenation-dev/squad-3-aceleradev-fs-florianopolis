@@ -15,7 +15,7 @@ func (S *SMTPAgent) CreateSender(login string,pass string) {
 	S.Senders = append(S.Senders,S.Host.createSender(login,pass))
 }
 
-//Send
+//Send send a email
 func (S *SMTPAgent) Send() {
 	logs.Info("Mail - Agent","Tryingo to send mail")
 	var auth = S.Senders[S.senderCtrl].Authme()
