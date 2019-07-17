@@ -61,6 +61,13 @@ func Request(method string,source string,destination string,parameters string, o
 	logIt(getFileName("request"),s)
 }
 
+// SimpleRequest formated
+func SimpleRequest(source string, description string){
+	t := getNow()
+	s := fmt.Sprintf("%s : [REQUEST] : %s | %s",t,source,description)
+	logIt(getFileName("request"),s)
+}
+
 //Info formated
 func Info(source string, description string){
 	t := getNow()
@@ -75,11 +82,7 @@ func getNow() string {
 }
 
 func logIt(file string, message string){
-<<<<<<< HEAD:logs/logs.go
 	f,_ := os.OpenFile(file, os.O_APPEND | os.O_CREATE | os.O_WRONLY, 0664)
-=======
-	f,_ := os.OpenFile(file, os.O_APPEND | os.O_CREATE | os.O_WRONLY, 0644)
->>>>>>> 06bb0e24fa28cd6d3361ea074b1c9e52bfa99bcb:entities/logs/logs.go
 	writeFile(message, f)
 }
 
