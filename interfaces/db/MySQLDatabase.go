@@ -48,10 +48,10 @@ func Init() (*MySQLDatabase, error) {
 //ExecQuery Execute a Query
 //Alterado para retornar o resultado da query (junto com o erro), para casos de Select
 func (MyDB MySQLDatabase) ExecQuery(comando string) (error, *sql.Rows) {
-	retorno, erro := MyDB.Database.Query(comando)
-	if erro != nil {
+	retorno, erro := MyDB.Database.Query(comando);if erro != nil {
+		logs.Errorf("MySQL Database", fmt.Sprintf("%s", erro))
 		fmt.Println("Erro (ExecQuery): ", erro)
 	}
-	//defer MyDB.Database.Close()
+	defer MyDB.Database.Close()
 	return erro, retorno
 }

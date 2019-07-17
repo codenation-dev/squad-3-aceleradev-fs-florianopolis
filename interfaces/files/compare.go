@@ -162,12 +162,13 @@ func insertIntoPessoa(rawdata [][]string) error {
 
 		}
 		//Setar todos os TotalLiquido para 0 de todos os clientes que o update=false
+		//Ou seja, todos os funcionarios públicos que deixaram de ser funcionários
 		erro := funcpublico.UpdateAllSetTotalLiquido(0); if erro != nil {
 			logs.Errorf("insertIntoPessoa", erro.Error())
 			return erro
 		}
 		
-		//- Ao final, setar novamente update = false em todos os clientes da tabela*/
+		//seta updated = false em todos os clientes da tabela após o término do processamento*/
 		erro = funcpublico.UpdateAllSetFlagUpdated(false); if erro != nil {
 			logs.Errorf("insertIntoPessoa", erro.Error())
 			return erro
