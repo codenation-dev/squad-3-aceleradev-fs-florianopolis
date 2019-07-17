@@ -43,6 +43,25 @@ func Update(person *entity.FuncPublico) error {
 	return erro
 }
 
+//UpdateAllSetTotalLiquido atualiza os valores dos que não são mais funcionários públicos para 0
+func UpdateAllSetTotalLiquido(totalLiquido float64) error {
+	dbi, erro := db.Init()
+	defer dbi.Database.Close()
+	squery := "UPDATE FUNCPUBLICO SET totalliquido = " + strconv.FormatFloat(totalLiquido, 'E', -1, 64) +
+			  "WHERE updated = " + strconv.FormatBool(false)
+	erro, _ = dbi.ExecQuery(squery)
+	return erro
+}
+
+//UpdateAllSetFlagUpdated seta a flag updated de todos conforme valor passado
+func UpdateAllSetFlagUpdated(flag bool) error {
+	dbi, erro := db.Init()
+	defer dbi.Database.Close()
+	squery := "UPDATE FUNCPUBLICO SET updated = " + strconv.FormatBool(flag)
+	erro, _ = dbi.ExecQuery(squery)
+	return erro
+}
+
 //Get funcionário público by ID
 //func Get(id int, dbi *db.MySQLDatabase) (*entity.FuncPublico, error) {
 func Get(id int) (*entity.FuncPublico, error) {
