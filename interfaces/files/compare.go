@@ -8,7 +8,6 @@ import (
 	"errors"
 	"io"
 	"io/ioutil"
-	"log"
 	"os"
 	"path/filepath"
 	"sort"
@@ -18,6 +17,10 @@ import (
 	"strconv"
 	"strings"
 )
+
+type Clients struct {
+	Nome string `json:"nome"`
+}
 
 func openFileCSV() error {
 	workPath, err := getFileName()
@@ -55,16 +58,37 @@ func openFileCSV() error {
 }
 
 //Check if person already exists in DB (by name)
-//func checkPersonInDB(name string, dbi *db.MySQLDatabase) (bool, int) {
 func checkPersonInDB(name string) (bool, int) {
 	Pessoa := new(entity.FuncPublico)
 	alreadyInDB := false
-	//Pessoa, _ = funcpublico.GetByName(name, dbi)
 	Pessoa, _ = funcpublico.GetByName(name)
 	if Pessoa.Nome == name {
 		alreadyInDB = true
 	}
 	return alreadyInDB, Pessoa.ID
+}
+
+//func to check if its a client
+func isClient(name string) bool {
+	isClient := false
+	file, erro := ioutil.ReadFile("../api/clientlist.json")
+	if erro != nil {
+		logs.Errorf("isClient", erro.Error())
+	}
+	data := []Clients{}
+
+	erro = json.Unmarshal(file, &data)
+	if erro != nil {
+		logs.Errorf("isClient", erro.Error())
+	}
+
+	for _, value := range data {
+		if name == value.Nome {
+			//fmt.Println(value.Nome + "=" + name)
+			isClient = true
+		}
+	}
+	return isClient
 }
 
 //func insertIntoPessoa(rawdata [][]string, dbi *db.MySQLDatabase) error {
@@ -89,17 +113,7 @@ func insertIntoPessoa(rawdata [][]string) error {
 					return err
 				}
 				if Totalliquido > 20000 {
-					/*type FuncPublico struct {
-						ID               int
-						Nome             string
-						Cargo            string
-						Orgao            string
-						Remuneracaodomes float64
-						RedutorSalarial  float64
-						TotalLiquido     float64
-						Updated          bool
-						ClientedoBanco   bool
-					}*/
+
 					Pessoa.Nome = column[0]
 					Pessoa.Cargo = column[1]
 					Pessoa.Orgao = column[2]
@@ -107,30 +121,28 @@ func insertIntoPessoa(rawdata [][]string) error {
 					Pessoa.RedutorSalarial = Redutorsalarial
 					Pessoa.TotalLiquido = Totalliquido
 
-					//Funcao para procurar pelo nome (Pessoa.Nome)
-					//alreadyExists, existingID := checkPersonInDB(Pessoa.Nome, dbi)
+					//Funcao para procurar pelo nome no BD (Pessoa.Nome)
 					alreadyExists, existingID := checkPersonInDB(Pessoa.Nome)
 
-					/*REVER: PROCURA PELO NOME COMPLETO DA PESSOA
-					CASO JÁ EXISTA NO BANCO, FAZ O UPDATE DOS DADOS NA TABELA FUNCPUBLICO
-					CASO NÃO EXISTA, INSERE NOVA TUPLA NA TABELA FUNCPUBLICO
-					OUTRA QUESTÃO É SE É CLIENTE DO BANCO (true ou false na variável ClientedoBanco,
-					a depender do CSV importado com os nomes)*/
+					if isClient(Pessoa.Nome) {
+						Pessoa.ClientedoBanco = true
+					} else {
+						Pessoa.ClientedoBanco = false
+					}
 
 					//Verifica se nome já é cliente
 					//Caso cliente, update dos dados e update = true
-					if alreadyExists { //verifica se é cliente do banco na api e pega o ID da pessoa
+					if alreadyExists {
 						Pessoa.ID = existingID
 						Pessoa.Updated = true
-						Pessoa.ClientedoBanco = true //pega o valor do json do cliente
-						jsonData, err := json.Marshal(Pessoa)
+						//Pessoa.ClientedoBanco = true
+						//jsonData, err := json.Marshal(Pessoa)
 						if err != nil {
 							logs.Errorf("insertIntoPessoa", err.Error())
 							return err
 						}
-						log.Println(string(jsonData))
-						//atualiza no banco
-						//erro := funcpublico.Update(Pessoa, dbi)
+						//log.Println(string(jsonData))
+						//Atualiza no banco
 						erro := funcpublico.Update(Pessoa)
 						if erro != nil {
 							logs.Errorf("insertIntoPessoa", erro.Error())
@@ -138,10 +150,8 @@ func insertIntoPessoa(rawdata [][]string) error {
 
 						//Caso não cliente, insere os dados e seta update = true
 					} else {
-						Pessoa.ClientedoBanco = false
+						//Pessoa.ClientedoBanco = false
 						//Insere no banco
-
-						//erro := funcpublico.Insert(Pessoa, dbi)
 						erro := funcpublico.Insert(Pessoa)
 						if erro != nil {
 							logs.Errorf("insertIntoPessoa", erro.Error())
@@ -163,17 +173,19 @@ func insertIntoPessoa(rawdata [][]string) error {
 		}
 		//Setar todos os TotalLiquido para 0 de todos os clientes que o update=false
 		//Ou seja, todos os funcionarios públicos que deixaram de ser funcionários
-		erro := funcpublico.UpdateAllSetTotalLiquido(0); if erro != nil {
+		erro := funcpublico.UpdateAllSetTotalLiquido(0)
+		if erro != nil {
 			logs.Errorf("insertIntoPessoa", erro.Error())
 			return erro
 		}
-		
+
 		//seta updated = false em todos os clientes da tabela após o término do processamento*/
-		erro = funcpublico.UpdateAllSetFlagUpdated(false); if erro != nil {
+		erro = funcpublico.UpdateAllSetFlagUpdated(false)
+		if erro != nil {
 			logs.Errorf("insertIntoPessoa", erro.Error())
 			return erro
 		}
-		
+
 	} else {
 		err := errors.New("the csv file is empty")
 		logs.Errorf("insertIntoPessoa", err.Error())
