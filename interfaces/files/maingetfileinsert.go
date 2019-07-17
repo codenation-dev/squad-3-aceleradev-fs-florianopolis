@@ -14,6 +14,7 @@ const (
 func main() {
 	DownloadAndExtractFile()
 	openFileCSV()
+	CreateJSONfile()
 }
 
 //DownloadAndExtractFile from URLService
