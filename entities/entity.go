@@ -22,6 +22,14 @@ type Notificacao struct {
 	Lista FuncPublico `json:"pessoa"`
 }
 
+//Usuario entity
+type Usuario struct {
+	ID      int    `json:"id"`
+	Usuario string `json:"usuario"`
+	Senha   string `json:"senha"`
+	Email   string `json:"email"`
+}
+
 //NotificacaoUsuario entity
 /*type NotificacaoUsuario struct {
 	Usuario     Usuario     `json:"idusuario"`

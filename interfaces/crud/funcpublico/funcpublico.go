@@ -102,3 +102,46 @@ func GetByName(name string) (*entity.FuncPublico, error) {
 	}
 	return &person, erro
 }
+
+//Get cliente que é funcionário público
+func GetClienteFuncPublico() (nomes []string, erro error) {
+	dbi, erro := db.Init()
+	defer dbi.Database.Close()
+	squery := "SELECT * FROM FUNCPUBLICO WHERE clientedobanco = TRUE"
+	seleciona, erro := dbi.Database.Query(squery)
+	defer seleciona.Close()
+	var person entity.FuncPublico
+	var names []string
+	if erro == nil {
+		for seleciona.Next() {
+			erro := seleciona.Scan(&person.ID, &person.Nome, &person.Cargo, &person.Orgao,
+				&person.Remuneracaodomes, &person.RedutorSalarial, &person.TotalLiquido, &person.Updated, &person.ClientedoBanco)
+			if erro != nil {
+				panic(erro.Error())
+			}
+			names = append(names, person.Nome)
+		}
+	}
+	return names, erro
+}
+
+//Get top10 func publico based on income
+func GetTop10Incomes() (nomes []string, erro error) {
+	dbi, erro := db.Init()
+	defer dbi.Database.Close()
+	squery := "SELECT nome FROM FUNCPUBLICO ORDER BY totalliquido DESC LIMIT 10"
+	seleciona, erro := dbi.Database.Query(squery)
+	defer seleciona.Close()
+	var names []string
+	var name string
+	if erro == nil {
+		for seleciona.Next() {
+			erro := seleciona.Scan(&name)
+			if erro != nil {
+				panic(erro.Error())
+			}
+			names = append(names, name)
+		}
+	}
+	return names, erro
+}
