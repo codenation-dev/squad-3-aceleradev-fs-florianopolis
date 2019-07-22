@@ -48,11 +48,13 @@ func openFileCSV() error {
 	//dbi, _ := db.Init()
 	//defer dbi.Database.Close()
 	//err = insertIntoPessoa(rawdata, dbi)
+	logs.Info("openFileCSV", "Updating data in DB...")
 	err = insertIntoPessoa(rawdata)
 	if err != nil {
 		logs.Errorf("openFileCSV", err.Error())
 		return err
 	}
+	logs.Info("openFileCSV", "Data stored in DB")
 
 	return err
 }
