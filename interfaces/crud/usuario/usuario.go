@@ -4,6 +4,7 @@ import (
 	entity "squad-3-aceleradev-fs-florianopolis/entities"
 	"squad-3-aceleradev-fs-florianopolis/entities/logs"
 	db "squad-3-aceleradev-fs-florianopolis/interfaces/db"
+	mail "squad-3-aceleradev-fs-florianopolis/services/MailSender/src"
 	"strconv"
 )
 
@@ -97,16 +98,15 @@ func checkUsuario(email string) bool {
 	}
 }
 
-
 //Search user by Mail
-func SearchUsuarioByMail(email string) (bool ,*entity.Usuario) {
-	
+func SearchUsuarioByMail(email string) (bool, *entity.Usuario) {
+
 	dbi, erro := db.Init()
-	
+
 	if erro != nil {
 		logs.Errorf("checkUsuario", erro.Error())
 	}
-	
+
 	defer dbi.Database.Close()
 	squery := "SELECT * FROM USUARIO WHERE email = '" + email + "';"
 	seleciona, erro := dbi.Database.Query(squery)
@@ -119,10 +119,34 @@ func SearchUsuarioByMail(email string) (bool ,*entity.Usuario) {
 			}
 		}
 	}
-	
+
 	if email == user.Email {
 		return true, &user
 	}
-	
+
 	return false, nil
+}
+
+func GetAllMails() []mail.Target {
+	dbi, erro := db.Init()
+	defer dbi.Database.Close()
+	if erro != nil {
+		logs.Errorf("getAllMails", erro.Error())
+	}
+	seleciona, erro := dbi.Database.Query("SELECT usuario, email FROM USUARIO")
+	if erro != nil {
+		logs.Errorf("getAllMails", erro.Error())
+	}
+	var mailList []mail.Target
+	var onemail mail.Target
+	if erro == nil {
+		for seleciona.Next() {
+			erro := seleciona.Scan(&onemail.Name, &onemail.Mail)
+			if erro != nil {
+				logs.Errorf("getAllMails", erro.Error())
+			}
+			mailList = append(mailList, onemail)
+		}
+	}
+	return mailList
 }
