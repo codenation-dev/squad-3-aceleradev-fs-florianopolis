@@ -13,6 +13,7 @@ import (
 	entity "squad-3-aceleradev-fs-florianopolis/entities"
 	"squad-3-aceleradev-fs-florianopolis/entities/logs"
 	"squad-3-aceleradev-fs-florianopolis/interfaces/crud/funcpublico"
+	"squad-3-aceleradev-fs-florianopolis/interfaces/crud/historico"
 	"strconv"
 	"strings"
 )
@@ -80,6 +81,16 @@ func OpenAndProcessFileCSV() error {
 		err = funcpublico.UpdateAllSetFlagUpdated(false)
 		if err != nil {
 			logs.Errorf("insertIntoPessoa", err.Error())
+			return err
+		}
+		hist, err := funcpublico.GetAllFuncPublico()
+		if err != nil {
+			logs.Errorf("GetAllFuncPublico", err.Error())
+			return err
+		}
+		historico.Insert(hist)
+		if err != nil {
+			logs.Errorf("Insert Historico", err.Error())
 			return err
 		}
 	}
