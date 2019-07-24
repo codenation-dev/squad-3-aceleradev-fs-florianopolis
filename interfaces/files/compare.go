@@ -21,7 +21,7 @@ type Clients struct {
 	Nome string `json:"nome"`
 }
 
-func openFileCSV() error {
+func OpenAndProcessFileCSV() error {
 	workPath, err := getFileName()
 	if err != nil {
 		logs.Errorf("openFileCSV", err.Error())
