@@ -3,7 +3,9 @@ package funcpublico
 import (
 	entity "squad-3-aceleradev-fs-florianopolis/entities"
 	db "squad-3-aceleradev-fs-florianopolis/interfaces/db"
+	"squad-3-aceleradev-fs-florianopolis/entities/logs"
 	"strconv"
+	"strings"
 )
 
 //Insert new funcionário público
@@ -83,11 +85,11 @@ func Get(id int) (*entity.FuncPublico, error) {
 	return &person, erro
 }
 
-//Get funcionário público by name
+//GetByName funcionário público by name
 func GetByName(name string) (*entity.FuncPublico, error) {
 	dbi, erro := db.Init()
 	defer dbi.Database.Close()
-	squery := "SELECT * FROM FUNCPUBLICO WHERE nome = '" + name + "'"
+	squery := "SELECT * FROM FUNCPUBLICO WHERE nome = '" + strings.Trim(name," ") + "'"
 	seleciona, erro := dbi.Database.Query(squery)
 	defer seleciona.Close()
 	var person entity.FuncPublico
@@ -101,4 +103,71 @@ func GetByName(name string) (*entity.FuncPublico, error) {
 		}
 	}
 	return &person, erro
+}
+
+//GetAllFuncPublico get all funcionário público 
+func GetAllFuncPublico() (*[]entity.FuncPublico, error) {
+	dbi, erro := db.Init()
+	defer dbi.Database.Close()
+	squery := "SELECT * FROM FUNCPUBLICO"
+	seleciona, erro := dbi.Database.Query(squery)
+	defer seleciona.Close()
+	var person entity.FuncPublico
+	var persons [] entity.FuncPublico
+	if erro == nil {
+		for seleciona.Next() {
+			erro := seleciona.Scan(&person.ID, &person.Nome, &person.Cargo, &person.Orgao,
+				&person.Remuneracaodomes, &person.RedutorSalarial, &person.TotalLiquido, &person.Updated, &person.ClientedoBanco)
+				persons = append(persons, person)
+			if erro != nil {
+				logs.Errorf("GetAllFuncPublico", erro.Error())
+				break
+			}
+		}
+	}
+	return &persons, erro
+}
+
+//GetClienteFuncPublico cliente que é funcionário público
+func GetClienteFuncPublico() (nomes []string, erro error) {
+	dbi, erro := db.Init()
+	defer dbi.Database.Close()
+	squery := "SELECT * FROM FUNCPUBLICO WHERE clientedobanco = TRUE"
+	seleciona, erro := dbi.Database.Query(squery)
+	defer seleciona.Close()
+	var person entity.FuncPublico
+	var names []string
+	if erro == nil {
+		for seleciona.Next() {
+			erro := seleciona.Scan(&person.ID, &person.Nome, &person.Cargo, &person.Orgao,
+				&person.Remuneracaodomes, &person.RedutorSalarial, &person.TotalLiquido, &person.Updated, &person.ClientedoBanco)
+			if erro != nil {
+				panic(erro.Error())
+			}
+			names = append(names, person.Nome)
+		}
+	}
+	return names, erro
+}
+
+
+//Get top10 func publico based on income
+func GetTop10Incomes() (nomes []string, erro error) {
+	dbi, erro := db.Init()
+	defer dbi.Database.Close()
+	squery := "SELECT nome FROM FUNCPUBLICO ORDER BY totalliquido DESC LIMIT 10"
+	seleciona, erro := dbi.Database.Query(squery)
+	defer seleciona.Close()
+	var names []string
+	var name string
+	if erro == nil {
+		for seleciona.Next() {
+			erro := seleciona.Scan(&name)
+			if erro != nil {
+				panic(erro.Error())
+			}
+			names = append(names, name)
+		}
+	}
+	return names, erro
 }

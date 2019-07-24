@@ -1,0 +1,91 @@
+div.Dash {
+    display: flex;
+    align-content: space-around;
+}
+
+div.options {
+    text-align: center;
+    width: 40%;
+    color: #444;
+    border: #ccc 1px solid;
+    border-radius: 5px;
+    display: inline-block;
+}
+
+div.options ul {
+    display: block;
+}
+
+div.options ul li:hover {
+    cursor: pointer;
+    background-color: #dfe0df;
+}
+
+div.options ul li {
+    width: 100%;
+    list-style: none;
+}
+
+div.options ul li.active {
+    background-color: #ffd351;
+    color: #222;
+}
+
+span.selected {
+    display: none;
+}
+
+div.FilterContainer {
+    margin-top: 0;
+    width: 55%;
+    margin-left: 5%;
+    border: #ccc 1px solid;
+    border-radius: 5px;
+    display: inline-block;
+}
+
+div.FilterContainer .FilterItem {
+    display: none;
+}
+
+div.FilterContainer .ActiveItem {
+    display: block;
+}
+
+@media (max-width: 768px) {
+
+    div.Dash {
+        display: block;
+    }
+
+    div.options {
+        margin-top: 50px;
+        width: 100%;
+        border: none;
+        border-top: 1px solid #ccc;
+        border-bottom: 1px solid #ccc;
+        text-align: center;
+    }
+
+    div.options ul {
+        display: none;
+    }
+
+    span.selected {
+        display: block;
+    }
+
+    div.options ul.Expand {
+        display: block;
+        position: absolute;
+        padding: 0;
+        left: 25%;
+        width: 50%;
+    }
+
+    div.FilterContainer {
+        margin-top: 25px;
+        width: 100%;
+        margin-left: 0;
+    }
+}

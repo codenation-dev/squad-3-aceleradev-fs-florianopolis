@@ -22,18 +22,17 @@ type Notificacao struct {
 	Lista FuncPublico `json:"pessoa"`
 }
 
-//NotificacaoUsuario entity
-/*type NotificacaoUsuario struct {
-	Usuario     Usuario     `json:"idusuario"`
-	Notificacao Notificacao `json:"idnotificacao"`
-	Data        time.Time   `json:"data"`
-}*/
 //Usuario entity
-/*type Usuario struct {
-	ID          int    `json:"id"`
-	Cpf         uint64 `json:"cpf"`
-	Nome        string `json:"nome"`
-	Senha       string `json:"senha"`
-	Email       string `json:"email"`
-	RecebeEmail bool   `json:"recebeemail"`
-}*/
+type Usuario struct {
+	ID      int    `json:"id"`
+	Usuario string `json:"usuario"`
+	Senha   string `json:"senha"`
+	Email   string `json:"email"`
+}
+
+//Historico entity
+type Historico struct {
+	ID   int  		 `json:"id"`
+	Data time.Time 	 `json:"data"`
+	JSON FuncPublico `json:"pessoa"`
+}

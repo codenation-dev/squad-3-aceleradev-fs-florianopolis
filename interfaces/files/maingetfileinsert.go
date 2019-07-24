@@ -3,7 +3,8 @@ package main
 import (
 	"os"
 	"squad-3-aceleradev-fs-florianopolis/entities/logs"
-	//"squad-3-aceleradev-fs-florianopolis/interfaces/files"
+	"github.com/robfig/cron"
+	"sync"
 )
 
 const (
@@ -12,12 +13,27 @@ const (
 )
 
 func main() {
-	DownloadAndExtractFile()
-	openFileCSV()
+	logs.Info("Start App", "The application was Started")
+	wg := &sync.WaitGroup{}
+	wg.Add(1)
+	cronJob := cron.New()
+	cronJob.Start()
+	logs.Info("Start App", "Application is Waiting until the time match...")
+	cronJob.AddFunc("0 03 09 24 * ?", Execute) //dia 17 de cada mes as 22:10
+	wg.Wait()
+	Execute()
 }
 
+//Execute when the time is match
+func Execute(){
+	if DownloadAndExtractFile() {
+		OpenAndProcessFileCSV()
+		CreateJSONfile()
+	}
+}
 //DownloadAndExtractFile from URLService
-func DownloadAndExtractFile() {
+func DownloadAndExtractFile() bool {
+	process := false
 	workPath, erro := getFileName()
 	zipFileName := workPath.FullPath
 	if erro == nil {
@@ -47,6 +63,7 @@ func DownloadAndExtractFile() {
 					logs.Info("DownloadAndExtractFile", "Files are the same. New file was removed.")
 				} else {
 					ExtractFile(zipFileName)
+					process = true
 				}
 			}
 		} else {
@@ -55,4 +72,5 @@ func DownloadAndExtractFile() {
 	} else {
 		logs.Errorf("DownloadAndExtractFile", erro.Error())
 	}
+	return process
 }
