@@ -3,7 +3,7 @@ package api
 import ("github.com/gorilla/mux")
 
 func (a *App) endpoints() {
-	a.Router.HandleFunc("/auth",notImplemented)
+	a.Router.HandleFunc("/auth", a.login)
 	a.Router.HandleFunc("/warn",notImplemented)
 	a.Router.HandleFunc("/warn/{id}",notImplemented)
 	a.Router.HandleFunc("/mails",notImplemented)

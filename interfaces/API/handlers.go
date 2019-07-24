@@ -1,6 +1,8 @@
 package api
 
 import("squad-3-aceleradev-fs-florianopolis/entities/logs"
+"squad-3-aceleradev-fs-florianopolis/entities"
+"squad-3-aceleradev-fs-florianopolis/interfaces/crud/usuario"
 "encoding/json"
 "net/http"
 "fmt")
@@ -48,6 +50,26 @@ func (a *App) mailDeleter(w http.ResponseWriter, r *http.Request)  {
 
 func (a *App) mailRegister(w http.ResponseWriter, r *http.Request)  {
 	//TruePass := bcrypt.GenerateFromPassword([]byte(), 2)
+	decode := json.NewDecoder(r.Body)
+
+	var Info MailType
+
+	_ = decode.Decode(&Info)
+
+	if (validateMailType(Info)){
+		pass := generatePassword()
+		User := entity.Usuario{
+			ID: 0,
+		Usuario:Info.Name,
+		Email: Info.Mail,
+		Senha:pass}
+		usuario.Insert(&User)
+		
+	} else {
+
+	}
+
+	 
 }
 
 func (a *App) warnGeneral(w http.ResponseWriter, r *http.Request)  {
