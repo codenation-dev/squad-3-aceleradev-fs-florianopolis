@@ -42,11 +42,10 @@ func Get(id int) (*entity.Notificacao, error) {
 	seleciona, erro := dbi.Database.Query("SELECT * FROM notificacao WHERE id = " + strconv.Itoa(id))
 	var note entity.Notificacao
 	if erro == nil {
-
 		for seleciona.Next() {
 			//erro := seleciona.Scan(&note.ID, &note.IDPessoa)
 			if erro != nil {
-				panic(erro.Error())
+				logs.Errorf("Get(notificação)", erro.Error())
 			}
 		}
 	}
