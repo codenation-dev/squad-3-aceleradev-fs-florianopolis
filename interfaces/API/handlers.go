@@ -5,6 +5,9 @@ import(
 	"encoding/json"
 	"net/http"
 	"fmt"
+	"encoding/csv"
+	"io"
+	"io/ioutil"
 )
 
 func notImplemented(w http.ResponseWriter, r *http.Request) {
@@ -62,7 +65,7 @@ func (a *App) warnDetail(w http.ResponseWriter, r *http.Request)  {
 
 func (a *App) uploadCSV(w http.ResponseWriter, r *http.Request) {
 	list := csv.NewReader(r.Body)
-	var structuredList []listaClientes
+	var structuredList []ListaClientes
 	for {
 		line, err := list.Read()
 		if err == io.EOF {
@@ -71,7 +74,7 @@ func (a *App) uploadCSV(w http.ResponseWriter, r *http.Request) {
 		if err != nil {
 			logs.Errorf("App/Cant read file",err.Error())
 		}
-		cliente := listaClientes{
+		cliente := ListaClientes{
 			Nome:    line[0],
 		}
 		structuredList = append(structuredList, cliente)
@@ -80,7 +83,7 @@ func (a *App) uploadCSV(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		logs.Errorf("App/Cant encoding array to json", err.Error())
 	}
-	err = ioutil.WriteFile("clientlist.json", j, 0644)
+	err = ioutil.WriteFile("ClientList.json", j, 0644)
 	if err != nil {
 		logs.Errorf("App/Cant write clientlist.json file on server", err.Error())
 	}
