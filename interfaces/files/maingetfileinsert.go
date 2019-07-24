@@ -3,8 +3,9 @@ package main
 import (
 	"os"
 	"squad-3-aceleradev-fs-florianopolis/entities/logs"
-	"github.com/robfig/cron"
 	"sync"
+
+	"github.com/robfig/cron"
 )
 
 const (
@@ -13,18 +14,19 @@ const (
 )
 
 func main() {
-	logs.Info("Start App" , "The application was Started")
+	logs.Info("Start App", "The application was Started")
 	wg := &sync.WaitGroup{}
-    wg.Add(1)
+	wg.Add(1)
 	cronJob := cron.New()
 	cronJob.Start()
-	logs.Info("Start App" , "Application is Waiting until the time match...")
-    cronJob.AddFunc("0 10 22 17 * ?", Execute) //dia 17 de cada mes as 22:10
+	logs.Info("Start App", "Application is Waiting until the time match...")
+	cronJob.AddFunc("0 03 09 24 * ?", Execute) //dia 17 de cada mes as 22:10
 	wg.Wait()
 	Execute()
 }
+
 //Execute when the time is match
-func Execute(){
+func Execute() {
 	DownloadAndExtractFile()
 	openFileCSV()
 	CreateJSONfile()

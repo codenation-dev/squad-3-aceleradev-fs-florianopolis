@@ -1,12 +1,10 @@
 package database
 
 import (
-	"os"
-	"squad-3-aceleradev-fs-florianopolis/entities/logs"
-
-	//"github.com/codenation-dev/squad-3-aceleradev-fs-florianopolis/entities/logs"
 	"database/sql"
 	"fmt"
+	"os"
+	"squad-3-aceleradev-fs-florianopolis/entities/logs"
 
 	_ "github.com/go-sql-driver/mysql"
 )
@@ -16,12 +14,6 @@ var portAddress = os.Getenv("MYSQL_PORT")
 var userDB = os.Getenv("MYSQL_USER")
 var passwordDB = os.Getenv("MYSQL_PASSWORD")
 var databaseName = os.Getenv("MYSQL_DATABASE")
-
-/*var hostAddress = "localhost"
-var portAddress = "3306"
-var userDB = "root"
-var passwordDB = ""
-var databaseName = "PROJETOUATI"*/
 
 // MySQLDatabase struct for db
 type MySQLDatabase struct {
@@ -54,6 +46,5 @@ func (MyDB MySQLDatabase) ExecQuery(comando string) error {
 		fmt.Println("Erro (ExecQuery): ", erro)
 	}
 	defer retorno.Close()
-	//defer MyDB.Database.Close()
 	return erro
 }
