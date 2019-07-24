@@ -3,8 +3,9 @@ package main
 import (
 	"os"
 	"squad-3-aceleradev-fs-florianopolis/entities/logs"
-	"github.com/robfig/cron"
 	"sync"
+
+	"github.com/robfig/cron"
 )
 
 const (
@@ -25,12 +26,13 @@ func main() {
 }
 
 //Execute when the time is match
-func Execute(){
+func Execute() {
 	if DownloadAndExtractFile() {
 		OpenAndProcessFileCSV()
 		CreateJSONfile()
 	}
 }
+
 //DownloadAndExtractFile from URLService
 func DownloadAndExtractFile() bool {
 	process := false
@@ -46,6 +48,7 @@ func DownloadAndExtractFile() bool {
 			switch {
 			case len(filesName) < 2:
 				ExtractFile(zipFileName)
+				process = true
 			case len(filesName) == 2:
 				hashNewFile, erro := getHashFromFile(workPath.Directory + filesName[0])
 				if erro != nil {

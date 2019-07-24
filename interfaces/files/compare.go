@@ -18,10 +18,12 @@ import (
 	"strings"
 )
 
+//Clients get clients names from csv file
 type Clients struct {
 	Nome string `json:"nome"`
 }
 
+//OpenAndProcessFileCSV open file csv and insert in DB
 func OpenAndProcessFileCSV() error {
 	workPath, err := getFileName()
 	if err != nil {
