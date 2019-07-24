@@ -5,8 +5,8 @@ import ("time"
 "crypto/rsa")
 
 type Result struct {	
-	Result []byte `json:"Result"`
-	Token []byte `json:"Token,omitempty"`
+	Result string `json:"Result"`
+	Token string `json:"Token,omitempty"`
 	Warn Warn `json:"Warn,omitempty"`
 	Warns WarnList `json:"WarnList,omitempty"`
 	Mail MailType `json:"Mail,omitempty"`
@@ -57,16 +57,16 @@ type MailType struct {
 
 //Resum references to a resum of data
 type Resum struct {
-	Name string
-	Date time.Time
-	Data []Data
+	Name string `json:"Name"`
+	Date time.Time `json:"Date"`
+	Data []Data `json:"DATA"`
 }
 
 //Data references to a Data
 type Data struct {
-	Name string
-	LineName string
-	ColName string 
-	Lines []string
-	Cols []string
+	Name string `json:"Name"`
+	LineName string `json:"LineName"`
+	ColName string  `json:"ColName"`
+	Lines []string `json:"Lines"`
+	Cols []string `json:"Cols"`
 }

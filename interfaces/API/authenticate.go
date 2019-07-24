@@ -5,7 +5,8 @@ import (jwt "github.com/dgrijalva/jwt-go"
 "squad-3-aceleradev-fs-florianopolis/entities/logs"
 "time"
 "golang.org/x/crypto/bcrypt"
-"squad-3-aceleradev-fs-florianopolis/interfaces/crud/usuario")
+"squad-3-aceleradev-fs-florianopolis/interfaces/crud/usuario"
+"fmt")
 
 const (
 	pubPath="keys/app.rsa.pub"
@@ -55,16 +56,14 @@ func (a *App) GenerateJWT(Username string) (string,error) {
 
 func (a *App) tryLogin(c *credentials) bool {
 
-	valid, usr := usuario.SearchUsuarioByMail()
+	valid, usr := usuario.SearchUsuarioByMail(c.Usermail)
 	
-	Hash, err := GetPassword(c.Usermail)
-	
-	if(err != nil){
-		logs.Errorf("App_loginAttempt_User", err.Error())
+	if(valid){
+		logs.Errorf("App_loginAttempt_User", fmt.Sprintf("Cant Get User %s",c.Usermail))
 		return false
 	}
 
-	err = bcrypt.CompareHashAndPassword([]byte(Hash),[]byte(c.Password))
+	err := bcrypt.CompareHashAndPassword([]byte(usr.Senha),[]byte(c.Password))
 
 	if(err != nil){
 		logs.Errorf("App_loginAttempt_Pass", err.Error())
@@ -72,7 +71,6 @@ func (a *App) tryLogin(c *credentials) bool {
 	}
 	
 	return true
-	}
 }
 
 func (a *App) tokenVerify(T tokenSt) (*jwt.Token,error) {

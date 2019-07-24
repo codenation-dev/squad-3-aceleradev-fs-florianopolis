@@ -14,9 +14,9 @@ func (a *App) endpoints() {
 }
 
 //Initialize the router
-func Initialize(DBInterface DBI) *App {
+func Initialize() *App {
 	thisRouter := mux.NewRouter()
-	thisApp := &App{Router: thisRouter, Database:""}
+	thisApp := &App{Router: thisRouter}
 	thisApp.initKey()
 	thisApp.endpoints()
 	return thisApp
