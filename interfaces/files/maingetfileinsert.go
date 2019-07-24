@@ -5,8 +5,6 @@ import (
 	"squad-3-aceleradev-fs-florianopolis/entities/logs"
 	"github.com/robfig/cron"
 	"sync"
-
-	
 )
 
 const (
