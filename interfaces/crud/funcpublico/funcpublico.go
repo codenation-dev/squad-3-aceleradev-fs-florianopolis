@@ -4,6 +4,7 @@ import (
 	entity "squad-3-aceleradev-fs-florianopolis/entities"
 	db "squad-3-aceleradev-fs-florianopolis/interfaces/db"
 	"strconv"
+	"strings"
 )
 
 //Insert new funcionário público
@@ -87,7 +88,7 @@ func Get(id int) (*entity.FuncPublico, error) {
 func GetByName(name string) (*entity.FuncPublico, error) {
 	dbi, erro := db.Init()
 	defer dbi.Database.Close()
-	squery := "SELECT * FROM FUNCPUBLICO WHERE nome = '" + name + "'"
+	squery := "SELECT * FROM FUNCPUBLICO WHERE nome = '" + strings.Trim(name," ") + "'"
 	seleciona, erro := dbi.Database.Query(squery)
 	defer seleciona.Close()
 	var person entity.FuncPublico
