@@ -2,6 +2,7 @@ package api
 
 import(
 	"squad-3-aceleradev-fs-florianopolis/entities/logs"
+	"squad-3-aceleradev-fs-florianopolis/interfaces/crud/usuario"
 	"encoding/json"
 	"net/http"
 	"fmt"
@@ -40,11 +41,23 @@ func (a *App) login(w http.ResponseWriter, r *http.Request) {
 }
 
 func (a *App) mailGeneral(w http.ResponseWriter, r *http.Request)  {
-
+	usersEmails := usuario.GetAllMails()
+	if usersEmails != nil{
+		err := json.NewEncoder(w).Encode(usersEmails); if err != nil{
+			logs.Errorf("App/Cant write respond", err.Error())	
+		}
+	}else {
+		var response Result
+		response.Result = "Nenhum usuário encontrado"
+		err := json.NewEncoder(w).Encode(response); if err != nil{
+			logs.Errorf("App/Cant write respond", err.Error())	
+		}
+	}
+	
 }
 
 func (a *App) mailEdit(w http.ResponseWriter, r *http.Request)  {
-
+	
 }
 
 func (a *App) mailDeleter(w http.ResponseWriter, r *http.Request)  {
