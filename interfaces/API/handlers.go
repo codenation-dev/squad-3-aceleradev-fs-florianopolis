@@ -18,17 +18,22 @@ func (a *App) login(w http.ResponseWriter, r *http.Request) {
 	var cred credentials
 
 	_ = decode.Decode(&cred)
+	
+	var Response Result
 
 	if (a.tryLogin(&cred)){
 		T,E := a.GenerateJWT(cred.Usermail)
-		if (E!=nil){
+		if (E==nil){
+			Response.Result = "Login Success"
+			Response.Token = T
+		} else {
 			logs.Errorf("App/Cant create JWT Token",E.Error())
-		}
-		fmt.Fprintf(w,fmt.Sprintf("this is your token: %s",string(T)))
+			Response.Result = "Login Fail! Internal Error"
+		}	
 	} else {
-		fmt.Fprintf(w,"Login Error")
+		Response.Result = "Login Fail! Invalid Credentials"
 	}
-
+	json.NewEncoder(w).Encode(Response)
 }
 
 func (a *App) mailGeneral(w http.ResponseWriter, r *http.Request)  {

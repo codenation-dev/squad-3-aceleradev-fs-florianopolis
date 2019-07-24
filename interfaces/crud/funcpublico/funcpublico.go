@@ -2,8 +2,8 @@ package funcpublico
 
 import (
 	entity "squad-3-aceleradev-fs-florianopolis/entities"
-	db "squad-3-aceleradev-fs-florianopolis/interfaces/db"
 	"squad-3-aceleradev-fs-florianopolis/entities/logs"
+	db "squad-3-aceleradev-fs-florianopolis/interfaces/db"
 	"strconv"
 	"strings"
 )
@@ -78,7 +78,7 @@ func Get(id int) (*entity.FuncPublico, error) {
 			erro := seleciona.Scan(&person.ID, &person.Nome, &person.Cargo, &person.Orgao,
 				&person.Remuneracaodomes, &person.RedutorSalarial, &person.TotalLiquido, &person.Updated, &person.ClientedoBanco)
 			if erro != nil {
-				panic(erro.Error())
+				logs.Errorf("Get(funcpublico)", erro.Error())
 			}
 		}
 	}
@@ -89,7 +89,7 @@ func Get(id int) (*entity.FuncPublico, error) {
 func GetByName(name string) (*entity.FuncPublico, error) {
 	dbi, erro := db.Init()
 	defer dbi.Database.Close()
-	squery := "SELECT * FROM FUNCPUBLICO WHERE nome = '" + strings.Trim(name," ") + "'"
+	squery := "SELECT * FROM FUNCPUBLICO WHERE nome = '" + strings.Trim(name, " ") + "'"
 	seleciona, erro := dbi.Database.Query(squery)
 	defer seleciona.Close()
 	var person entity.FuncPublico
@@ -98,14 +98,14 @@ func GetByName(name string) (*entity.FuncPublico, error) {
 			erro := seleciona.Scan(&person.ID, &person.Nome, &person.Cargo, &person.Orgao,
 				&person.Remuneracaodomes, &person.RedutorSalarial, &person.TotalLiquido, &person.Updated, &person.ClientedoBanco)
 			if erro != nil {
-				panic(erro.Error())
+				logs.Errorf("GetByName(funcpublico)", erro.Error())
 			}
 		}
 	}
 	return &person, erro
 }
 
-//GetAllFuncPublico get all funcionário público 
+//GetAllFuncPublico get all funcionário público
 func GetAllFuncPublico() (*[]entity.FuncPublico, error) {
 	dbi, erro := db.Init()
 	defer dbi.Database.Close()
@@ -113,12 +113,12 @@ func GetAllFuncPublico() (*[]entity.FuncPublico, error) {
 	seleciona, erro := dbi.Database.Query(squery)
 	defer seleciona.Close()
 	var person entity.FuncPublico
-	var persons [] entity.FuncPublico
+	var persons []entity.FuncPublico
 	if erro == nil {
 		for seleciona.Next() {
 			erro := seleciona.Scan(&person.ID, &person.Nome, &person.Cargo, &person.Orgao,
 				&person.Remuneracaodomes, &person.RedutorSalarial, &person.TotalLiquido, &person.Updated, &person.ClientedoBanco)
-				persons = append(persons, person)
+			persons = append(persons, person)
 			if erro != nil {
 				logs.Errorf("GetAllFuncPublico", erro.Error())
 				break
@@ -142,14 +142,13 @@ func GetClienteFuncPublico() (nomes []string, erro error) {
 			erro := seleciona.Scan(&person.ID, &person.Nome, &person.Cargo, &person.Orgao,
 				&person.Remuneracaodomes, &person.RedutorSalarial, &person.TotalLiquido, &person.Updated, &person.ClientedoBanco)
 			if erro != nil {
-				panic(erro.Error())
+				logs.Errorf("GetClienteFuncPublico", erro.Error())
 			}
 			names = append(names, person.Nome)
 		}
 	}
 	return names, erro
 }
-
 
 //Get top10 func publico based on income
 func GetTop10Incomes() (nomes []string, erro error) {
@@ -164,7 +163,7 @@ func GetTop10Incomes() (nomes []string, erro error) {
 		for seleciona.Next() {
 			erro := seleciona.Scan(&name)
 			if erro != nil {
-				panic(erro.Error())
+				logs.Errorf("GetTop10Incomes", erro.Error())
 			}
 			names = append(names, name)
 		}
