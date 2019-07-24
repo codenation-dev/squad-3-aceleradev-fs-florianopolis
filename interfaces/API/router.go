@@ -1,6 +1,8 @@
 package api
 
-import ("github.com/gorilla/mux")
+import (
+	"github.com/gorilla/mux"
+)
 
 func (a *App) endpoints() {
 	a.Router.HandleFunc("/auth",notImplemented)
@@ -10,7 +12,7 @@ func (a *App) endpoints() {
 	a.Router.HandleFunc("/mails/add",notImplemented)
 	a.Router.HandleFunc("/mails/{id}/delete",notImplemented)
 	a.Router.HandleFunc("/mails/{id}/update",notImplemented)
-	a.Router.HandleFunc("/upload",notImplemented)
+	a.Router.HandleFunc("/upload", a.uploadCSV)
 }
 
 //Initialize the router
