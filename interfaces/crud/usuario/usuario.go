@@ -95,5 +95,34 @@ func checkUsuario(email string) bool {
 	} else {
 		return false
 	}
+}
 
+
+//Search user by Mail
+func SearchUsuarioByMail(email string) (bool ,*entity.Usuario) {
+	
+	dbi, erro := db.Init()
+	
+	if erro != nil {
+		logs.Errorf("checkUsuario", erro.Error())
+	}
+	
+	defer dbi.Database.Close()
+	squery := "SELECT * FROM USUARIO WHERE email = '" + email + "';"
+	seleciona, erro := dbi.Database.Query(squery)
+	var user entity.Usuario
+	if erro == nil {
+		for seleciona.Next() {
+			erro := seleciona.Scan(&user.ID, &user.Usuario, &user.Senha, &user.Email)
+			if erro != nil {
+				logs.Errorf("checkUsuario", erro.Error())
+			}
+		}
+	}
+	
+	if email == user.Email {
+		return true, &user
+	}
+	
+	return false, nil
 }

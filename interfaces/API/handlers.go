@@ -11,21 +11,21 @@ func notImplemented(w http.ResponseWriter, r *http.Request) {
 
 func (a *App) login(w http.ResponseWriter, r *http.Request) {
 
-decode := json.NewDecoder(r.Body)
+	decode := json.NewDecoder(r.Body)
 
-var cred credentials
+	var cred credentials
 
-_ = decode.Decode(&cred)
+	_ = decode.Decode(&cred)
 
-if(a.loginAttempt(&cred)){
+	if (a.tryLogin(&cred)){
 		T,E := a.GenerateJWT(cred.Usermail)
 		if (E!=nil){
 			logs.Errorf("App/Cant create JWT Token",E.Error())
 		}
 		fmt.Fprintf(w,fmt.Sprintf("this is your token: %s",string(T)))
-} else {
-	fmt.Fprintf(w,"Login Error")
-}
+	} else {
+		fmt.Fprintf(w,"Login Error")
+	}
 
 }
 
@@ -42,7 +42,7 @@ func (a *App) mailDeleter(w http.ResponseWriter, r *http.Request)  {
 }
 
 func (a *App) mailRegister(w http.ResponseWriter, r *http.Request)  {
-
+	//TruePass := bcrypt.GenerateFromPassword([]byte(), 2)
 }
 
 func (a *App) warnGeneral(w http.ResponseWriter, r *http.Request)  {
@@ -50,6 +50,10 @@ func (a *App) warnGeneral(w http.ResponseWriter, r *http.Request)  {
 }
 
 func (a *App) warnDetail(w http.ResponseWriter, r *http.Request)  {
+
+}
+
+func (a *App) uploadCSV(w http.ResponseWriter, r *http.Request) {
 
 }
 

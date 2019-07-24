@@ -4,10 +4,6 @@ import ("time"
 "github.com/gorilla/mux"
 "crypto/rsa")
 
-type DBI struct {
-	DB string
-}
-
 type Result struct {	
 	Result []byte `json:"Result"`
 	Token []byte `json:"Token,omitempty"`

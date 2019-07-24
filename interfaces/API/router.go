@@ -1,5 +1,7 @@
 package api
 
+import ("github.com/gorilla/mux")
+
 func (a *App) endpoints() {
 	a.Router.HandleFunc("/auth",notImplemented)
 	a.Router.HandleFunc("/warn",notImplemented)
@@ -8,9 +10,14 @@ func (a *App) endpoints() {
 	a.Router.HandleFunc("/mails/add",notImplemented)
 	a.Router.HandleFunc("/mails/{id}/delete",notImplemented)
 	a.Router.HandleFunc("/mails/{id}/update",notImplemented)
+	a.Router.HandleFunc("/upload",notImplemented)
 }
 
 //Initialize the router
-func Initialize(DBInterface DBI) App {
-
+func Initialize(DBInterface DBI) *App {
+	thisRouter := mux.NewRouter()
+	thisApp := &App{Router: thisRouter, Database:""}
+	thisApp.initKey()
+	thisApp.endpoints()
+	return thisApp
 }
