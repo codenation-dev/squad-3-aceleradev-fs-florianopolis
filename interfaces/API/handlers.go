@@ -3,6 +3,7 @@ package api
 import(
 	"squad-3-aceleradev-fs-florianopolis/entities/logs"
 	"squad-3-aceleradev-fs-florianopolis/interfaces/crud/usuario"
+	entity "squad-3-aceleradev-fs-florianopolis/entities"
 	"encoding/json"
 	"net/http"
 	"fmt"
@@ -47,17 +48,22 @@ func (a *App) mailGeneral(w http.ResponseWriter, r *http.Request)  {
 			logs.Errorf("App/Cant write respond", err.Error())	
 		}
 	}else {
-		var response Result
-		response.Result = "Nenhum usuário encontrado"
-		err := json.NewEncoder(w).Encode(response); if err != nil{
-			logs.Errorf("App/Cant write respond", err.Error())	
-		}
+		responseCodeResult(w, Empty, "Nenhum dado encontrado")
 	}
 	
 }
 
 func (a *App) mailEdit(w http.ResponseWriter, r *http.Request)  {
-	
+	var Usuario entity.Usuario
+	userJSON := json.NewDecoder(r.Body)
+	err := userJSON.Decode(&Usuario);if err != nil {
+		responseCodeResult(w, Error, err.Error())
+	}
+
+	if Usuario.Validar(){
+		usuario.Update(&Usuario)	
+	}
+
 }
 
 func (a *App) mailDeleter(w http.ResponseWriter, r *http.Request)  {
@@ -92,13 +98,17 @@ func (a *App) uploadCSV(w http.ResponseWriter, r *http.Request) {
 		}
 		structuredList = append(structuredList, cliente)
 	}
-	j, err := json.Marshal(structuredList)
-	if err != nil {
-		logs.Errorf("App/Cant encoding array to json", err.Error())
-	}
-	err = ioutil.WriteFile("ClientList.json", j, 0644)
-	if err != nil {
-		logs.Errorf("App/Cant write clientlist.json file on server", err.Error())
+	if structuredList != nil{
+		j, err := json.Marshal(structuredList)
+		if err != nil {
+			logs.Errorf("App/Cant encoding array to json", err.Error())
+		}
+		err = ioutil.WriteFile("ClientList.json", j, 0644)
+		if err != nil {
+			logs.Errorf("App/Cant write clientlist.json file on server", err.Error())
+		}
+	}else {
+		responseCodeResult(w, Empty, "Nenhum dado encontrado")
 	}
 }
 
@@ -108,4 +118,13 @@ func unauth(w http.ResponseWriter, r *http.Request) {
 
 func internalError(w http.ResponseWriter, r *http.Request) {
 
+}
+
+func responseCodeResult(w http.ResponseWriter, code int, msg string ){
+	var response Result
+	response.Code   = code
+	response.Result = msg
+	err := json.NewEncoder(w).Encode(response); if err != nil{
+		logs.Errorf("App/Cant write respond", err.Error())	
+	}
 }
