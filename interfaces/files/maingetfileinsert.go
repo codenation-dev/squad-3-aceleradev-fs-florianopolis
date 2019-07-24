@@ -25,13 +25,15 @@ func main() {
 }
 //Execute when the time is match
 func Execute(){
-	DownloadAndExtractFile()
-	openFileCSV()
-	CreateJSONfile()
+	if DownloadAndExtractFile() {
+		OpenAndProcessFileCSV()
+		CreateJSONfile()
+	}
 }
 
 //DownloadAndExtractFile from URLService
-func DownloadAndExtractFile() {
+func DownloadAndExtractFile() bool {
+	process := false
 	workPath, erro := getFileName()
 	zipFileName := workPath.FullPath
 	if erro == nil {
@@ -61,6 +63,7 @@ func DownloadAndExtractFile() {
 					logs.Info("DownloadAndExtractFile", "Files are the same. New file was removed.")
 				} else {
 					ExtractFile(zipFileName)
+					process = true
 				}
 			}
 		} else {
@@ -69,4 +72,5 @@ func DownloadAndExtractFile() {
 	} else {
 		logs.Errorf("DownloadAndExtractFile", erro.Error())
 	}
+	return process
 }
