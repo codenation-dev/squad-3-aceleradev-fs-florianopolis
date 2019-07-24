@@ -109,7 +109,7 @@ func GetByName(name string) (*entity.FuncPublico, error) {
 func GetAllFuncPublico() (*[]entity.FuncPublico, error) {
 	dbi, erro := db.Init()
 	defer dbi.Database.Close()
-	squery := "SELECT * FROM FUNCPUBLICO"
+	squery := "SELECT * FROM FUNCPUBLICO WHERE totalliquido > 0 ORDER BY totalliquido DESC"
 	seleciona, erro := dbi.Database.Query(squery)
 	defer seleciona.Close()
 	var person entity.FuncPublico
@@ -132,7 +132,7 @@ func GetAllFuncPublico() (*[]entity.FuncPublico, error) {
 func GetClienteFuncPublico() (nomes []string, erro error) {
 	dbi, erro := db.Init()
 	defer dbi.Database.Close()
-	squery := "SELECT * FROM FUNCPUBLICO WHERE clientedobanco = TRUE"
+	squery := "SELECT * FROM FUNCPUBLICO WHERE clientedobanco = TRUE LIMIT 10"
 	seleciona, erro := dbi.Database.Query(squery)
 	defer seleciona.Close()
 	var person entity.FuncPublico
