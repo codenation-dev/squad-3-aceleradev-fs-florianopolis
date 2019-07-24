@@ -10,11 +10,11 @@ import (
 type Result struct {
 	Result    string   `json:"Result"`
 	Token     string   `json:"Token,omitempty"`
-	Warn      Warn     `json:"Warn,omitempty"`
-	Warns     WarnList `json:"WarnList,omitempty"`
-	Mail      MailType `json:"Mail,omitempty"`
-	Mails     MailList `json:"Mails,omitempty"`
-	DataResum Resum    `json:"DataResum,omitempty"`
+	Warn      *Warn     `json:"Warn,omitempty"`
+	Warns     *WarnList `json:"WarnList,omitempty"`
+	Mail      *MailType `json:"Mail,omitempty"`
+	Mails     *MailList `json:"Mails,omitempty"`
+	DataResum *Resum    `json:"DataResum,omitempty"`
 }
 
 type App struct {
@@ -31,50 +31,50 @@ type credentials struct {
 }
 
 type tokenSt struct {
-	Token string `json:"token"`
+	Token string `json:"token,omitempty"`
 }
 
 //Warn References to a Warn
 type Warn struct {
-	Name   string `json:"Name"`
-	Change string `json:"Changes"`
+	Name   string `json:"Name,omitempty"`
+	Change string `json:"Changes,omitempty"`
 }
 
 //WarnList References to a list of Warns
 type WarnList struct {
-	Warns []Warn    `json:"Warns"`
-	Date  time.Time `json:"Date"`
+	Warns *[]Warn    `json:"Warns,omitempty"`
+	Date  *time.Time `json:"Date,omitempty"`
 }
 
 //MailList References to a list of Mails
 type MailList struct {
-	Mails []MailType `json:"Mails"`
+	Mails *[]MailType `json:"Mails,omitempty"`
 }
 
 //MailType References to a Mail
 type MailType struct {
-	ID   int    `json:"ID"`
-	Name string `json:"Name"`
-	Mail string `json:"Mail"`
+	ID   int    `json:"ID,omitempty"`
+	Name string `json:"Name,omitempty"`
+	Mail string `json:"Mail,omitempty"`
 }
 
 //Resum references to a resum of data
 type Resum struct {
-	Name string    `json:"Name"`
-	Date time.Time `json:"Date"`
-	Data []Data    `json:"DATA"`
+	Name string    `json:"Name,omitempty"`
+	Date time.Time `json:"Date,omitempty"`
+	Data []Data    `json:"DATA,omitempty"`
 }
 
 //Data references to a Data
 type Data struct {
-	Name     string   `json:"Name"`
-	LineName string   `json:"LineName"`
-	ColName  string   `json:"ColName"`
-	Lines    []string `json:"Lines"`
-	Cols     []string `json:"Cols"`
+	Name     string   `json:"Name,omitempty"`
+	LineName string   `json:"LineName,omitempty"`
+	ColName  string   `json:"ColName,omitempty"`
+	Lines    []string `json:"Lines,omitempty"`
+	Cols     []string `json:"Cols,omitempty"`
 }
 
 //ListaClientes define json struct
 type ListaClientes struct {
-	Nome string `json:"nome"`
+	Nome string `json:"nome,omitempty"`
 }
