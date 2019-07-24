@@ -41,14 +41,15 @@ func OpenAndProcessFileCSV() error {
 	logs.Info("openFileCSV", "Reading file...")
 	//rawdata, err := reader.ReadAll()
 	numLine := 0
+	logs.Info("openFileCSV", "Updating data in DB...")
 	for {
 		numLine++
-		record , err := reader.Read()
-		
-		if err == io.EOF{
-			break;
+		record, err := reader.Read()
+
+		if err == io.EOF {
+			break
 		}
-		if err != nil{
+		if err != nil {
 			logs.Errorf("openFileCSV", err.Error())
 		}
 		if numLine > 1 {
@@ -58,12 +59,14 @@ func OpenAndProcessFileCSV() error {
 			}
 		}
 	}
-	
+
+	logs.Info("openFileCSV", "Data stored in DB")
+
 	if err != nil {
 		logs.Errorf("openFileCSV", err.Error())
 		return err
 	}
-	
+	logs.Info("openFileCSV", "UpdateAllSetTotalLiquido")
 	if numLine > 1 {
 		//Setar todos os TotalLiquido para 0 de todos os clientes que o update=false
 		//Ou seja, todos os funcionarios públicos que deixaram de ser funcionários
@@ -136,12 +139,12 @@ func persistPessoa(column []string) error {
 		return err
 	}
 	/*	PONTOS:
-			- Caso salário líquido > 20k,
-			- Verifica se nome já é cliente
-			- Caso cliente, update dos dados e update = true
-			- Caso não cliente, insere os dados e seta update = true
-			- Caso update = false, set totalliquido = 0
-			- Ao final, setar novamente update = false em todos os clientes da tabela*/
+		- Caso salário líquido > 20k,
+		- Verifica se nome já é cliente
+		- Caso cliente, update dos dados e update = true
+		- Caso não cliente, insere os dados e seta update = true
+		- Caso update = false, set totalliquido = 0
+		- Ao final, setar novamente update = false em todos os clientes da tabela*/
 	if Totalliquido > 20000 {
 		Pessoa := new(entity.FuncPublico)
 		Pessoa.Nome = column[0]

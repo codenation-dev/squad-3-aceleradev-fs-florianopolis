@@ -5,6 +5,7 @@ import (
 	"io/ioutil"
 	"squad-3-aceleradev-fs-florianopolis/entities/logs"
 	funcpublico "squad-3-aceleradev-fs-florianopolis/interfaces/crud/funcpublico"
+	notificacao "squad-3-aceleradev-fs-florianopolis/interfaces/crud/notificacao"
 	mail "squad-3-aceleradev-fs-florianopolis/services/MailSender/src"
 )
 
@@ -18,7 +19,6 @@ func getTopClientsName() (nomes []string) {
 	if erro != nil {
 		logs.Errorf("getNames", erro.Error())
 	}
-	//fmt.Println("Cliente funcionário público:", nomes)
 	return nomes
 }
 
@@ -28,11 +28,11 @@ func getTopIncomes() (nomes []string) {
 	if erro != nil {
 		logs.Errorf("getNames", erro.Error())
 	}
-	//fmt.Println("Top 10 incomes: ", nomes)
 	return nomes
 }
 
 func CreateJSONfile() {
+	logs.Info("CreateJSONfile", "Generating JSON file for email service...")
 	var request mail.Mailrequest
 	request.Subject = "Take a look at UATI"
 	request.Targets = []mail.Target{{"Roberta", "robertarl@gmail.com"},
@@ -50,4 +50,7 @@ func CreateJSONfile() {
 	if erro != nil {
 		logs.Errorf("createjsonfile", erro.Error())
 	}
+	logs.Info("CreateJSONfile", "Updating notifications in DB...")
+	notificacao.InsertNotificacao(request)
+	logs.Info("CreateJSONfile", "Notifications up to date in DB!")
 }
