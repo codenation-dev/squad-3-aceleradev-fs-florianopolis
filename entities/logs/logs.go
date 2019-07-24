@@ -2,7 +2,7 @@ package logs
 
 /*
 
-**** Need environment variable LOG_PATH **** 
+**** Need environment variable LOG_PATH ****
 
 Usage:
 
@@ -26,69 +26,69 @@ Usage:
 
 */
 
-
-import ("os"
-	"time"
+import (
 	"fmt"
+	"os"
+	"time"
 )
 
 func getFileName(name string) string {
 	LogPath := os.Getenv("LOG_PATH")
 	t := time.Now()
 	var filename string
-	filename = fmt.Sprintf("%s%s_%d_%s_%d.log", LogPath,name,t.Year(),t.Month(),t.Day())
+	filename = fmt.Sprintf("%s%s_%d_%s_%d.log", LogPath, name, t.Year(), t.Month(), t.Day())
 	return filename
 }
 
 // Errorf formated
 func Errorf(source string, description string) {
 	t := getNow()
-	s := fmt.Sprintf("%s : [ERROR] : %s | %s",t,source,description)
-	logIt(getFileName("error"),s)
+	s := fmt.Sprintf("%s : [ERROR] : %s | %s", t, source, description)
+	logIt(getFileName("error"), s)
 }
 
 // Warning formated
 func Warning(source string, description string) {
 	t := getNow()
-	s := fmt.Sprintf("%s : [WARNING] : %s | %s",t,source,description)
-	logIt(getFileName("warning"),s)
+	s := fmt.Sprintf("%s : [WARNING] : %s | %s", t, source, description)
+	logIt(getFileName("warning"), s)
 }
 
 // Request formated
-func Request(method string,source string,destination string,parameters string, observation string){
+func Request(method string, source string, destination string, parameters string, observation string) {
 	t := getNow()
-	s := fmt.Sprintf("%s : [REQUEST] : %s | %s | %s | %s | %s",t,method,source,destination,parameters,observation)
-	logIt(getFileName("request"),s)
+	s := fmt.Sprintf("%s : [REQUEST] : %s | %s | %s | %s | %s", t, method, source, destination, parameters, observation)
+	logIt(getFileName("request"), s)
 }
 
 // SimpleRequest formated
-func SimpleRequest(source string, description string){
+func SimpleRequest(source string, description string) {
 	t := getNow()
-	s := fmt.Sprintf("%s : [REQUEST] : %s | %s",t,source,description)
-	logIt(getFileName("request"),s)
+	s := fmt.Sprintf("%s : [REQUEST] : %s | %s", t, source, description)
+	logIt(getFileName("request"), s)
 }
 
 //Info formated
-func Info(source string, description string){
+func Info(source string, description string) {
 	t := getNow()
-	s := fmt.Sprintf("%s : [INFO] : %s | %s",t,source,description)
-	logIt(getFileName("info"),s)
+	s := fmt.Sprintf("%s : [INFO] : %s | %s", t, source, description)
+	logIt(getFileName("info"), s)
 }
 
 func getNow() string {
 	t := time.Now()
-	s := fmt.Sprintf("%d:%d:%d",t.Hour(),t.Minute(),t.Second())
+	s := fmt.Sprintf("%02d:%02d:%02d", t.Hour(), t.Minute(), t.Second())
 	return s
 }
 
-func logIt(file string, message string){
-	f,_ := os.OpenFile(file, os.O_APPEND | os.O_CREATE | os.O_WRONLY, 0664)
+func logIt(file string, message string) {
+	f, _ := os.OpenFile(file, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0664)
 	writeFile(message, f)
 }
 
-func writeFile(s string,f *os.File) {
-	_,err := fmt.Fprintln(f,s)
-	if(err!=nil){
+func writeFile(s string, f *os.File) {
+	_, err := fmt.Fprintln(f, s)
+	if err != nil {
 		panic(err)
 	}
 	f.Close()
