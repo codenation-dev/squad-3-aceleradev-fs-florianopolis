@@ -3,6 +3,7 @@ package funcpublico
 import (
 	entity "squad-3-aceleradev-fs-florianopolis/entities"
 	db "squad-3-aceleradev-fs-florianopolis/interfaces/db"
+	"squad-3-aceleradev-fs-florianopolis/entities/logs"
 	"strconv"
 	"strings"
 )
@@ -84,7 +85,7 @@ func Get(id int) (*entity.FuncPublico, error) {
 	return &person, erro
 }
 
-//Get funcionário público by name
+//GetByName funcionário público by name
 func GetByName(name string) (*entity.FuncPublico, error) {
 	dbi, erro := db.Init()
 	defer dbi.Database.Close()
@@ -104,7 +105,30 @@ func GetByName(name string) (*entity.FuncPublico, error) {
 	return &person, erro
 }
 
-//Get cliente que é funcionário público
+//GetAllFuncPublico get all funcionário público 
+func GetAllFuncPublico() (*[]entity.FuncPublico, error) {
+	dbi, erro := db.Init()
+	defer dbi.Database.Close()
+	squery := "SELECT * FROM FUNCPUBLICO"
+	seleciona, erro := dbi.Database.Query(squery)
+	defer seleciona.Close()
+	var person entity.FuncPublico
+	var persons [] entity.FuncPublico
+	if erro == nil {
+		for seleciona.Next() {
+			erro := seleciona.Scan(&person.ID, &person.Nome, &person.Cargo, &person.Orgao,
+				&person.Remuneracaodomes, &person.RedutorSalarial, &person.TotalLiquido, &person.Updated, &person.ClientedoBanco)
+				persons = append(persons, person)
+			if erro != nil {
+				logs.Errorf("GetAllFuncPublico", erro.Error())
+				break
+			}
+		}
+	}
+	return &persons, erro
+}
+
+//GetClienteFuncPublico cliente que é funcionário público
 func GetClienteFuncPublico() (nomes []string, erro error) {
 	dbi, erro := db.Init()
 	defer dbi.Database.Close()
@@ -125,6 +149,7 @@ func GetClienteFuncPublico() (nomes []string, erro error) {
 	}
 	return names, erro
 }
+
 
 //Get top10 func publico based on income
 func GetTop10Incomes() (nomes []string, erro error) {
