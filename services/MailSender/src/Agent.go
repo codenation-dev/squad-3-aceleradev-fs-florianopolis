@@ -29,6 +29,19 @@ func (S *SMTPAgent) Send() {
 	}
 }
 
+//PasswordSend send a email with password
+func (S *SMTPAgent) PasswordSend() {
+	logs.Info("Mail - Agent","Tryingo to send mail")
+	var auth = S.Senders[S.senderCtrl].Authme()
+	msg := TemplatePass(S.Pass)
+	logs.Info("This is what you are sending",string(msg))
+	err := smtp.SendMail(S.Host.toString(),auth,S.Senders[S.senderCtrl].login,[]string{S.Pass.Target.Mail},msg)
+	if (err!=nil){
+		logs.Errorf("Mail - Agent",fmt.Sprintf("Error %s",err.Error()))
+		panic(err)
+	}
+}
+
 func (S *SMTPAgent) controlSender() {
 	if (S.senderCtrl == len(S.Senders)){
 		S.senderCtrl = 0

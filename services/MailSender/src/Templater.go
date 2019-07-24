@@ -35,3 +35,17 @@ func TemplateIt(mail Mailrequest,index int) []byte{
 	tmpl.Execute(&tpl,toTemplate(mail,index))
 	return []byte(Header+mime+tpl.String())
 }
+
+//TemplatePass Create a template html with css to password
+func TemplatePass(Pass PasswordRequest) []byte {
+	mime := "MIME-version: 1.0;\nContent-Type: text/html; charset=\"UTF-8\";\n\n "
+	Header := fmt.Sprintf("To:%s\r\nSubject:%s\r\n",Pass.Target.Mail,Pass.Subject)
+	var tpl bytes.Buffer
+	tmpl,err := template.ParseFiles("templates/templatepass.html")
+	if(err!=nil){
+		logs.Errorf("MailSender_Templater_TemplatePass ",err.Error())
+		panic(err)
+	}
+	tmpl.Execute(&tpl,Pass)
+	return []byte(Header+mime+tpl.String())
+}
