@@ -30,18 +30,9 @@ type Usuario struct {
 	Email   string `json:"email"`
 }
 
-//NotificacaoUsuario entity
-/*type NotificacaoUsuario struct {
-	Usuario     Usuario     `json:"idusuario"`
-	Notificacao Notificacao `json:"idnotificacao"`
-	Data        time.Time   `json:"data"`
-}*/
-//Usuario entity
-/*type Usuario struct {
-	ID          int    `json:"id"`
-	Cpf         uint64 `json:"cpf"`
-	Nome        string `json:"nome"`
-	Senha       string `json:"senha"`
-	Email       string `json:"email"`
-	RecebeEmail bool   `json:"recebeemail"`
-}*/
+//Historico entity
+type Historico struct {
+	ID   int  		 `json:"id"`
+	Data time.Time 	 `json:"data"`
+	JSON FuncPublico `json:"pessoa"`
+}
