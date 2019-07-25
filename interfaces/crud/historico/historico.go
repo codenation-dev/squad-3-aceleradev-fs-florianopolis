@@ -19,6 +19,6 @@ func Insert(hist *[]entity.FuncPublico) error {
 	json, err := json.Marshal(&hist);if err != nil{
 		return err
 	}
-	 _, err = dbi.Database.Query("INSERT INTO HISTORICO (data, json) VALUES(?, ?)", formatTime, json)
+	 _, err = dbi.Database.Query(`INSERT INTO HISTORICO (data, json) VALUES(?, ?)`, formatTime, json)
 	return err
 }

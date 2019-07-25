@@ -18,8 +18,8 @@ func InsertNotificacao(request mail.Mailrequest) error {
 	if erro != nil {
 		logs.Errorf("InsertNotificacao", erro.Error())
 	}
-	//_, err := appdatabase.Exec("INSERT INTO emptable(name, age, salary) VALUES(?, ?, ?)", data.Username , age, salary)
-	_, erro = dbi.Database.Query("INSERT INTO NOTIFICACAO (data, lista) VALUES(?, ?)", time.Now().Format("2006.01.02"), response)
+	//_, err := appdatabase.Exec(`INSERT INTO emptable(name, age, salary) VALUES(?, ?, ?)`, data.Username , age, salary)
+	_, erro = dbi.Database.Query(`INSERT INTO NOTIFICACAO (data, lista) VALUES(?, ?)`, time.Now().Format("2006.01.02"), response)
 	if erro != nil {
 		logs.Errorf("InsertNotificacao", erro.Error())
 	}
@@ -30,7 +30,7 @@ func InsertNotificacao(request mail.Mailrequest) error {
 func Delete(id int) error {
 	dbi, erro := db.Init()
 	defer dbi.Database.Close()
-	squery := "DELETE FROM NOTIFICACAO WHERE id = " + strconv.Itoa(id)
+	squery := `DELETE FROM NOTIFICACAO WHERE id = ` + strconv.Itoa(id)
 	erro = dbi.ExecQuery(squery)
 	return erro
 }
@@ -39,7 +39,7 @@ func Delete(id int) error {
 func Get(id int) (*entity.Notificacao, error) {
 	dbi, erro := db.Init()
 	defer dbi.Database.Close()
-	seleciona, erro := dbi.Database.Query("SELECT * FROM notificacao WHERE id = " + strconv.Itoa(id))
+	seleciona, erro := dbi.Database.Query(`SELECT * FROM notificacao WHERE id = ` + strconv.Itoa(id))
 	var note entity.Notificacao
 	if erro == nil {
 		for seleciona.Next() {
