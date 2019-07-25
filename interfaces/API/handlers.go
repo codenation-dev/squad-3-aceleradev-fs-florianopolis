@@ -162,11 +162,14 @@ func (a *App) uploadCSV(w http.ResponseWriter, r *http.Request) {
 	if structuredList != nil{
 		j, err := json.Marshal(structuredList)
 		if err != nil {
-			logs.Errorf("App/Cant encoding array to json", err.Error())
-		}
-		err = ioutil.WriteFile("ClientList.json", j, 0644)
-		if err != nil {
-			logs.Errorf("App/Cant write clientlist.json file on server", err.Error())
+			responseCodeResult(w, Error, err.Error())
+		}else{	
+			err = ioutil.WriteFile("ClientList.json", j, 0644)
+			if err != nil {
+				responseCodeResult(w, Error, err.Error())
+			}else{
+				responseCodeResult(w, Success, "Arquivo salvo com sucesso")
+			}
 		}
 	}else {
 		responseCodeResult(w, Empty, "Nenhum dado encontrado")
