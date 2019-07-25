@@ -62,7 +62,7 @@ func (a *App) mailEdit(w http.ResponseWriter, r *http.Request)  {
 	idStr := strings.Trim(ids["id"], " ")
 	id, err := strconv.Atoi(idStr)
 	if err != nil {
-		responseCodeResult(w, Error, err.Error())
+		responseCodeResult(w, Error, "Id não é um número")
 	}else{
 		UsuarioOnDataBase, err := usuario.GetUsuarioByID(id)
 		if err != nil {
@@ -90,9 +90,6 @@ func (a *App) mailEdit(w http.ResponseWriter, r *http.Request)  {
 		}
 
 	}
-
-	
-
 }
 
 func (a *App) mailDeleter(w http.ResponseWriter, r *http.Request)  {
@@ -101,6 +98,19 @@ func (a *App) mailDeleter(w http.ResponseWriter, r *http.Request)  {
 
 func (a *App) mailRegister(w http.ResponseWriter, r *http.Request)  {
 	//TruePass := bcrypt.GenerateFromPassword([]byte(), 2)
+	var UsuarioRequestUpdate entity.Usuario
+	userJSON := json.NewDecoder(r.Body)
+	err := userJSON.Decode(&UsuarioRequestUpdate)
+	if err != nil {
+		responseCodeResult(w, Error, err.Error())
+	}else{
+		err := usuario.Insert(&UsuarioRequestUpdate)
+		if err != nil {
+			responseCodeResult(w, Error, err.Error())
+		}else{
+			responseCodeResult(w, Success, "Atualizado com Sucesso")
+		}
+	}
 }
 
 func (a *App) warnGeneral(w http.ResponseWriter, r *http.Request)  {
