@@ -8,9 +8,9 @@ import (
 )
 
 const ( 
-	Success = 0 
-	Empty 	= 1
-	Error   = 2
+	Success = 1
+	Empty 	= 2
+	Error   = 3
  )
  
 
