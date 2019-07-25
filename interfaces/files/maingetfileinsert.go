@@ -20,7 +20,7 @@ func main() {
 	cronJob := cron.New()
 	cronJob.Start()
 	logs.Info("Start App", "Application is Waiting until the time match...")
-	cronJob.AddFunc("0 03 09 24 * ?", Execute) //dia 17 de cada mes as 22:10
+	cronJob.AddFunc("0 51 01 25 * ?", Execute) //dia 17 de cada mes as 22:10
 	wg.Wait()
 	Execute()
 }
@@ -31,6 +31,7 @@ func Execute() {
 		OpenAndProcessFileCSV()
 		CreateJSONfile()
 	}
+	logs.Info("Execute", "Finished running Execute")
 }
 
 //DownloadAndExtractFile from URLService

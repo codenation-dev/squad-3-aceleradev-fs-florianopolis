@@ -46,11 +46,11 @@ func Update(person *entity.FuncPublico) error {
 }
 
 //UpdateAllSetTotalLiquido atualiza os valores dos que não são mais funcionários públicos para 0
-func UpdateAllSetTotalLiquido(totalLiquido float64) error {
+func UpdateAllSetRemuneracaodoMes(remuneracaodomes float64) error { //CHANGED from totalliquido to remuneracaodomes
 	dbi, erro := db.Init()
 	defer dbi.Database.Close()
-	squery := "UPDATE FUNCPUBLICO SET totalliquido = " + strconv.FormatFloat(totalLiquido, 'E', -1, 64) +
-		"WHERE updated = " + strconv.FormatBool(false)
+	squery := "UPDATE FUNCPUBLICO SET remuneracaodomes = " + strconv.FormatFloat(remuneracaodomes, 'E', -1, 64) +
+		"WHERE updated = " + strconv.FormatBool(false) //CHANGED from totalliquido to remuneracaodomes
 	erro = dbi.ExecQuery(squery)
 	return erro
 }
@@ -89,7 +89,8 @@ func Get(id int) (*entity.FuncPublico, error) {
 func GetByName(name string) (*entity.FuncPublico, error) {
 	dbi, erro := db.Init()
 	defer dbi.Database.Close()
-	squery := "SELECT * FROM FUNCPUBLICO WHERE nome = '" + strings.Trim(name, " ") + "'"
+	name = strings.Replace(name, "'", "''", 1) //prevent from single quotes in names (Escape character)
+	squery := `SELECT * FROM FUNCPUBLICO WHERE nome = "` + strings.Trim(name, " ") + `"`
 	seleciona, erro := dbi.Database.Query(squery)
 	defer seleciona.Close()
 	var person entity.FuncPublico
@@ -109,7 +110,7 @@ func GetByName(name string) (*entity.FuncPublico, error) {
 func GetAllFuncPublico() (*[]entity.FuncPublico, error) {
 	dbi, erro := db.Init()
 	defer dbi.Database.Close()
-	squery := "SELECT * FROM FUNCPUBLICO WHERE totalliquido > 0 ORDER BY totalliquido DESC"
+	squery := "SELECT * FROM FUNCPUBLICO WHERE remuneracaodomes > 0 ORDER BY totalliquido DESC" //CHANGED from totalliquido to remuneracaodomes
 	seleciona, erro := dbi.Database.Query(squery)
 	defer seleciona.Close()
 	var person entity.FuncPublico
