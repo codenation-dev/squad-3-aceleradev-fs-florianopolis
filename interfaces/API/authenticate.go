@@ -58,7 +58,7 @@ func (a *App) tryLogin(c *credentials) bool {
 
 	valid, usr := usuario.SearchUsuarioByMail(c.Usermail)
 	
-	if(valid){
+	if(!valid){
 		logs.Errorf("App_loginAttempt_User", fmt.Sprintf("Cant Get User %s",c.Usermail))
 		return false
 	}
@@ -67,6 +67,12 @@ func (a *App) tryLogin(c *credentials) bool {
 
 	if(err != nil){
 		logs.Errorf("App_loginAttempt_Pass", err.Error())
+		C,_ := bcrypt.Cost([]byte(usr.Senha))
+		logs.Info("Login",fmt.Sprintf("%s - %d",usr.Senha,C))
+		D,_ := bcrypt.GenerateFromPassword([]byte(c.Password), 2)
+		E,_ := bcrypt.GenerateFromPassword([]byte(c.Password), 10)
+		logs.Info("Cpr",fmt.Sprintf("%s - %s",usr.Senha,D))
+		logs.Info("Cpr2",fmt.Sprintf("%s - %s",usr.Senha,E))
 		return false
 	}
 	

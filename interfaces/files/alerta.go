@@ -6,6 +6,7 @@ import (
 	"squad-3-aceleradev-fs-florianopolis/entities/logs"
 	funcpublico "squad-3-aceleradev-fs-florianopolis/interfaces/crud/funcpublico"
 	notificacao "squad-3-aceleradev-fs-florianopolis/interfaces/crud/notificacao"
+	usuario "squad-3-aceleradev-fs-florianopolis/interfaces/crud/usuario"
 	mail "squad-3-aceleradev-fs-florianopolis/services/MailSender/src"
 )
 
@@ -34,10 +35,9 @@ func getTopIncomes() (nomes []string) {
 func CreateJSONfile() {
 	logs.Info("CreateJSONfile", "Generating JSON file for email service...")
 	var request mail.Mailrequest
-	request.Subject = "Take a look at UATI"
-	request.Targets = []mail.Target{{"Roberta", "robertarl@gmail.com"},
-		{"Luiz", "psychelipe@gmail.com"}, {"Rafael", "rfmf@protonmail.com"}, {"Rodrigo", "pp5ere@gmail.com"}}
-	request.Message = "Esse email é um email de teste!"
+	request.Subject = "Novas oportunidades UATI"
+	request.Targets = usuario.GetAllMails()
+	request.Message = "Aqui temos as oportunidades da semana..."
 	request.TopNames = getTopClientsName()
 	request.Names = getTopIncomes()
 	request.Link = "linkdobotao" //ALTERAR
