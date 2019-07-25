@@ -10,6 +10,9 @@ import(
 	"encoding/csv"
 	"io"
 	"io/ioutil"
+	"github.com/gorilla/mux"
+	"strconv"
+	"strings"
 )
 
 func notImplemented(w http.ResponseWriter, r *http.Request) {
@@ -54,15 +57,41 @@ func (a *App) mailGeneral(w http.ResponseWriter, r *http.Request)  {
 }
 
 func (a *App) mailEdit(w http.ResponseWriter, r *http.Request)  {
-	var Usuario entity.Usuario
-	userJSON := json.NewDecoder(r.Body)
-	err := userJSON.Decode(&Usuario);if err != nil {
+	var UsuarioRequestUpdate entity.Usuario
+	ids := mux.Vars(r)
+	idStr := strings.Trim(ids["id"], " ")
+	id, err := strconv.Atoi(idStr)
+	if err != nil {
 		responseCodeResult(w, Error, err.Error())
+	}else{
+		UsuarioOnDataBase, err := usuario.GetUsuarioByID(id)
+		if err != nil {
+			responseCodeResult(w, Error, err.Error())
+		}else{
+			if UsuarioOnDataBase == nil{
+				responseCodeResult(w, Empty, "Usuário não encontrado")
+			}else{
+				userJSON := json.NewDecoder(r.Body)
+				err := userJSON.Decode(&UsuarioRequestUpdate)
+				if err != nil {
+					responseCodeResult(w, Error, err.Error())
+				}else{
+					UsuarioRequestUpdate.ID = id
+					if UsuarioRequestUpdate.Validar(){
+						err := usuario.Update(&UsuarioRequestUpdate)
+						if err != nil {
+							responseCodeResult(w, Error, err.Error())
+						}else{
+							responseCodeResult(w, Success, "Atualizado com Sucesso")
+						}
+					}
+				}
+			}
+		}
+
 	}
 
-	if Usuario.Validar(){
-		usuario.Update(&Usuario)	
-	}
+	
 
 }
 
