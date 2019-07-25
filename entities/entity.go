@@ -25,6 +25,14 @@ type Notificacao struct {
 	Lista FuncPublico `json:"pessoa"`
 }
 
+//EmailEnviado entity
+type EmailEnviado struct {
+	ID    			int `json:"id"`
+	IDNotificacao	int `json:"idnotificacao"`
+	EmailUsuario    string `json:"emailusuario"`
+	Data  			time.Time `json:"data"`
+}
+
 //Usuario entity
 type Usuario struct {
 	ID      int    `json:"id"`
