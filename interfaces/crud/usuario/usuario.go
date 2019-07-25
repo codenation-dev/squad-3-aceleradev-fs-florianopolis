@@ -1,6 +1,7 @@
 package usuario
 
 import (
+	"errors"
 	entity "squad-3-aceleradev-fs-florianopolis/entities"
 	"squad-3-aceleradev-fs-florianopolis/entities/logs"
 	db "squad-3-aceleradev-fs-florianopolis/interfaces/db"
@@ -23,7 +24,7 @@ func Insert(user *entity.Usuario) error {
 		return erro
 	} else {
 		logs.Info("Insert(User)", "User already exists")
-		return erro
+		return errors.New("User already exists")
 	}
 }
 
