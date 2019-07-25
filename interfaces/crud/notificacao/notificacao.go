@@ -18,8 +18,8 @@ func InsertNotificacao(request mail.Mailrequest) error {
 	if erro != nil {
 		logs.Errorf("InsertNotificacao", erro.Error())
 	}
-	//_, err := appdatabase.Exec(`INSERT INTO emptable(name, age, salary) VALUES(?, ?, ?)`, data.Username , age, salary)
-	_, erro = dbi.Database.Query(`INSERT INTO NOTIFICACAO (data, lista) VALUES(?, ?)`, time.Now().Format("2006.01.02"), response)
+
+	_, erro = dbi.Database.Query(`INSERT INTO NOTIFICACAO (data, lista) VALUES(?, ?)`, time.Now().Format("2006-01-02 15:04:05"), response)
 	if erro != nil {
 		logs.Errorf("InsertNotificacao", erro.Error())
 	}
