@@ -23,8 +23,8 @@ func Insert(user *entity.Usuario) error {
 		erro = dbi.ExecQuery(squery)
 		return erro
 	} else {
-		logs.Info("Insert(User)", "User already exists")
-		return errors.New("User already exists")
+		logs.Info("Insert(User)", "Email from User already exists")
+		return errors.New("Email from User already exists")
 	}
 }
 
