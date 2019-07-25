@@ -92,8 +92,30 @@ func (a *App) mailEdit(w http.ResponseWriter, r *http.Request)  {
 	}
 }
 
-func (a *App) mailDeleter(w http.ResponseWriter, r *http.Request)  {
+func (a *App) mailDelete(w http.ResponseWriter, r *http.Request)  {
+	ids := mux.Vars(r)
+	idStr := strings.Trim(ids["id"], " ")
+	id, err := strconv.Atoi(idStr)
+	if err != nil {
+		responseCodeResult(w, Error, "Id não é um número")
+	}else{
+		UsuarioOnDataBase, err := usuario.GetUsuarioByID(id)
+		if err != nil {
+			responseCodeResult(w, Error, err.Error())
+		}else{
+			if UsuarioOnDataBase == nil{
+				responseCodeResult(w, Empty, "Usuário não encontrado")
+			}else{
+				err := usuario.Delete(id)
+				if err != nil {
+					responseCodeResult(w, Error, err.Error())
+				}else{
+					responseCodeResult(w, Success, "Deletado com Sucesso")
+				}
+			}
+		}
 
+	}
 }
 
 func (a *App) mailRegister(w http.ResponseWriter, r *http.Request)  {
