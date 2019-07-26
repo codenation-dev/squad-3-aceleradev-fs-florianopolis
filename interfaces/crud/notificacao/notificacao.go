@@ -62,7 +62,7 @@ func Delete(id int) error {
 	dbi, erro := db.Init()
 	defer dbi.Database.Close()
 	squery := `DELETE FROM NOTIFICACAO WHERE id = ` + strconv.Itoa(id)
-	erro = dbi.ExecQuery(squery)
+	_, erro = dbi.Database.Query(squery)
 	return erro
 }
 

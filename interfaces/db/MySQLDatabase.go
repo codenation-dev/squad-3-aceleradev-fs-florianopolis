@@ -32,13 +32,3 @@ func Init() (*MySQLDatabase, error) {
 	MyDB := &MySQLDatabase{Database: dbConnection}
 	return MyDB, nil
 }
-
-//ExecQuery Execute a Query (Exceção de Select)
-func (MyDB MySQLDatabase) ExecQuery(comando string) error {
-	retorno, erro := MyDB.Database.Query(comando)
-	if erro != nil {
-		logs.Errorf("MySQL Database", fmt.Sprintf("%s", erro))
-	}
-	defer retorno.Close()
-	return erro
-}

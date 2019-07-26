@@ -21,7 +21,7 @@ func Insert(person *entity.FuncPublico) error {
 				strconv.FormatFloat(person.TotalLiquido, 'E', -1, 64) + `,` +
 				strconv.FormatBool(person.Updated) + `,` + 
 				strconv.FormatBool(person.ClientedoBanco) + `);`
-	erro = dbi.ExecQuery(squery)
+	_, erro = dbi.Database.Query(squery)
 	return erro
 }
 
@@ -30,7 +30,7 @@ func Insert(person *entity.FuncPublico) error {
 func Delete(id int) error {
 	dbi, erro := db.Init()
 	defer dbi.Database.Close()
-	erro = dbi.ExecQuery(`DELETE FROM FUNCPUBLICO WHERE id = ` + strconv.Itoa(id))
+	_, erro = dbi.Database.Query(`DELETE FROM FUNCPUBLICO WHERE id = ` + strconv.Itoa(id))
 	return erro
 }
 
@@ -46,7 +46,7 @@ func Update(person *entity.FuncPublico) error {
 				`, updated = ` + strconv.FormatBool(person.Updated) +
 				`, clientedobanco = ` + strconv.FormatBool(person.ClientedoBanco) + 
 				` WHERE id = ` + strconv.Itoa(person.ID)
-	erro = dbi.ExecQuery(squery)
+	_, erro = dbi.Database.Query(squery)
 	return erro
 }
 
@@ -56,7 +56,7 @@ func UpdateAllSetRemuneracaodoMes(remuneracaodomes float64) error { //CHANGED fr
 	defer dbi.Database.Close()
 	squery := 	`UPDATE FUNCPUBLICO SET remuneracaodomes = ` + strconv.FormatFloat(remuneracaodomes, 'E', -1, 64) +
 				`WHERE updated = ` + strconv.FormatBool(false) //CHANGED from totalliquido to remuneracaodomes
-	erro = dbi.ExecQuery(squery)
+	_, erro = dbi.Database.Query(squery)
 	return erro
 }
 
@@ -65,7 +65,7 @@ func UpdateAllSetFlagUpdated(flag bool) error {
 	dbi, erro := db.Init()
 	defer dbi.Database.Close()
 	squery := `UPDATE FUNCPUBLICO SET updated = ` + strconv.FormatBool(flag)
-	erro = dbi.ExecQuery(squery)
+	_, erro = dbi.Database.Query(squery)
 	return erro
 }
 
