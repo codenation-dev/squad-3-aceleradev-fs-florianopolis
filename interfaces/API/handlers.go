@@ -136,11 +136,18 @@ func (a *App) mailRegister(w http.ResponseWriter, r *http.Request)  {
 }
 
 func (a *App) warnGeneral(w http.ResponseWriter, r *http.Request)  {
-
+	var DataStruct DataEmailUsuario
+	dateJSON := json.NewDecoder(r.Body)
+	err := dateJSON.Decode(&DataStruct)
+	if err != nil {
+		responseCodeResult(w, Error, err.Error())
+	}else{
+		
+	}
 }
 
 func (a *App) warnDetail(w http.ResponseWriter, r *http.Request)  {
-
+	
 }
 
 func (a *App) uploadCSV(w http.ResponseWriter, r *http.Request) {
