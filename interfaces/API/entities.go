@@ -107,6 +107,6 @@ type DataEmailUsuario struct{
 type Warn struct{
 	ID    int         `json:"id"`
 	Data  time.Time   `json:"data"`
-	Lista entity.FuncPublico `json:"pessoa"`
-	EmailsEnviados entity.EmailEnviado `json:"emails"`
+	Lista entity.NotificacaoLista `json:"lista"`
+	EmailsEnviados []entity.EmailEnviado `json:"emails"`
 }

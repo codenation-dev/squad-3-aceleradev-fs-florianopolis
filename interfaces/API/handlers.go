@@ -3,6 +3,8 @@ package api
 import("squad-3-aceleradev-fs-florianopolis/entities/logs"
 entity "squad-3-aceleradev-fs-florianopolis/entities"
 "squad-3-aceleradev-fs-florianopolis/interfaces/crud/usuario"
+"squad-3-aceleradev-fs-florianopolis/interfaces/crud/notificacao"
+"squad-3-aceleradev-fs-florianopolis/interfaces/crud/emailenviado"
 "encoding/json"
 "net/http"
 "fmt"
@@ -16,7 +18,6 @@ entity "squad-3-aceleradev-fs-florianopolis/entities"
 "strings"
 "github.com/gorilla/context"
 jwt "github.com/dgrijalva/jwt-go"
-"time"
 )
 
 func notImplemented(w http.ResponseWriter, r *http.Request) {
@@ -170,14 +171,28 @@ func (a *App) mailRegister(w http.ResponseWriter, r *http.Request)  {
 
 func (a *App) warnGeneral(w http.ResponseWriter, r *http.Request)  {
 	var DataStruct DataEmailUsuario
-	var Date time.Time
 	dateJSON := json.NewDecoder(r.Body)
 	err := dateJSON.Decode(&DataStruct)
-	if err != nil {
+	if err != nil && err != io.EOF {
 		responseCodeResult(w, Error, err.Error())
-	}else{
-		if DataStruct.Data == Date {
-			
+	} else {
+		var warn Warn
+		Notificacao, err := notificacao.Get(DataStruct.Data)
+		if err != nil {
+			responseCodeResult(w, Error, err.Error())
+		}
+		Emails := emailenviado.GetAll(Notificacao.ID)
+		warn.ID = Notificacao.ID
+		warn.Lista = Notificacao.Lista
+		warn.Data = Notificacao.Data
+		warn.EmailsEnviados = Emails
+		var Response Result
+		Response.Warn = &warn
+		Response.Code = Success
+		Response.Result = "Sucesso"
+		Response.Token = a.GetToken(context.Get(r,"token").(*jwt.Token))
+		err = json.NewEncoder(w).Encode(Response); if err != nil{
+			logs.Errorf("App/Cant write respond", err.Error())	
 		}
 	}
 }

@@ -23,29 +23,6 @@ func Insert(ID int,Endereco string) error {
 	return err
 }
 
-/*
-func GetAll(pData time.Time) (*entity.EmailEnviado, error) {
-	var Data time.Time
-	var note entity.Notificacao
-	dbi, erro := db.Init()
-	if erro != nil {
-		logs.Errorf("get(EMAILENVIADO)", erro.Error())
-	}
-	defer dbi.Database.Close()
-	if pData != Data{
-		formatTime := pData.Format("2006-01-02 15:04:05")	
-		_, err := dbi.Database.Query(`select * from EMAILENVIADO order by data desc limit 1`)
-	}else {		
-		seleciona, err := dbi.Database.Query(`select * from NOTIFICACAO order by data desc limit 1`)
-		seleciona.Scan(&note.ID, &note.Data, &note.Lista)
-		seleciona, err = dbi.Database.Query(`select * from EMAILENVIADO where idnotificacao = ` + strconv.Itoa(note.ID))
-		
-	}
-	
-	return err
-}
-*/
-
 //GetAll gets a list
 func GetAll(id int) ([]entity.EmailEnviado) {
 	dbi, erro := db.Init()

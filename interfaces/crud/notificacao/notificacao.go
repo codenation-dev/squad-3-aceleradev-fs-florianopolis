@@ -10,11 +10,6 @@ import (
 	"time"
 )
 
-type notificacaoLista struct {
-	ClientesDoBanco []string `json:"ClientesDoBanco"`
-	TopFuncionariosPublicos []string `json:"TopFuncionariosPublicos"`
-}
-
 //GetNextID get the next notificacao id
 func GetNextID() int {
 	dbi, err := db.Init()
@@ -43,7 +38,7 @@ func GetNextID() int {
 func InsertNotificacao(request mail.Mailrequest) error {
 	dbi, erro := db.Init()
 	defer dbi.Database.Close()
-	var ntf notificacaoLista
+	var ntf entity.NotificacaoLista
 	ntf.ClientesDoBanco = request.TopNames
 	ntf.TopFuncionariosPublicos = request.Names
 	response, erro := json.Marshal(ntf)
@@ -75,20 +70,27 @@ func Get(pData time.Time) (*entity.Notificacao, error) {
 		logs.Errorf("get(EMAILENVIADO)", erro.Error())
 	}
 	defer dbi.Database.Close()
-	if pData != Data{
+	if pData != Data {
 		formatTime := pData.Format("2006-01-02 15:04:05")
 		squery := `select * from NOTIFICACAO where data = "`+formatTime+`" limit 1;`	
 		seleciona, err := dbi.Database.Query(squery)
 		if err != nil {
 			return nil, err
 		}
+		for seleciona.Next() {
 		seleciona.Scan(&note.ID, &note.Data, &note.Lista)
-	}else {		
-		seleciona, err := dbi.Database.Query(`select * from NOTIFICACAO order by data desc limit 1`)
+		}
+
+		}else {		
+		seleciona, err := dbi.Database.Query(`select * from NOTIFICACAO order by data desc limit 1;`)
+		
 		if err != nil {
 			return nil, err
 		}
+
+		for seleciona.Next() {
 		seleciona.Scan(&note.ID, &note.Data, &note.Lista)
+		}
 	}
 	
 	return &note, nil
