@@ -5,14 +5,15 @@ import (
 )
 
 func (a *App) endpoints() {
-	a.Router.HandleFunc("/auth",notImplemented)
-	a.Router.HandleFunc("/warn",notImplemented)//data em um json opcional vem no body da mensagem, se não preencher pega a última
-	a.Router.HandleFunc("/warn/{idnotificacao}",notImplemented)
-	a.Router.HandleFunc("/mails", a.mailGeneral)
-	a.Router.HandleFunc("/mails/add",a.mailRegister)
-	a.Router.HandleFunc("/mails/{id}/delete",a.mailDelete)
-	a.Router.HandleFunc("/mails/{id}/update",a.mailEdit)
-	a.Router.HandleFunc("/upload", a.uploadCSV)
+
+	a.Router.HandleFunc("/auth", a.login)
+	a.Router.HandleFunc("/warn", a.restricted(notImplemented))//data em um json opcional vem no body da mensagem, se não preencher pega a última
+	a.Router.HandleFunc("/warn/{id}", a.restricted(notImplemented))
+	a.Router.HandleFunc("/mails", a.restricted(a.mailGeneral))
+	a.Router.HandleFunc("/mails/add", a.restricted(a.mailRegister))
+	a.Router.HandleFunc("/mails/{id}/delete", a.restricted(a.mailDelete))
+	a.Router.HandleFunc("/mails/{id}/update", a.restricted(a.mailEdit))
+	a.Router.HandleFunc("/upload", a.restricted(a.uploadCSV))
 }
 
 //Initialize the router

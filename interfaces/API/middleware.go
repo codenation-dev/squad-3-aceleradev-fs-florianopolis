@@ -15,11 +15,11 @@ func (a *App) restricted(next http.HandlerFunc) http.HandlerFunc {
 				next(w,r)
 			} else {
 				w.WriteHeader(http.StatusUnauthorized)
-				unauth(w,r)
+				responseCodeResult(w, Error, "Unauthorized Request! You need Login")
 			}
 		} else {
 			w.WriteHeader(http.StatusUnauthorized)
-			internalError(w,r)
+			responseCodeResult(w,Error,"Internal Error ")
 		}
 }
 }

@@ -58,7 +58,7 @@ func (a *App) tryLogin(c *credentials) bool {
 
 	valid, usr := usuario.SearchUsuarioByMail(c.Usermail)
 	
-	if(valid){
+	if(!valid){
 		logs.Errorf("App_loginAttempt_User", fmt.Sprintf("Cant Get User %s",c.Usermail))
 		return false
 	}

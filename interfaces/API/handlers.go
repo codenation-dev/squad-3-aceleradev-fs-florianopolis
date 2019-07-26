@@ -1,16 +1,17 @@
 package api
 
-import(
-	"squad-3-aceleradev-fs-florianopolis/entities/logs"
-	"squad-3-aceleradev-fs-florianopolis/interfaces/crud/usuario"
-	entity "squad-3-aceleradev-fs-florianopolis/entities"
-	"encoding/json"
-	"net/http"
-	"fmt"
-	"encoding/csv"
-	"io"
-	"io/ioutil"
-	"github.com/gorilla/mux"
+import("squad-3-aceleradev-fs-florianopolis/entities/logs"
+entity "squad-3-aceleradev-fs-florianopolis/entities"
+"squad-3-aceleradev-fs-florianopolis/interfaces/crud/usuario"
+"encoding/json"
+"net/http"
+"fmt"
+"encoding/csv"
+"io"
+"io/ioutil"
+"bytes"
+"golang.org/x/crypto/bcrypt"
+"github.com/gorilla/mux"
 	"strconv"
 	"strings"
 )
@@ -37,6 +38,7 @@ func (a *App) login(w http.ResponseWriter, r *http.Request) {
 		} else {
 			logs.Errorf("App/Cant create JWT Token",E.Error())
 			Response.Result = "Login Fail! Internal Error"
+			responseCodeResult(w, Error, E.Error())
 		}	
 	} else {
 		Response.Result = "Login Fail! Invalid Credentials"
@@ -119,20 +121,43 @@ func (a *App) mailDelete(w http.ResponseWriter, r *http.Request)  {
 }
 
 func (a *App) mailRegister(w http.ResponseWriter, r *http.Request)  {
-	//TruePass := bcrypt.GenerateFromPassword([]byte(), 2)
-	var UsuarioRequestUpdate entity.Usuario
-	userJSON := json.NewDecoder(r.Body)
-	err := userJSON.Decode(&UsuarioRequestUpdate)
-	if err != nil {
-		responseCodeResult(w, Error, err.Error())
-	}else{
-		err := usuario.Insert(&UsuarioRequestUpdate)
-		if err != nil {
+	
+	decode := json.NewDecoder(r.Body)
+
+	var Info MailType
+
+	_ = decode.Decode(&Info)
+	
+	if (validateMailType(Info)){
+		pass := generatePassword()
+		crypted,_ := bcrypt.GenerateFromPassword([]byte(pass), 10)
+		User := entity.Usuario{
+			ID: 0,
+		Usuario:Info.Name,
+		Email: Info.Mail,
+		Senha: string(crypted)}
+		err := usuario.Insert(&User)
+		
+		if (err != nil){
 			responseCodeResult(w, Error, err.Error())
-		}else{
-			responseCodeResult(w, Success, "Atualizado com Sucesso")
 		}
+		
+		u := passT{Subject: "Uati Suporte", 
+		Target: MailType{Name:User.Usuario,
+		Mail:User.Email},
+		Message:pass}
+		b := new(bytes.Buffer)
+		json.NewEncoder(b).Encode(u)
+		_,es := http.Post("http://127.0.0.1:8225/pass", "application/json; charset=utf-8", b)
+		if (es!=nil){
+			logs.Errorf("MailConsumer - SendMailWithPassError",es.Error())
+			responseCodeResult(w, Error, "Cant Send Mail With Password")
+		}
+		responseCodeResult(w, Success, "Success")
+	} else {
+		responseCodeResult(w, Error, "Invalid Data")
 	}
+
 }
 
 func (a *App) warnGeneral(w http.ResponseWriter, r *http.Request)  {
@@ -183,18 +208,13 @@ func (a *App) uploadCSV(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func unauth(w http.ResponseWriter, r *http.Request) {
-
-}
-
-func internalError(w http.ResponseWriter, r *http.Request) {
-
-}
-
-func responseCodeResult(w http.ResponseWriter, code int, msg string ){
+func responseCodeResult(w http.ResponseWriter, code int, msg string, tk ...string ){
 	var response Result
 	response.Code   = code
 	response.Result = msg
+	if (len(tk)>0) {
+		response.Token = tk[0]
+	}
 	err := json.NewEncoder(w).Encode(response); if err != nil{
 		logs.Errorf("App/Cant write respond", err.Error())	
 	}

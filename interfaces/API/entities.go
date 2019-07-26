@@ -25,12 +25,20 @@ type Result struct {
 	DataResum *Resum    `json:"DataResum,omitempty"`
 }
 
+//App the struct for the app
 type App struct {
 	Router    *mux.Router
 	Database  string
 	signKey   *rsa.PrivateKey
 	verifyKey *rsa.PublicKey
 }
+
+type passT struct {
+	Subject string `json:"Subject"`
+	Message string `json:"Message"`
+	Target MailType `json:"Target"`
+}
+
 
 // Credentials struct
 type credentials struct {
