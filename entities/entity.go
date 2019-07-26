@@ -5,6 +5,13 @@ import (
 	"strings"
 )
 
+//Cliente entity
+type Cliente struct{
+	ID               int     `json:"id"`
+	Nome             string  `json:"nome"`
+	IDFuncPublico    int     `json:"idfuncpublico"`
+}
+
 //FuncPublico entity
 type FuncPublico struct {
 	ID               int     `json:"id"`
