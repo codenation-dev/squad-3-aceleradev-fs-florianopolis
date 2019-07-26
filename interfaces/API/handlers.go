@@ -1,19 +1,21 @@
 package api
 
-import("squad-3-aceleradev-fs-florianopolis/entities/logs"
-entity "squad-3-aceleradev-fs-florianopolis/entities"
-"squad-3-aceleradev-fs-florianopolis/interfaces/crud/usuario"
-"encoding/json"
-"net/http"
-"fmt"
-"encoding/csv"
-"io"
-"io/ioutil"
-"bytes"
-"golang.org/x/crypto/bcrypt"
-"github.com/gorilla/mux"
+import (
+	"squad-3-aceleradev-fs-florianopolis/entities/logs"
+	entity "squad-3-aceleradev-fs-florianopolis/entities"
+	"squad-3-aceleradev-fs-florianopolis/interfaces/crud/usuario"
+	"encoding/json"
+	"net/http"
+	"fmt"
+	"encoding/csv"
+	"io"
+	"io/ioutil"
+	"bytes"
+	"golang.org/x/crypto/bcrypt"
+	"github.com/gorilla/mux"
 	"strconv"
 	"strings"
+	"time"
 )
 
 func notImplemented(w http.ResponseWriter, r *http.Request) {
@@ -162,12 +164,15 @@ func (a *App) mailRegister(w http.ResponseWriter, r *http.Request)  {
 
 func (a *App) warnGeneral(w http.ResponseWriter, r *http.Request)  {
 	var DataStruct DataEmailUsuario
+	var Date time.Time
 	dateJSON := json.NewDecoder(r.Body)
 	err := dateJSON.Decode(&DataStruct)
 	if err != nil {
 		responseCodeResult(w, Error, err.Error())
 	}else{
-		
+		if DataStruct.Data == Date {
+			
+		}
 	}
 }
 
