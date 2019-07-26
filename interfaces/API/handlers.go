@@ -182,10 +182,6 @@ func (a *App) warnGeneral(w http.ResponseWriter, r *http.Request)  {
 	}
 }
 
-func (a *App) warnDetail(w http.ResponseWriter, r *http.Request)  {
-	
-}
-
 func (a *App) uploadCSV(w http.ResponseWriter, r *http.Request) {
 	list := csv.NewReader(r.Body)
 	var structuredList []ListaClientes

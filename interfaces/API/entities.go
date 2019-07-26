@@ -3,21 +3,26 @@ package api
 import (
 	"crypto/rsa"
 	"time"
+	entity "squad-3-aceleradev-fs-florianopolis/entities"
 	mail "squad-3-aceleradev-fs-florianopolis/services/MailSender/src"
 	"github.com/gorilla/mux"
 )
 
-const ( 
+const (
+	//Success Code for response 
 	Success = 1
+	//Empty Code for response
 	Empty 	= 2
+	//Error Code for response
 	Error   = 3
  )
  
 
+//Result pattern response for all requests
 type Result struct {
 	Result    string   `json:"Result"`
 	Code	  int	   `json:"Code,omitempty"`	
-	Token     string   `json:"Token,omitempty"`
+	Token     string   `json:"token,omitempty"`
 	Warn      *Warn     `json:"Warn,omitempty"`
 	Warns     *WarnList `json:"WarnList,omitempty"`
 	Mail      *MailType `json:"Mail,omitempty"`
@@ -51,10 +56,14 @@ type tokenSt struct {
 }
 
 //Warn References to a Warn
+/*
 type Warn struct {
-	Name   string `json:"Name,omitempty"`
-	Change string `json:"Changes,omitempty"`
+	ID int `json:"id"`
+	Date time.Time `json:"Date"`
+	Data []byte `json:"Data"`
+	SendedMail Mail
 }
+*/
 
 //WarnList References to a list of Warns
 type WarnList struct {
@@ -95,10 +104,9 @@ type DataEmailUsuario struct{
 	Data  time.Time   `json:"data"`
 }
 
-/*type Warn struct{
+type Warn struct{
 	ID    int         `json:"id"`
 	Data  time.Time   `json:"data"`
 	Lista entity.FuncPublico `json:"pessoa"`
 	EmailsEnviados entity.EmailEnviado `json:"emails"`
-
-}*/
+}
