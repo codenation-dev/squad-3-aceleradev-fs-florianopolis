@@ -201,18 +201,13 @@ func (a *App) uploadCSV(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func unauth(w http.ResponseWriter, r *http.Request) {
-
-}
-
-func internalError(w http.ResponseWriter, r *http.Request) {
-
-}
-
-func responseCodeResult(w http.ResponseWriter, code int, msg string ){
+func responseCodeResult(w http.ResponseWriter, code int, msg string, tk ...string ){
 	var response Result
 	response.Code   = code
 	response.Result = msg
+	if (len(tk)>0) {
+		response.Token = tk[0]
+	}
 	err := json.NewEncoder(w).Encode(response); if err != nil{
 		logs.Errorf("App/Cant write respond", err.Error())	
 	}
