@@ -7,9 +7,16 @@ import (
 	"github.com/gorilla/mux"
 )
 
-//Result the response struct
+const ( 
+	Success = 1
+	Empty 	= 2
+	Error   = 3
+ )
+ 
+
 type Result struct {
 	Result    string   `json:"Result"`
+	Code	  int	   `json:"Code,omitempty"`	
 	Token     string   `json:"Token,omitempty"`
 	Warn      *Warn     `json:"Warn,omitempty"`
 	Warns     *WarnList `json:"WarnList,omitempty"`

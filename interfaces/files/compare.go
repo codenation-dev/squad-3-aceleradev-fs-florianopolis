@@ -73,7 +73,7 @@ func OpenAndProcessFileCSV() error {
 	if numLine > 1 {
 		//Setar todos os TotalLiquido para 0 de todos os clientes que o update=false
 		//Ou seja, todos os funcionarios públicos que deixaram de ser funcionários
-		err = funcpublico.UpdateAllSetTotalLiquido(0)
+		err = funcpublico.UpdateAllSetRemuneracaodoMes(0) //CHANGED from totalliquido to remuneracaodomes
 		if err != nil {
 			logs.Errorf("insertIntoPessoa", err.Error())
 			return err
@@ -114,7 +114,7 @@ func checkPersonInDB(name string) (bool, int) {
 //func to check if its a client
 func isClient(name string) bool {
 	isClient := false
-	file, erro := ioutil.ReadFile("../api/clientlist-alterado.json")
+	file, erro := ioutil.ReadFile("../api/clientlist.json")
 	if erro != nil {
 		logs.Errorf("isClient", erro.Error())
 	}
@@ -158,9 +158,10 @@ func persistPessoa(column []string) error {
 		- Caso não cliente, insere os dados e seta update = true
 		- Caso update = false, set totalliquido = 0
 		- Ao final, setar novamente update = false em todos os clientes da tabela*/
-	if Totalliquido > 20000 {
+	if Remuneracaodomes > 20000 { //CHANGED from totalliquido to remuneracaodomes
 		Pessoa := new(entity.FuncPublico)
 		Pessoa.Nome = column[0]
+		Pessoa.Nome = strings.Replace(Pessoa.Nome, "'", "''", 1) //prevent from single quotes in names (Escape character)
 		Pessoa.Cargo = column[1]
 		Pessoa.Orgao = column[2]
 		Pessoa.Remuneracaodomes = Remuneracaodomes

@@ -68,11 +68,13 @@ func (a *App) tryLogin(c *credentials) bool {
 	if(err != nil){
 		logs.Errorf("App_loginAttempt_Pass", err.Error())
 		C,_ := bcrypt.Cost([]byte(usr.Senha))
+		PP := []byte(c.Password)
 		logs.Info("Login",fmt.Sprintf("%s - %d",usr.Senha,C))
 		D,_ := bcrypt.GenerateFromPassword([]byte(c.Password), 2)
 		E,_ := bcrypt.GenerateFromPassword([]byte(c.Password), 10)
 		logs.Info("Cpr",fmt.Sprintf("%s - %s",usr.Senha,D))
 		logs.Info("Cpr2",fmt.Sprintf("%s - %s",usr.Senha,E))
+		logs.Info("DFT",fmt.Sprintf("%s ",PP))
 		return false
 	}
 	
