@@ -2,7 +2,6 @@ package entity
 
 import (
 	"time"
-	"strings"
 )
 
 //Cliente entity
@@ -51,21 +50,6 @@ type Usuario struct {
 	Usuario string `json:"usuario"`
 	Senha   string `json:"senha"`
 	Email   string `json:"email"`
-}
-
-
-func (user *Usuario) Validar() bool{
-	valid := true
-	if strings.Trim(user.Usuario, " ") == "" && valid{
-		valid = false
-	}
-	if strings.Trim(user.Senha, " ") == "" && valid{
-		valid = false
-	}
-	if strings.Trim(user.Email, " ") == "" && valid{
-		valid = false
-	}
-	return valid
 }
 
 //Historico entity
