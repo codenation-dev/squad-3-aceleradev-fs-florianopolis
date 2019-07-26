@@ -9,6 +9,5 @@ import (
 
 func main() {
 	R := api.Initialize()
-	CreateNotify()
 	logs.Errorf("Router ", fmt.Sprintf("Server dead %s", http.ListenAndServe(":8921", R.Router).Error()))
 }
