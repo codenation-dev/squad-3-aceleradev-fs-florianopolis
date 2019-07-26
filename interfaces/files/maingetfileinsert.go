@@ -29,7 +29,7 @@ func main() {
 func Execute() {
 	if DownloadAndExtractFile() {
 		OpenAndProcessFileCSV()
-		CreateJSONfile()
+		CreateNotify()
 	}
 	logs.Info("Execute", "Finished running Execute")
 }
