@@ -5,8 +5,9 @@ import (
 )
 
 func (a *App) endpoints() {
+
 	a.Router.HandleFunc("/auth", a.login)
-	a.Router.HandleFunc("/warn", a.restricted(notImplemented))
+	a.Router.HandleFunc("/warn", a.restricted(notImplemented))//data em um json opcional vem no body da mensagem, se não preencher pega a última
 	a.Router.HandleFunc("/warn/{id}", a.restricted(notImplemented))
 	a.Router.HandleFunc("/mails", a.restricted(a.mailGeneral))
 	a.Router.HandleFunc("/mails/add", a.mailRegister)

@@ -16,6 +16,7 @@ entity "squad-3-aceleradev-fs-florianopolis/entities"
 "strings"
 "github.com/gorilla/context"
 jwt "github.com/dgrijalva/jwt-go"
+"time"
 )
 
 func notImplemented(w http.ResponseWriter, r *http.Request) {
@@ -168,11 +169,21 @@ func (a *App) mailRegister(w http.ResponseWriter, r *http.Request)  {
 }
 
 func (a *App) warnGeneral(w http.ResponseWriter, r *http.Request)  {
-
+	var DataStruct DataEmailUsuario
+	var Date time.Time
+	dateJSON := json.NewDecoder(r.Body)
+	err := dateJSON.Decode(&DataStruct)
+	if err != nil {
+		responseCodeResult(w, Error, err.Error())
+	}else{
+		if DataStruct.Data == Date {
+			
+		}
+	}
 }
 
 func (a *App) warnDetail(w http.ResponseWriter, r *http.Request)  {
-
+	
 }
 
 func (a *App) uploadCSV(w http.ResponseWriter, r *http.Request) {

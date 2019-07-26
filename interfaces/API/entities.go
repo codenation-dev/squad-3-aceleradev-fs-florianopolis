@@ -89,3 +89,16 @@ type Data struct {
 type ListaClientes struct {
 	Nome string `json:"nome,omitempty"`
 }
+
+//DataEmailUsuario define json struct
+type DataEmailUsuario struct{
+	Data  time.Time   `json:"data"`
+}
+
+/*type Warn struct{
+	ID    int         `json:"id"`
+	Data  time.Time   `json:"data"`
+	Lista entity.FuncPublico `json:"pessoa"`
+	EmailsEnviados entity.EmailEnviado `json:"emails"`
+
+}*/
