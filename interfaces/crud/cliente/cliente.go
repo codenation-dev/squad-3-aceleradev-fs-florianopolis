@@ -36,3 +36,13 @@ func GetByName(name string) (*entity.Cliente, error) {
 	}
 	return &cliente, erro
 }
+
+func Update(cliente *entity.Cliente) error {
+	dbi, erro := db.Init()
+	if erro != nil {
+		logs.Errorf("Update(Cliente)", erro.Error())
+	}
+	defer dbi.Database.Close()
+	_, erro = dbi.Database.Query(`UPDATE CLIENTE SET idfuncpublico = ? WHERE nome = ?`, cliente.IDFuncPublico, cliente.Nome)
+	return erro
+}
