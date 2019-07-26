@@ -5,7 +5,7 @@ dbInfo = {
     'Port': '3306',
     'Database': 'PROJETOUATI',
     'User': 'root',
-    'Password': 'mbdsqd3fln',
+    'Password': '',
 }
 
 def getHistorico():
