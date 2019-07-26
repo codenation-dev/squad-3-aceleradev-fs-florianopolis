@@ -2,6 +2,7 @@ package usuario
 
 import (
 	"errors"
+	"fmt"
 	entity "squad-3-aceleradev-fs-florianopolis/entities"
 	"squad-3-aceleradev-fs-florianopolis/entities/logs"
 	db "squad-3-aceleradev-fs-florianopolis/interfaces/db"
@@ -13,17 +14,21 @@ import (
 func Insert(user *entity.Usuario) error {
 	dbi, erro := db.Init()
 	if erro != nil {
-		logs.Errorf("Insert(User)", erro.Error())
+		logs.Errorf("Insert(Usuario)", erro.Error())
 	}
 	defer dbi.Database.Close()
 	if !checkUsuario(user.Email) {
-		logs.Info("Insert(User)", "Inserting new user in DB...")
-		squery := `INSERT INTO USUARIO (usuario, senha, email) VALUES("` +
-			user.Usuario + `", "` + user.Senha + `","` + user.Email + `");`
+		logs.Info("Insert(Usuario)", "Trying to register new user...")
+		//NULLIF Prevents from creating empty string field in table Usuario
+		squery := `INSERT INTO USUARIO (usuario, senha, email) VALUES(NULLIF("` + user.Usuario + `",""), NULLIF("` +
+			user.Senha + `",""), NULLIF("` + user.Email + `",""));`
 		_, erro = dbi.Database.Query(squery)
+		if erro != nil {
+			logs.Errorf("Insert(Usuario)", erro.Error())
+		}
 		return erro
 	} else {
-		logs.Info("Insert(User)", "Email from User already exists")
+		logs.Info("Insert(Usuario)", "Email from User already exists")
 		return errors.New("Email from User already exists")
 	}
 }
@@ -32,10 +37,13 @@ func Insert(user *entity.Usuario) error {
 func Delete(id int) error {
 	dbi, erro := db.Init()
 	if erro != nil {
-		logs.Errorf("Delete(User)", erro.Error())
+		logs.Errorf("Delete(Usuario)", erro.Error())
 	}
 	defer dbi.Database.Close()
 	_, erro = dbi.Database.Query(`DELETE FROM USUARIO WHERE id = ` + strconv.Itoa(id))
+	if erro != nil {
+		logs.Errorf("Delete(Usuario)", erro.Error())
+	}
 	return erro
 }
 
@@ -43,14 +51,20 @@ func Delete(id int) error {
 func Update(user *entity.Usuario) error {
 	dbi, erro := db.Init()
 	if erro != nil {
-		logs.Errorf("Update(User)", erro.Error())
+		logs.Errorf("Update(Usuario)", erro.Error())
 	}
 	defer dbi.Database.Close()
-	squery :=	`UPDATE USUARIO SET usuario = "` + user.Usuario + 
-				`", senha = "` + user.Senha +
-				`", email = "` + user.Email + 
-				`" WHERE id = ` + strconv.Itoa(user.ID)
+	logs.Info("Update(Usuario)", "Trying to update user...")
+	//NULLIF Prevents from creating empty string field in table Usuario
+	squery := `UPDATE USUARIO SET usuario = NULLIF("` + user.Usuario + `",""), senha = NULLIF("` + user.Senha +
+		`",""), email = NULLIF("` + user.Email + `","") WHERE id = ` + strconv.Itoa(user.ID)
+	fmt.Println(squery)
 	_, erro = dbi.Database.Query(squery)
+	if erro != nil {
+		logs.Errorf("Update(Usuario)", erro.Error())
+	} else {
+		logs.Info("Update(Usuario)", "User updated successfully!")
+	}
 	return erro
 }
 
@@ -58,18 +72,17 @@ func Update(user *entity.Usuario) error {
 func GetUsuarioByID(id int) (*entity.Usuario, error) {
 	dbi, erro := db.Init()
 	if erro != nil {
-		logs.Errorf("getUsuarioByID", erro.Error())
+		logs.Errorf("GetUsuarioByID(Usuario)", erro.Error())
 	}
 	defer dbi.Database.Close()
 	squery := `SELECT * FROM USUARIO WHERE id = ` + strconv.Itoa(id)
 	seleciona, erro := dbi.Database.Query(squery)
 	var user entity.Usuario
-
 	if erro == nil {
 		for seleciona.Next() {
 			erro := seleciona.Scan(&user.ID, &user.Usuario, &user.Senha, &user.Email)
 			if erro != nil {
-				logs.Errorf("GetUsuarioByID", erro.Error())
+				logs.Errorf("GetUsuarioByID(Usuario)", erro.Error())
 			}
 		}
 	}
@@ -80,7 +93,7 @@ func GetUsuarioByID(id int) (*entity.Usuario, error) {
 func checkUsuario(email string) bool {
 	dbi, erro := db.Init()
 	if erro != nil {
-		logs.Errorf("checkUsuario", erro.Error())
+		logs.Errorf("checkUsuario(Usuario)", erro.Error())
 	}
 	defer dbi.Database.Close()
 	squery := `SELECT * FROM USUARIO WHERE email = "` + email + `";`
@@ -90,7 +103,7 @@ func checkUsuario(email string) bool {
 		for seleciona.Next() {
 			erro := seleciona.Scan(&user.ID, &user.Usuario, &user.Senha, &user.Email)
 			if erro != nil {
-				logs.Errorf("checkUsuario", erro.Error())
+				logs.Errorf("checkUsuario(Usuario)", erro.Error())
 			}
 		}
 	}
@@ -103,13 +116,10 @@ func checkUsuario(email string) bool {
 
 //Search user by Mail
 func SearchUsuarioByMail(email string) (bool, *entity.Usuario) {
-
 	dbi, erro := db.Init()
-
 	if erro != nil {
-		logs.Errorf("checkUsuario", erro.Error())
+		logs.Errorf("SearchUsuarioByMail(Usuario)", erro.Error())
 	}
-
 	defer dbi.Database.Close()
 	squery := `SELECT * FROM USUARIO WHERE email = "` + email + `";`
 	seleciona, erro := dbi.Database.Query(squery)
@@ -118,15 +128,13 @@ func SearchUsuarioByMail(email string) (bool, *entity.Usuario) {
 		for seleciona.Next() {
 			erro := seleciona.Scan(&user.ID, &user.Usuario, &user.Senha, &user.Email)
 			if erro != nil {
-				logs.Errorf("checkUsuario", erro.Error())
+				logs.Errorf("SearchUsuarioByMail(Usuario)", erro.Error())
 			}
 		}
 	}
-
 	if email == user.Email {
 		return true, &user
 	}
-
 	return false, nil
 }
 
@@ -134,11 +142,11 @@ func GetAllMails() []mail.Target {
 	dbi, erro := db.Init()
 	defer dbi.Database.Close()
 	if erro != nil {
-		logs.Errorf("getAllMails", erro.Error())
+		logs.Errorf("GetAllMails(Usuario)", erro.Error())
 	}
 	seleciona, erro := dbi.Database.Query(`SELECT usuario, email FROM USUARIO`)
 	if erro != nil {
-		logs.Errorf("getAllMails", erro.Error())
+		logs.Errorf("GetAllMails(Usuario)", erro.Error())
 	}
 	var mailList []mail.Target
 	var onemail mail.Target
@@ -146,7 +154,7 @@ func GetAllMails() []mail.Target {
 		for seleciona.Next() {
 			erro := seleciona.Scan(&onemail.Name, &onemail.Mail)
 			if erro != nil {
-				logs.Errorf("getAllMails", erro.Error())
+				logs.Errorf("GetAllMails(Usuario)", erro.Error())
 			}
 			mailList = append(mailList, onemail)
 		}
