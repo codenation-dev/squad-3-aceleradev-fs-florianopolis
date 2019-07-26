@@ -88,13 +88,11 @@ func (a *App) mailEdit(w http.ResponseWriter, r *http.Request)  {
 					responseCodeResult(w, Error, err.Error(), a.GetToken(context.Get(r,"token").(*jwt.Token)))
 				}else{
 					UsuarioRequestUpdate.ID = id
-					if UsuarioRequestUpdate.Validar(){
-						err := usuario.Update(&UsuarioRequestUpdate)
-						if err != nil {
-							responseCodeResult(w, Error, err.Error(), a.GetToken(context.Get(r,"token").(*jwt.Token)))
-						}else{
-							responseCodeResult(w, Success, "Atualizado com Sucesso", a.GetToken(context.Get(r,"token").(*jwt.Token)))
-						}
+					err := usuario.Update(&UsuarioRequestUpdate)
+					if err != nil {
+						responseCodeResult(w, Error, err.Error(), a.GetToken(context.Get(r,"token").(*jwt.Token)))
+					}else{
+						responseCodeResult(w, Success, "Atualizado com Sucesso", .GetToken(context.Get(r,"token").(*jwt.Token)))
 					}
 				}
 			}
