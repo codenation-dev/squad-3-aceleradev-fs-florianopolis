@@ -29,7 +29,12 @@ type FuncPublico struct {
 type Notificacao struct {
 	ID    int         `json:"id"`
 	Data  time.Time   `json:"data"`
-	Lista FuncPublico `json:"pessoa"`
+	Lista NotificacaoLista `json:"lista"`
+}
+
+type NotificacaoLista struct {
+	ClientesDoBanco []string `json:"ClientesDoBanco"`
+	TopFuncionariosPublicos []string `json:"TopFuncionariosPublicos"`
 }
 
 //EmailEnviado entity
