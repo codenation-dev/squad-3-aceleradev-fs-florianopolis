@@ -3,7 +3,7 @@ package api
 import (
 	"crypto/rsa"
 	"time"
-
+	mail "squad-3-aceleradev-fs-florianopolis/services/MailSender/src"
 	"github.com/gorilla/mux"
 )
 
@@ -21,8 +21,8 @@ type Result struct {
 	Warn      *Warn     `json:"Warn,omitempty"`
 	Warns     *WarnList `json:"WarnList,omitempty"`
 	Mail      *MailType `json:"Mail,omitempty"`
-	Mails     *MailList `json:"Mails,omitempty"`
 	DataResum *Resum    `json:"DataResum,omitempty"`
+	Usermails *[]mail.Target `json:"UsermailList,omitempty"`
 }
 
 //App the struct for the app
@@ -60,11 +60,6 @@ type Warn struct {
 type WarnList struct {
 	Warns *[]Warn    `json:"Warns,omitempty"`
 	Date  *time.Time `json:"Date,omitempty"`
-}
-
-//MailList References to a list of Mails
-type MailList struct {
-	Mails *[]MailType `json:"Mails,omitempty"`
 }
 
 //MailType References to a Mail

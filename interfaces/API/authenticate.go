@@ -34,6 +34,17 @@ func (a *App) initKey() {
 	logs.Info("App_initKey","Sucesso na inilizaçao do par de chaves")
 }
 
+//GetToken Generates a token using the received token
+func (a *App) GetToken(token *jwt.Token) (string) {
+	
+	Claims := token.Claims.(jwt.MapClaims)
+	R,err := a.GenerateJWT(Claims["user"].(string))
+	if err != nil {
+		return "tHERE"
+	}
+	return R
+}
+
 //GenerateJWT Generate Token
 func (a *App) GenerateJWT(Username string) (string,error) {
 	
