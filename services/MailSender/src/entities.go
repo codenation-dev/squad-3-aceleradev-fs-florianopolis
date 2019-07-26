@@ -8,6 +8,7 @@ type Mailrequest struct {
 	TopNames []string `json:"TopNames,omitempty"`
 	Names []string `json:"Names"`
 	Link string `json:"Link"`
+	ID int `json:"ID"`
 }
 
 //PasswordRequest Type for sending password
