@@ -86,3 +86,8 @@ type Data struct {
 type ListaClientes struct {
 	Nome string `json:"nome,omitempty"`
 }
+
+//DataEmailUsuario define json struct
+type DataEmailUsuario struct{
+	Data  time.Time   `json:"data"`
+}
