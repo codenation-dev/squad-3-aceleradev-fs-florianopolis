@@ -20,7 +20,7 @@ func Insert(user *entity.Usuario) error {
 		logs.Info("Insert(User)", "Inserting new user in DB...")
 		squery := `INSERT INTO USUARIO (usuario, senha, email) VALUES("` +
 			user.Usuario + `", "` + user.Senha + `","` + user.Email + `");`
-		erro = dbi.ExecQuery(squery)
+		_, erro = dbi.Database.Query(squery)
 		return erro
 	} else {
 		logs.Info("Insert(User)", "Email from User already exists")
@@ -35,7 +35,7 @@ func Delete(id int) error {
 		logs.Errorf("Delete(User)", erro.Error())
 	}
 	defer dbi.Database.Close()
-	erro = dbi.ExecQuery(`DELETE FROM USUARIO WHERE id = ` + strconv.Itoa(id))
+	_, erro = dbi.Database.Query(`DELETE FROM USUARIO WHERE id = ` + strconv.Itoa(id))
 	return erro
 }
 
@@ -50,7 +50,7 @@ func Update(user *entity.Usuario) error {
 				`", senha = "` + user.Senha +
 				`", email = "` + user.Email + 
 				`" WHERE id = ` + strconv.Itoa(user.ID)
-	erro = dbi.ExecQuery(squery)
+	_, erro = dbi.Database.Query(squery)
 	return erro
 }
 

@@ -20,7 +20,8 @@ func main() {
 	cronJob := cron.New()
 	cronJob.Start()
 	logs.Info("Start App", "Application is Waiting until the time match...")
-	cronJob.AddFunc("0 51 01 25 * ?", Execute) //dia 17 de cada mes as 22:10
+	cronJob.AddFunc("30 00 22 10 * ?", Execute) //dia 10 de cada mes as 22:00:30
+	cronJob.AddFunc("30 00 22 25 * ?", Execute) //dia 25 de cada mes as 22:00:30
 	wg.Wait()
 	Execute()
 }
