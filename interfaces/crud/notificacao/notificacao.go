@@ -6,6 +6,7 @@ import (
 	"squad-3-aceleradev-fs-florianopolis/entities/logs"
 	db "squad-3-aceleradev-fs-florianopolis/interfaces/db"
 	mail "squad-3-aceleradev-fs-florianopolis/services/MailSender/src"
+	utils "squad-3-aceleradev-fs-florianopolis/utils"
 	"strconv"
 	"time"
 )
@@ -89,7 +90,9 @@ func Get(pData time.Time) (*entity.Notificacao, error) {
 		}
 
 		for seleciona.Next() {
-		seleciona.Scan(&note.ID, &note.Data, &note.Lista)
+			var d string
+			seleciona.Scan(&note.ID, &d, &note.Lista)
+			note.Data = utils.ConvertDateTimeSQL(d)
 		}
 	}
 	
