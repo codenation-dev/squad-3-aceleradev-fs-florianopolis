@@ -18,6 +18,7 @@ import (
 	"strconv"
 	"strings"
 	"bytes"
+	//"sync"
 )
 
 //Clients get clients names from csv file
@@ -60,7 +61,7 @@ func getInfoFromCSVFile() (*CSVFile, error) {
 	if err != nil {
 		return nil, err
 	}
-	csvFile.TotalOfLines = numLines
+	csvFile.TotalOfLines = numLines -1
 	return csvFile, nil
 }
 
@@ -69,33 +70,119 @@ func ProcessMultiLinesCSVFile() error {
 	var lines []LineInterval
 	csvFileInfo, err := getInfoFromCSVFile()
 	var linesByGoRotine int64
-	var TotalGoRotine int64
+	TotalGoRotine := 1
 	linesByGoRotine = 100000
-	line.Start = 2
-	TotalGoRotine = 1
+	line.Start = 0
 	if csvFileInfo.TotalOfLines > csvFileInfo.TotalOfLines / linesByGoRotine{
-		line.Start = 2
 		ToProcess := csvFileInfo.TotalOfLines / linesByGoRotine
 		var i int64
 		for i =0; i <= ToProcess; i++ {
-			line.End = line.Start + linesByGoRotine + 1
+			line.End = line.Start + linesByGoRotine - 1
 			if line.End > csvFileInfo.TotalOfLines{
 				line.End = csvFileInfo.TotalOfLines - line.Start
 				line.End = line.End + line.Start
 			}
 			lines = append(lines,line)
-			line.Start = line.Start + linesByGoRotine + 1
+			line.Start = line.Start + linesByGoRotine 
 			TotalGoRotine++ 
 		}
 	}else{
 		line.End = csvFileInfo.TotalOfLines
 		lines = append(lines,line)
 	}
+	
+	/*wg := &sync.WaitGroup{}
+	wg.Add(TotalGoRotine)*/
+	for i:=0; i < len(lines); i++{
+	//	PersistLinesInDb(wg, lines[i].Start, lines[i].End)
+		PersistLinesInDb(lines[i].Start, lines[i].End)
+	}
+	//wg.Wait()
+	err = AfterProcess()
+	return err
+}
+
+//func PersistLinesInDb(wg *sync.WaitGroup, pStart int64, pEnd int64) {
+func PersistLinesInDb(pStart int64, pEnd int64) {
+	CSVLines, err := openCSV()
+	for j:= pStart; j < pEnd; j++{
+			
+		persistPessoa(CSVLines[j])
+		if err != nil {
+			logs.Errorf("PersistLinesInDb", err.Error())
+		}
+	}
+	//wg.Done()
+}
+
+func openCSV() ([][]string, error) {
+	workPath, err := getFileName()
+	var lines [][]string
+	if err != nil {
+		logs.Errorf("openFileCSV", err.Error())
+		return nil, err
+	}
+	fileName := getLastFiles(workPath.Directory, 1, ".txt")
+	fullPath := workPath.Directory + fileName[0]
+	csvfile, err := os.Open(fullPath)
+	if err != nil {
+		logs.Errorf("openFileCSV", err.Error())
+		return nil, err
+	}
+	defer csvfile.Close()
+	logs.Info("openFileCSV", "Opening file: "+fullPath)
+	reader := csv.NewReader(csvfile)
+	reader.Comma = ';'
+	logs.Info("openFileCSV", "Reading file...")
+//	rawdata, err := reader.ReadAll()
+	numLine := 0
+	logs.Info("openFileCSV", "Updating data in DB...")
+	for {
+		numLine++
+		record, err := reader.Read()
+		if err == io.EOF {
+			break
+		}
+		if err != nil {
+			logs.Errorf("openFileCSV", err.Error())
+		}
+		if numLine > 1 {
+			lines = append(lines, record)
+		}
+	}
+	return lines, err
+}
+
+func AfterProcess() error {
+	//Setar todos os TotalLiquido para 0 de todos os clientes que o update=false
+	//Ou seja, todos os funcionarios públicos que deixaram de ser funcionários
+	err := funcpublico.UpdateAllSetRemuneracaodoMes(0) //CHANGED from totalliquido to remuneracaodomes
+	if err != nil {
+		logs.Errorf("insertIntoPessoa", err.Error())
+		return err
+	}
+
+	//seta updated = false em todos os clientes da tabela após o término do processamento*/
+	err = funcpublico.UpdateAllSetFlagUpdated(false)
+	if err != nil {
+		logs.Errorf("insertIntoPessoa", err.Error())
+		return err
+	}
+	hist, err := funcpublico.GetAllFuncPublico()
+	if err != nil {
+		logs.Errorf("GetAllFuncPublico", err.Error())
+		return err
+	}
+	historico.Insert(hist)
+	if err != nil {
+		logs.Errorf("Insert Historico", err.Error())
+		return err
+	}
 	return err
 }
 
 //OpenAndProcessFileCSV open file csv and insert in DB
-func OpenCSVAndInsertCSV() error {
+func OpenCSVAndInsertCSV(intLine int64, endLine int64) error {
 	workPath, err := getFileName()
 	if err != nil {
 		logs.Errorf("openFileCSV", err.Error())
