@@ -5,17 +5,16 @@ import json
 import numpy as np
 import datetime
 
-
-print("Inicio de acesso ao db: ", datetime.datetime.now())
+# Connects to DB
 rows = db.getHistorico()
-print("Banco de dados acessado em: ", datetime.datetime.now())
 
+
+# Reads the json values and categorize them by the respective month.
 months = []
 monthsMedian = {}
 
 for row in rows:
     if row[1].month not in months:
-        print("Data: ", row[1])
         months.append(row[1].month)
         
         jsons = []
@@ -32,27 +31,28 @@ for row in rows:
         medians.append(np.median(totliq))
 
         monthsMedian[row[1].month] = np.median(medians)
-        print(monthsMedian)
-        print(months)
     
+
+# Gets the total median of the entire period.
 allMedian = []
 for month in monthsMedian:
     allMedian.append(monthsMedian[month])
 
 totMedian = np.median(allMedian)
 
+# Calculates the percent diference between each month and the total.
 monthPerc = {}
 
 for month in monthsMedian:
     dif = monthsMedian[month] - totMedian
     
-    perc = 100*abs(dif)/totMedian
+    perc = 100*dif/totMedian
 
     monthPerc[month] = perc
 
+# Saves table to JSON.
 with open("topmonths.json", 'w') as outfile:
     json.dump(monthPerc, outfile)
 
-print("Operação concluída em: ", datetime.datetime.now())
 
 

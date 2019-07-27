@@ -6,8 +6,13 @@ import connectionToDB as db
 import json
 import numpy as np
 
+
+# Connects to DB
 rows = db.getHistorico()
 
+
+# Read the json, groups the entries by the 'orgao' field and calculates the
+# median of 'remuneracaodomes' for the each 'orgao'.
 jsons = []
 for row in rows:
     jsonData = json.loads(row[2])
@@ -28,9 +33,11 @@ for data in jsons:
             median = np.median(orgRem)
             orgMedian[entry['orgao']] = median
 
+# Sorts list from the highest 'remuneracaodomes' to the lowest.
 sortedList = OrderedDict(sorted(orgMedian.items(), key=itemgetter(1),
     reverse=True))  
 
+# Selects the top 6 entries of the sorted list.
 finalList = {}
 while True:
     i = 0
@@ -41,5 +48,6 @@ while True:
         i = i+1
     break
 
+# Saves to JSON.
 with open('toporgs.json', 'w') as outfile:
     json.dump(finalList, outfile)

@@ -6,8 +6,11 @@ import connectionToDB as db
 import json
 import numpy as np
 
+# Connects to DB.
 rows = db.getHistorico()
 
+# Reads the json, groups the entries by the 'cargo' field and calculates the
+# median of the 'remuneracaodomes' field for each 'cargo'.
 jsons = []
 for row in rows:
     jsonData = json.loads(row[2])
@@ -28,9 +31,11 @@ for data in jsons:
             median = np.median(posRem)
             posMedian[entry['cargo']] = median
 
+# Sorts list by from the highest 'remuneracaodomes' to the lowest.
 sortedList = OrderedDict(sorted(posMedian.items(), key=itemgetter(1),
     reverse=True))  
 
+# Gets the top 6 entries from the list.
 finalList = {}
 while True:
     i = 0
@@ -41,5 +46,6 @@ while True:
         i = i+1
     break
 
+# Saves to JSON file.
 with open('toppos.json', 'w') as outfile:
     json.dump(finalList, outfile)
