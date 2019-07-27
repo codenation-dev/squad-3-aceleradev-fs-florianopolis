@@ -1,6 +1,16 @@
 package entity
 
-import "time"
+import (
+	"time"
+	"strings"
+)
+
+//Cliente entity
+type Cliente struct{
+	ID               int     `json:"id"`
+	Nome             string  `json:"nome"`
+	IDFuncPublico    int     `json:"idfuncpublico"`
+}
 
 //FuncPublico entity
 type FuncPublico struct {
@@ -19,7 +29,20 @@ type FuncPublico struct {
 type Notificacao struct {
 	ID    int         `json:"id"`
 	Data  time.Time   `json:"data"`
-	Lista FuncPublico `json:"pessoa"`
+	Lista NotificacaoLista `json:"lista"`
+}
+
+type NotificacaoLista struct {
+	ClientesDoBanco []string `json:"ClientesDoBanco"`
+	TopFuncionariosPublicos []string `json:"TopFuncionariosPublicos"`
+}
+
+//EmailEnviado entity
+type EmailEnviado struct {
+	ID    			int `json:"id"`
+	IDNotificacao	int `json:"idnotificacao"`
+	EmailUsuario    string `json:"emailusuario"`
+	Data  			time.Time `json:"data"`
 }
 
 //Usuario entity
@@ -30,18 +53,24 @@ type Usuario struct {
 	Email   string `json:"email"`
 }
 
-//NotificacaoUsuario entity
-/*type NotificacaoUsuario struct {
-	Usuario     Usuario     `json:"idusuario"`
-	Notificacao Notificacao `json:"idnotificacao"`
-	Data        time.Time   `json:"data"`
-}*/
-//Usuario entity
-/*type Usuario struct {
-	ID          int    `json:"id"`
-	Cpf         uint64 `json:"cpf"`
-	Nome        string `json:"nome"`
-	Senha       string `json:"senha"`
-	Email       string `json:"email"`
-	RecebeEmail bool   `json:"recebeemail"`
-}*/
+
+func (user *Usuario) Validar() bool{
+	valid := true
+	if strings.Trim(user.Usuario, " ") == "" && valid{
+		valid = false
+	}
+	if strings.Trim(user.Senha, " ") == "" && valid{
+		valid = false
+	}
+	if strings.Trim(user.Email, " ") == "" && valid{
+		valid = false
+	}
+	return valid
+}
+
+//Historico entity
+type Historico struct {
+	ID   int  		 `json:"id"`
+	Data time.Time 	 `json:"data"`
+	JSON FuncPublico `json:"pessoa"`
+}

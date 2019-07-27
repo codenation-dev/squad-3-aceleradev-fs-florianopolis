@@ -1,0 +1,50 @@
+div#Registred {
+    margin: 0 auto;
+    text-align: left;
+}
+
+div#Registred table {
+    margin: 0 auto;
+    border: 1px solid;
+    width: 95%;
+}
+
+div#Registred table th {
+    color: 000;
+}
+
+.col-12 {
+    margin-bottom: 15px;
+}
+
+th, td {
+    padding: 10px;
+    text-align: left;
+}
+
+form {
+    margin: 0 auto;
+    font-size: 115%;
+    text-align: center;
+}
+
+form * {
+    display: block;
+    margin: 5px auto;
+}
+
+form input {
+    width: 90%;
+}
+
+form button {
+    width: 40%;
+    margin: 0 auto;
+}
+
+h2 {
+    width: 100%;
+    padding: 15px;
+    background-color: #ffd351;
+    text-align: center;
+}

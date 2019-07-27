@@ -8,6 +8,14 @@ type Mailrequest struct {
 	TopNames []string `json:"TopNames,omitempty"`
 	Names []string `json:"Names"`
 	Link string `json:"Link"`
+	ID int `json:"ID"`
+}
+
+//PasswordRequest Type for sending password
+type PasswordRequest struct {
+	Subject string `json:"Subject"`
+	Target Target `json:"Target"`
+	Message string `json:"Message"`
 }
 
 //Target struct refer email to send
@@ -28,6 +36,7 @@ type SMTPAgent struct {
 	Senders []Sender
 	senderCtrl int
 	Mail Mailrequest
+	Pass PasswordRequest
 }
 
 //Sender struct references to a sender

@@ -37,3 +37,4 @@
 interfaces/files/download/*
 !interfaces/files/download/.gitkeep 
 interfaces/files/logs/*
+frontend/node_modules/*

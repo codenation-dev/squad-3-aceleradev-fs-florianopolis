@@ -2,11 +2,15 @@ package main
 
 import (
 	"encoding/json"
-	"io/ioutil"
 	"squad-3-aceleradev-fs-florianopolis/entities/logs"
 	funcpublico "squad-3-aceleradev-fs-florianopolis/interfaces/crud/funcpublico"
 	notificacao "squad-3-aceleradev-fs-florianopolis/interfaces/crud/notificacao"
+
+	usuario "squad-3-aceleradev-fs-florianopolis/interfaces/crud/usuario"
+
 	mail "squad-3-aceleradev-fs-florianopolis/services/MailSender/src"
+	"net/http"
+	"bytes"
 )
 
 /*O Banco Uati gostaria de monitorar de forma contínua e automatizada caso um de seus clientes
@@ -31,26 +35,31 @@ func getTopIncomes() (nomes []string) {
 	return nomes
 }
 
-func CreateJSONfile() {
+func sendMailRequest(r mail.Mailrequest) {
+	b := new(bytes.Buffer)
+	json.NewEncoder(b).Encode(r)
+	_,es := http.Post("http://127.0.0.1:8225/send", "application/json; charset=utf-8", b)
+	if (es!=nil){
+		logs.Errorf("MailConsumer - SendMailNotify",es.Error())
+	}
+}
+
+func CreateNotify() {
+
 	logs.Info("CreateJSONfile", "Generating JSON file for email service...")
 	var request mail.Mailrequest
-	request.Subject = "Take a look at UATI"
-	request.Targets = []mail.Target{{"Roberta", "robertarl@gmail.com"},
-		{"Luiz", "psychelipe@gmail.com"}, {"Rafael", "rfmf@protonmail.com"}, {"Rodrigo", "pp5ere@gmail.com"}}
-	request.Message = "Esse email é um email de teste!"
+	request.Subject = "Novas oportunidades UATI"
+	request.Targets = usuario.GetAllMails()
+	request.Message = "Aqui temos as oportunidades da semana..."
 	request.TopNames = getTopClientsName()
 	request.Names = getTopIncomes()
 	request.Link = "linkdobotao" //ALTERAR
+	request.ID = notificacao.GetNextID()
 
-	response, erro := json.Marshal(request)
-	if erro != nil {
-		logs.Errorf("createjsonfile", erro.Error())
-	}
-	erro = ioutil.WriteFile("mailrequest.json", response, 0644)
-	if erro != nil {
-		logs.Errorf("createjsonfile", erro.Error())
-	}
-	logs.Info("CreateJSONfile", "Updating notifications in DB...")
+	logs.Info("CreateNotify", "Updating notifications in DB...")
 	notificacao.InsertNotificacao(request)
-	logs.Info("CreateJSONfile", "Notifications up to date in DB!")
+	logs.Info("CreateNotify", "Notifications up to date in DB!")
+
+	sendMailRequest(request)
+
 }

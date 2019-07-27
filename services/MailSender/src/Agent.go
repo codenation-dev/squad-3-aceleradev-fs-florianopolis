@@ -2,7 +2,8 @@ package mail
 
 import ("squad-3-aceleradev-fs-florianopolis/entities/logs"
 "net/smtp"
-"fmt")
+"fmt"
+"squad-3-aceleradev-fs-florianopolis/interfaces/crud/emailenviado")
 
 //SetHost set the host of smtpagent
 func (S *SMTPAgent) SetHost(H SMTPHost) {
@@ -25,8 +26,26 @@ func (S *SMTPAgent) Send() {
 		if (err!=nil){
 			logs.Errorf("Mail - Agent",fmt.Sprintf("Error %s",err.Error()))
 			panic(err)
+		} else {
+			err = emailenviado.Insert(S.Mail.ID,v.Mail)
+			if err != nil {
+				logs.Errorf("EmailInsert",err.Error())
+			}
 		}
 	}
+}
+
+//PasswordSend send a email with password
+func (S *SMTPAgent) PasswordSend() {
+	logs.Info("Mail - Agent","Tryingo to send mail")
+	var auth = S.Senders[S.senderCtrl].Authme()
+	msg := TemplatePass(S.Pass)
+	logs.Info("This is what you are sending",string(msg))
+	err := smtp.SendMail(S.Host.toString(),auth,S.Senders[S.senderCtrl].login,[]string{S.Pass.Target.Mail},msg)
+	if (err!=nil){
+		logs.Errorf("Mail - Agent",fmt.Sprintf("Error %s",err.Error()))
+		panic(err)
+	} 
 }
 
 func (S *SMTPAgent) controlSender() {

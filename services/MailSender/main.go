@@ -12,7 +12,7 @@ func main(){
 	Agent.LoadSenders()
 	logs.Info("Mail - # ","Initializing mail service test")
 	theRouter := mail.Router(&Agent)
-	logs.Errorf("Mail - # ",fmt.Sprintf("Server dead %s",http.ListenAndServe(":8921", theRouter).Error()))
+	logs.Errorf("Mail - # ",fmt.Sprintf("Server dead %s",http.ListenAndServe(":8225", theRouter).Error()))
 }
 
     

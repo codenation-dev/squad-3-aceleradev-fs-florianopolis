@@ -1,55 +1,78 @@
 package funcpublico
 
 import (
+	"fmt"
 	entity "squad-3-aceleradev-fs-florianopolis/entities"
+	"squad-3-aceleradev-fs-florianopolis/entities/logs"
 	db "squad-3-aceleradev-fs-florianopolis/interfaces/db"
 	"strconv"
+	"strings"
 )
 
-//Insert new funcionário público
-//func Insert(person *entity.FuncPublico, dbi *db.MySQLDatabase) error {
+//Insert new Funcionário público
 func Insert(person *entity.FuncPublico) error {
 	dbi, erro := db.Init()
 	defer dbi.Database.Close()
-	squery := "INSERT INTO FUNCPUBLICO (nome, cargo, orgao, remuneracaodomes, " +
-		"redutorsalarial, totalliquido, updated, clientedobanco) VALUES('" +
-		person.Nome + "', '" + person.Cargo + "','" + person.Orgao + "'," + strconv.FormatFloat(person.Remuneracaodomes, 'E', -1, 64) + " ," +
-		strconv.FormatFloat(person.RedutorSalarial, 'E', -1, 64) + "," + strconv.FormatFloat(person.TotalLiquido, 'E', -1, 64) + "," +
-		strconv.FormatBool(person.Updated) + "," + strconv.FormatBool(person.ClientedoBanco) + ");"
-	erro = dbi.ExecQuery(squery)
+	if erro != nil {
+		logs.Errorf("Insert(FuncPublico)", erro.Error())
+	}
+	//NULLIF Prevents from creating empty string field in table FuncPublico
+	squery := `INSERT INTO FUNCPUBLICO (nome, cargo, orgao, remuneracaodomes, ` +
+		`redutorsalarial, totalliquido, updated, clientedobanco) VALUES(NULLIF("` +
+		person.Nome + `",""), NULLIF("` + person.Cargo + `",""), NULLIF("` + person.Orgao + `",""), ` +
+		strconv.FormatFloat(person.Remuneracaodomes, 'E', -1, 64) + `,` +
+		strconv.FormatFloat(person.RedutorSalarial, 'E', -1, 64) + `,` +
+		strconv.FormatFloat(person.TotalLiquido, 'E', -1, 64) + `,` +
+		strconv.FormatBool(person.Updated) + `,` +
+		strconv.FormatBool(person.ClientedoBanco) + `);`
+	result, erro := dbi.Database.Query(squery)
+	defer result.Close()
+	if erro != nil {
+		logs.Errorf("Insert(FuncPublico)", erro.Error())
+	}
 	return erro
 }
 
 //Delete funcionário público by ID
-//func Delete(id int, dbi *db.MySQLDatabase) error {
 func Delete(id int) error {
 	dbi, erro := db.Init()
 	defer dbi.Database.Close()
-	erro = dbi.ExecQuery("DELETE FROM FUNCPUBLICO WHERE id = " + strconv.Itoa(id))
+	result, erro := dbi.Database.Query(`DELETE FROM FUNCPUBLICO WHERE id = ` + strconv.Itoa(id))
+	defer result.Close()
 	return erro
 }
 
 //Update funcionário público
-//func Update(person *entity.FuncPublico, dbi *db.MySQLDatabase) error {
 func Update(person *entity.FuncPublico) error {
 	dbi, erro := db.Init()
 	defer dbi.Database.Close()
-	squery := "UPDATE FUNCPUBLICO SET nome = '" + person.Nome + "', cargo = '" + person.Cargo +
-		"', orgao = '" + person.Orgao + "', remuneracaodomes = " + strconv.FormatFloat(person.Remuneracaodomes, 'E', -1, 64) +
-		", redutorsalarial = " + strconv.FormatFloat(person.RedutorSalarial, 'E', -1, 64) +
-		", totalliquido = " + strconv.FormatFloat(person.TotalLiquido, 'E', -1, 64) + ", updated = " + strconv.FormatBool(person.Updated) +
-		", clientedobanco = " + strconv.FormatBool(person.ClientedoBanco) + " WHERE id = " + strconv.Itoa(person.ID)
-	erro = dbi.ExecQuery(squery)
+	if erro != nil {
+		logs.Errorf("Insert(FuncPublico)", erro.Error())
+	}
+	//NULLIF Prevents from creating empty string field in table FuncPublico
+	squery := `UPDATE FUNCPUBLICO SET nome = NULLIF("` + person.Nome + `",""), cargo = NULLIF("` + person.Cargo +
+		`",""), orgao = NULLIF("` + person.Orgao + `",""), remuneracaodomes = ` + strconv.FormatFloat(person.Remuneracaodomes, 'E', -1, 64) +
+		`, redutorsalarial = ` + strconv.FormatFloat(person.RedutorSalarial, 'E', -1, 64) +
+		`, totalliquido = ` + strconv.FormatFloat(person.TotalLiquido, 'E', -1, 64) +
+		`, updated = ` + strconv.FormatBool(person.Updated) +
+		`, clientedobanco = ` + strconv.FormatBool(person.ClientedoBanco) +
+		` WHERE id = ` + strconv.Itoa(person.ID)
+	result, erro := dbi.Database.Query(squery)
+	defer result.Close()
+	if erro != nil {
+		logs.Errorf("Insert(FuncPublico)", erro.Error())
+	}
 	return erro
 }
 
-//UpdateAllSetTotalLiquido atualiza os valores dos que não são mais funcionários públicos para 0
-func UpdateAllSetTotalLiquido(totalLiquido float64) error {
+//UpdateAllSetRemuneracaodoMes atualiza os valores dos que não são mais funcionários públicos para 0
+func UpdateAllSetRemuneracaodoMes(remuneracaodomes float64) error { //CHANGED from totalliquido to remuneracaodomes
 	dbi, erro := db.Init()
 	defer dbi.Database.Close()
-	squery := "UPDATE FUNCPUBLICO SET totalliquido = " + strconv.FormatFloat(totalLiquido, 'E', -1, 64) +
-		"WHERE updated = " + strconv.FormatBool(false)
-	erro = dbi.ExecQuery(squery)
+	squery := `UPDATE FUNCPUBLICO SET remuneracaodomes = ` + strconv.FormatFloat(remuneracaodomes, 'E', -1, 64) +
+		`WHERE updated = ` + strconv.FormatBool(false) //CHANGED from totalliquido to remuneracaodomes
+	result, erro := dbi.Database.Query(squery)
+	defer result.Close()
 	return erro
 }
 
@@ -57,37 +80,40 @@ func UpdateAllSetTotalLiquido(totalLiquido float64) error {
 func UpdateAllSetFlagUpdated(flag bool) error {
 	dbi, erro := db.Init()
 	defer dbi.Database.Close()
-	squery := "UPDATE FUNCPUBLICO SET updated = " + strconv.FormatBool(flag)
-	erro = dbi.ExecQuery(squery)
+	squery := `UPDATE FUNCPUBLICO SET updated = ` + strconv.FormatBool(flag)
+	result, erro := dbi.Database.Query(squery)
+	defer result.Close()
 	return erro
 }
 
 //Get funcionário público by ID
-//func Get(id int, dbi *db.MySQLDatabase) (*entity.FuncPublico, error) {
+
 func Get(id int) (*entity.FuncPublico, error) {
 	dbi, erro := db.Init()
 	defer dbi.Database.Close()
-	squery := "SELECT * FROM FUNCPUBLICO WHERE id = " + strconv.Itoa(id)
+	squery := `SELECT * FROM FUNCPUBLICO WHERE id = ` + strconv.Itoa(id)
 	seleciona, erro := dbi.Database.Query(squery)
 	var person entity.FuncPublico
-
+	defer seleciona.Close()
 	if erro == nil {
 		for seleciona.Next() {
 			erro := seleciona.Scan(&person.ID, &person.Nome, &person.Cargo, &person.Orgao,
 				&person.Remuneracaodomes, &person.RedutorSalarial, &person.TotalLiquido, &person.Updated, &person.ClientedoBanco)
 			if erro != nil {
-				panic(erro.Error())
+				logs.Errorf("Get(funcpublico)", erro.Error())
 			}
 		}
 	}
 	return &person, erro
 }
 
-//Get funcionário público by name
+//GetByName funcionário público by name
 func GetByName(name string) (*entity.FuncPublico, error) {
 	dbi, erro := db.Init()
 	defer dbi.Database.Close()
-	squery := "SELECT * FROM FUNCPUBLICO WHERE nome = '" + name + "'"
+	name = strings.Replace(name, "'", "''", 1) //prevent from single quotes in names (Escape character)
+	squery := `SELECT * FROM FUNCPUBLICO WHERE nome = "` + strings.Trim(name, " ") + `"`
+	fmt.Println(squery)
 	seleciona, erro := dbi.Database.Query(squery)
 	defer seleciona.Close()
 	var person entity.FuncPublico
@@ -96,18 +122,42 @@ func GetByName(name string) (*entity.FuncPublico, error) {
 			erro := seleciona.Scan(&person.ID, &person.Nome, &person.Cargo, &person.Orgao,
 				&person.Remuneracaodomes, &person.RedutorSalarial, &person.TotalLiquido, &person.Updated, &person.ClientedoBanco)
 			if erro != nil {
-				panic(erro.Error())
+				logs.Errorf("GetByName(funcpublico)", erro.Error())
 			}
 		}
 	}
+	fmt.Println(person)
 	return &person, erro
 }
 
-//Get cliente que é funcionário público
+//GetAllFuncPublico get all funcionário público
+func GetAllFuncPublico() (*[]entity.FuncPublico, error) {
+	dbi, erro := db.Init()
+	defer dbi.Database.Close()
+	squery := `SELECT * FROM FUNCPUBLICO WHERE remuneracaodomes > 0 ORDER BY totalliquido DESC` //CHANGED from totalliquido to remuneracaodomes
+	seleciona, erro := dbi.Database.Query(squery)
+	defer seleciona.Close()
+	var person entity.FuncPublico
+	var persons []entity.FuncPublico
+	if erro == nil {
+		for seleciona.Next() {
+			erro := seleciona.Scan(&person.ID, &person.Nome, &person.Cargo, &person.Orgao,
+				&person.Remuneracaodomes, &person.RedutorSalarial, &person.TotalLiquido, &person.Updated, &person.ClientedoBanco)
+			persons = append(persons, person)
+			if erro != nil {
+				logs.Errorf("GetAllFuncPublico", erro.Error())
+				break
+			}
+		}
+	}
+	return &persons, erro
+}
+
+//GetClienteFuncPublico cliente que é funcionário público
 func GetClienteFuncPublico() (nomes []string, erro error) {
 	dbi, erro := db.Init()
 	defer dbi.Database.Close()
-	squery := "SELECT * FROM FUNCPUBLICO WHERE clientedobanco = TRUE"
+	squery := `SELECT * FROM FUNCPUBLICO WHERE clientedobanco = TRUE LIMIT 10`
 	seleciona, erro := dbi.Database.Query(squery)
 	defer seleciona.Close()
 	var person entity.FuncPublico
@@ -117,7 +167,7 @@ func GetClienteFuncPublico() (nomes []string, erro error) {
 			erro := seleciona.Scan(&person.ID, &person.Nome, &person.Cargo, &person.Orgao,
 				&person.Remuneracaodomes, &person.RedutorSalarial, &person.TotalLiquido, &person.Updated, &person.ClientedoBanco)
 			if erro != nil {
-				panic(erro.Error())
+				logs.Errorf("GetClienteFuncPublico", erro.Error())
 			}
 			names = append(names, person.Nome)
 		}
@@ -129,7 +179,7 @@ func GetClienteFuncPublico() (nomes []string, erro error) {
 func GetTop10Incomes() (nomes []string, erro error) {
 	dbi, erro := db.Init()
 	defer dbi.Database.Close()
-	squery := "SELECT nome FROM FUNCPUBLICO ORDER BY totalliquido DESC LIMIT 10"
+	squery := `SELECT nome FROM FUNCPUBLICO ORDER BY totalliquido DESC LIMIT 10`
 	seleciona, erro := dbi.Database.Query(squery)
 	defer seleciona.Close()
 	var names []string
@@ -138,7 +188,7 @@ func GetTop10Incomes() (nomes []string, erro error) {
 		for seleciona.Next() {
 			erro := seleciona.Scan(&name)
 			if erro != nil {
-				panic(erro.Error())
+				logs.Errorf("GetTop10Incomes", erro.Error())
 			}
 			names = append(names, name)
 		}

@@ -3,7 +3,9 @@ package main
 import (
 	"os"
 	"squad-3-aceleradev-fs-florianopolis/entities/logs"
-	//"squad-3-aceleradev-fs-florianopolis/interfaces/files"
+	"sync"
+
+	"github.com/robfig/cron"
 )
 
 const (
@@ -12,13 +14,30 @@ const (
 )
 
 func main() {
-	DownloadAndExtractFile()
-	openFileCSV()
-	CreateJSONfile()
+	logs.Info("Start App", "The application was Started")
+	wg := &sync.WaitGroup{}
+	wg.Add(1)
+	cronJob := cron.New()
+	cronJob.Start()
+	logs.Info("Start App", "Application is Waiting until the time match...")
+	cronJob.AddFunc("30 00 22 10 * ?", Execute) //dia 10 de cada mes as 22:00:30
+	cronJob.AddFunc("30 00 22 25 * ?", Execute) //dia 25 de cada mes as 22:00:30
+	wg.Wait()
+	Execute()
+}
+
+//Execute when the time is match
+func Execute() {
+	if DownloadAndExtractFile() {
+		OpenAndProcessFileCSV()
+		CreateNotify()
+	}
+	logs.Info("Execute", "Finished running Execute")
 }
 
 //DownloadAndExtractFile from URLService
-func DownloadAndExtractFile() {
+func DownloadAndExtractFile() bool {
+	process := false
 	workPath, erro := getFileName()
 	zipFileName := workPath.FullPath
 	if erro == nil {
@@ -31,6 +50,7 @@ func DownloadAndExtractFile() {
 			switch {
 			case len(filesName) < 2:
 				ExtractFile(zipFileName)
+				process = true
 			case len(filesName) == 2:
 				hashNewFile, erro := getHashFromFile(workPath.Directory + filesName[0])
 				if erro != nil {
@@ -48,6 +68,7 @@ func DownloadAndExtractFile() {
 					logs.Info("DownloadAndExtractFile", "Files are the same. New file was removed.")
 				} else {
 					ExtractFile(zipFileName)
+					process = true
 				}
 			}
 		} else {
@@ -56,4 +77,5 @@ func DownloadAndExtractFile() {
 	} else {
 		logs.Errorf("DownloadAndExtractFile", erro.Error())
 	}
+	return process
 }
