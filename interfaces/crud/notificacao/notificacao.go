@@ -6,10 +6,13 @@ import (
 	"squad-3-aceleradev-fs-florianopolis/entities/logs"
 	db "squad-3-aceleradev-fs-florianopolis/interfaces/db"
 	mail "squad-3-aceleradev-fs-florianopolis/services/MailSender/src"
+
 	utils "squad-3-aceleradev-fs-florianopolis/utils"
+  
 	"strconv"
 	"time"
 )
+
 
 //GetNextID get the next Notificacao id
 func GetNextID() int {
@@ -49,11 +52,13 @@ func InsertNotificacao(request mail.Mailrequest) error {
 	}
 	result, erro := dbi.Database.Query(`INSERT INTO NOTIFICACAO (data, lista) VALUES(?, ?)`, time.Now().Format("2006-01-02 15:04:05"), response)
 	defer result.Close()
+
 	if erro != nil {
 		logs.Errorf("InsertNotificacao", erro.Error())
 	}
 	return erro
 }
+
 
 //Delete Notificacao by ID
 func Delete(id int) error {
@@ -62,10 +67,12 @@ func Delete(id int) error {
 	squery := `DELETE FROM NOTIFICACAO WHERE id = ` + strconv.Itoa(id)
 	result, erro := dbi.Database.Query(squery)
 	defer result.Close()
+
 	return erro
 }
 
 //Get notificacao by ID
+
 func Get(pData time.Time) (*entity.Notificacao, error) {
 	var Data time.Time
 	var note entity.Notificacao
@@ -101,4 +108,5 @@ func Get(pData time.Time) (*entity.Notificacao, error) {
 	}
 
 	return &note, nil
+
 }
