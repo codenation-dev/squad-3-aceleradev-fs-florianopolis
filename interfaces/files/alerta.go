@@ -3,6 +3,7 @@ package main
 import (
 	"squad-3-aceleradev-fs-florianopolis/entities/logs"
 	notificacao "squad-3-aceleradev-fs-florianopolis/interfaces/crud/notificacao"
+
 	usuario "squad-3-aceleradev-fs-florianopolis/interfaces/crud/usuario"
 	utils "squad-3-aceleradev-fs-florianopolis/utils"
 
@@ -15,6 +16,7 @@ ou seja um bom cliente com um salário maior que 20 mil reais.*/
 //Clientes do Banco Uati e que são funcionários públicos
 
 func CreateNotify() {
+
 	logs.Info("CreateJSONfile", "Generating JSON file for email service...")
 	request := utils.RequestCreator(usuario.GetAllMails(),notificacao.GetNextID())
 

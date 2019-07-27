@@ -69,4 +69,3 @@ func (h *SMTPHost) createSender(login string,pass string) Sender {
 func (s *Sender) Authme() smtp.Auth {
 	return smtp.PlainAuth("", s.login,s.pass, s.server.Host)
 }
-

@@ -65,10 +65,12 @@ func OpenAndProcessFileCSV() error {
 
 	logs.Info("openFileCSV", "Data stored in DB")
 
+
 	if err != nil {
 		logs.Errorf("openFileCSV", err.Error())
 		return err
 	}
+
 	logs.Info("openFileCSV", "UpdateAllSetTotalLiquido")
 	if numLine > 1 {
 		//Setar todos os TotalLiquido para 0 de todos os clientes que o update=false
@@ -97,6 +99,7 @@ func OpenAndProcessFileCSV() error {
 		}
 	}
 
+
 	return err
 }
 
@@ -104,7 +107,10 @@ func OpenAndProcessFileCSV() error {
 func checkPersonInDB(name string) (bool, int) {
 	Pessoa := new(entity.FuncPublico)
 	alreadyInDB := false
-	Pessoa, _ = funcpublico.GetByName(name)
+	Pessoa, erro := funcpublico.GetByName(name)
+	if erro != nil {
+		logs.Errorf("CheckpersonInDB", erro.Error())
+	}
 	if Pessoa.Nome == strings.Trim(name, " ") {
 		alreadyInDB = true
 	}
@@ -114,7 +120,7 @@ func checkPersonInDB(name string) (bool, int) {
 //func to check if its a client
 func isClient(name string) bool {
 	isClient := false
-	file, erro := ioutil.ReadFile("../api/clientlist.json")
+	file, erro := ioutil.ReadFile("../API/Clientlist.json")
 	if erro != nil {
 		logs.Errorf("isClient", erro.Error())
 	}
