@@ -5,6 +5,7 @@ import (
 	entity "squad-3-aceleradev-fs-florianopolis/entities"
 	"squad-3-aceleradev-fs-florianopolis/entities/logs"
 	db "squad-3-aceleradev-fs-florianopolis/interfaces/db"
+	utils "squad-3-aceleradev-fs-florianopolis/utils"
 	"time"
 )
 
@@ -30,12 +31,14 @@ func GetAll(id int) ([]entity.EmailEnviado) {
 		logs.Errorf("get(EMAILENVIADO)",erro.Error())
 	}
 	defer dbi.Database.Close()
-	seleciona, erro := dbi.Database.Query(`SELECT ID,EmailUsuario,Data FROM EMAILENVIADO WHERE idnotificacao = ` + strconv.Itoa(id))
+	seleciona, erro := dbi.Database.Query(`SELECT ID, EmailUsuario, Data FROM EMAILENVIADO WHERE idnotificacao = ` + strconv.Itoa(id))
 	var note entity.EmailEnviado
 	var List []entity.EmailEnviado
 	if erro == nil {
 		for seleciona.Next() {
-			erro := seleciona.Scan(&note.ID, &note.EmailUsuario, &note.Data)
+			var d string
+			erro := seleciona.Scan(&note.ID, &note.EmailUsuario, &d)
+			note.Data = utils.ConvertDateTimeSQL(d)
 			if erro != nil {
 				logs.Errorf("Get(notificação)", erro.Error())
 			}
