@@ -8,6 +8,7 @@ import (
 	"io"
 	"io/ioutil"
 	"os"
+	"os/exec"
 	"path/filepath"
 	"sort"
 	entity "squad-3-aceleradev-fs-florianopolis/entities"
@@ -16,15 +17,85 @@ import (
 	"squad-3-aceleradev-fs-florianopolis/interfaces/crud/historico"
 	"strconv"
 	"strings"
+	"bytes"
 )
 
 //Clients get clients names from csv file
 type Clients struct {
 	Nome string `json:"nome"`
 }
+type CSVFile struct{
+	Name string
+	FullPath string
+	TotalOfLines int64
+}
+
+type LineInterval struct{
+	Start int64
+	End int64
+}
+
+func getInfoFromCSVFile() (*CSVFile, error) {
+	workPath, err := getFileName() 
+	csvFile := new(CSVFile)
+	if err != nil {
+		logs.Errorf("openFileCSV", err.Error())
+		return csvFile, err
+	}
+	fileName := getLastFiles(workPath.Directory, 1, ".txt")
+	fullPath := workPath.Directory + fileName[0]
+	csvFile.FullPath = fullPath
+	csvFile.Name = fileName[0]
+	cmd := exec.Command("bash", "-c", "cat " + fullPath + " | wc -l")
+	var out bytes.Buffer
+	cmd.Stdout = &out
+	err = cmd.Run()
+	if err != nil {
+		return csvFile, err
+	}
+	
+	numberStr := strings.Trim(out.String(), "\"")
+	numberStr = strings.ReplaceAll(numberStr, "\n", "")
+	numLines, err := strconv.ParseInt(numberStr, 10, 64)
+	if err != nil {
+		return nil, err
+	}
+	csvFile.TotalOfLines = numLines
+	return csvFile, nil
+}
+
+func ProcessMultiLinesCSVFile() error {
+	var line LineInterval
+	var lines []LineInterval
+	csvFileInfo, err := getInfoFromCSVFile()
+	var linesByGoRotine int64
+	var TotalGoRotine int64
+	linesByGoRotine = 100000
+	line.Start = 2
+	TotalGoRotine = 1
+	if csvFileInfo.TotalOfLines > csvFileInfo.TotalOfLines / linesByGoRotine{
+		line.Start = 2
+		ToProcess := csvFileInfo.TotalOfLines / linesByGoRotine
+		var i int64
+		for i =0; i <= ToProcess; i++ {
+			line.End = line.Start + linesByGoRotine + 1
+			if line.End > csvFileInfo.TotalOfLines{
+				line.End = csvFileInfo.TotalOfLines - line.Start
+				line.End = line.End + line.Start
+			}
+			lines = append(lines,line)
+			line.Start = line.Start + linesByGoRotine + 1
+			TotalGoRotine++ 
+		}
+	}else{
+		line.End = csvFileInfo.TotalOfLines
+		lines = append(lines,line)
+	}
+	return err
+}
 
 //OpenAndProcessFileCSV open file csv and insert in DB
-func OpenAndProcessFileCSV() error {
+func OpenCSVAndInsertCSV() error {
 	workPath, err := getFileName()
 	if err != nil {
 		logs.Errorf("openFileCSV", err.Error())
