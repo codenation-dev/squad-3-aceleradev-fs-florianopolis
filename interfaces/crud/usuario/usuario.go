@@ -2,7 +2,6 @@ package usuario
 
 import (
 	"errors"
-	"fmt"
 	entity "squad-3-aceleradev-fs-florianopolis/entities"
 	"squad-3-aceleradev-fs-florianopolis/entities/logs"
 	db "squad-3-aceleradev-fs-florianopolis/interfaces/db"
@@ -10,7 +9,7 @@ import (
 	"strconv"
 )
 
-//Insert new Usuario
+//Insert New Usuario
 func Insert(user *entity.Usuario) error {
 	dbi, erro := db.Init()
 	if erro != nil {
@@ -18,11 +17,12 @@ func Insert(user *entity.Usuario) error {
 	}
 	defer dbi.Database.Close()
 	if !checkUsuario(user.Email) {
-		logs.Info("Insert(Usuario)", "Trying to register new user...")
-		//NULLIF Prevents from creating empty string field in table Usuario
+		logs.Info("Insert(Usuario)", "Trying to register new ur...")
+		//NULLIF Prevents from creating empty string field in table Usuariose
 		squery := `INSERT INTO USUARIO (usuario, senha, email) VALUES(NULLIF("` + user.Usuario + `",""), NULLIF("` +
 			user.Senha + `",""), NULLIF("` + user.Email + `",""));`
-		_, erro = dbi.Database.Query(squery)
+		result, erro := dbi.Database.Query(squery)
+		defer result.Close()
 		if erro != nil {
 			logs.Errorf("Insert(Usuario)", erro.Error())
 		}
@@ -40,7 +40,8 @@ func Delete(id int) error {
 		logs.Errorf("Delete(Usuario)", erro.Error())
 	}
 	defer dbi.Database.Close()
-	_, erro = dbi.Database.Query(`DELETE FROM USUARIO WHERE id = ` + strconv.Itoa(id))
+	result, erro := dbi.Database.Query(`DELETE FROM USUARIO WHERE id = ` + strconv.Itoa(id))
+	defer result.Close()
 	if erro != nil {
 		logs.Errorf("Delete(Usuario)", erro.Error())
 	}
@@ -58,8 +59,8 @@ func Update(user *entity.Usuario) error {
 	//NULLIF Prevents from creating empty string field in table Usuario
 	squery := `UPDATE USUARIO SET usuario = NULLIF("` + user.Usuario + `",""), senha = NULLIF("` + user.Senha +
 		`",""), email = NULLIF("` + user.Email + `","") WHERE id = ` + strconv.Itoa(user.ID)
-	fmt.Println(squery)
-	_, erro = dbi.Database.Query(squery)
+	result, erro := dbi.Database.Query(squery)
+	defer result.Close()
 	if erro != nil {
 		logs.Errorf("Update(Usuario)", erro.Error())
 	} else {
@@ -77,6 +78,7 @@ func GetUsuarioByID(id int) (*entity.Usuario, error) {
 	defer dbi.Database.Close()
 	squery := `SELECT * FROM USUARIO WHERE id = ` + strconv.Itoa(id)
 	seleciona, erro := dbi.Database.Query(squery)
+	defer seleciona.Close()
 	var user entity.Usuario
 	if erro == nil {
 		for seleciona.Next() {
@@ -98,6 +100,7 @@ func checkUsuario(email string) bool {
 	defer dbi.Database.Close()
 	squery := `SELECT * FROM USUARIO WHERE email = "` + email + `";`
 	seleciona, erro := dbi.Database.Query(squery)
+	defer seleciona.Close()
 	var user entity.Usuario
 	if erro == nil {
 		for seleciona.Next() {
@@ -123,6 +126,7 @@ func SearchUsuarioByMail(email string) (bool, *entity.Usuario) {
 	defer dbi.Database.Close()
 	squery := `SELECT * FROM USUARIO WHERE email = "` + email + `";`
 	seleciona, erro := dbi.Database.Query(squery)
+	defer seleciona.Close()
 	var user entity.Usuario
 	if erro == nil {
 		for seleciona.Next() {
@@ -145,6 +149,7 @@ func GetAllMails() []mail.Target {
 		logs.Errorf("GetAllMails(Usuario)", erro.Error())
 	}
 	seleciona, erro := dbi.Database.Query(`SELECT usuario, email FROM USUARIO`)
+	defer seleciona.Close()
 	if erro != nil {
 		logs.Errorf("GetAllMails(Usuario)", erro.Error())
 	}
