@@ -5,7 +5,9 @@ import (
 	"squad-3-aceleradev-fs-florianopolis/entities/logs"
 	funcpublico "squad-3-aceleradev-fs-florianopolis/interfaces/crud/funcpublico"
 	notificacao "squad-3-aceleradev-fs-florianopolis/interfaces/crud/notificacao"
+
 	usuario "squad-3-aceleradev-fs-florianopolis/interfaces/crud/usuario"
+
 	mail "squad-3-aceleradev-fs-florianopolis/services/MailSender/src"
 	"net/http"
 	"bytes"
@@ -43,6 +45,7 @@ func sendMailRequest(r mail.Mailrequest) {
 }
 
 func CreateNotify() {
+
 	logs.Info("CreateJSONfile", "Generating JSON file for email service...")
 	var request mail.Mailrequest
 	request.Subject = "Novas oportunidades UATI"
