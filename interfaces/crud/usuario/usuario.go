@@ -5,7 +5,6 @@ import (
 	entity "squad-3-aceleradev-fs-florianopolis/entities"
 	"squad-3-aceleradev-fs-florianopolis/entities/logs"
 	db "squad-3-aceleradev-fs-florianopolis/interfaces/db"
-	mail "squad-3-aceleradev-fs-florianopolis/services/MailSender/src"
 	"strconv"
 )
 
@@ -142,22 +141,21 @@ func SearchUsuarioByMail(email string) (bool, *entity.Usuario) {
 	return false, nil
 }
 
-func GetAllMails() []mail.Target {
+func GetAllMails() []entity.Target {
 	dbi, erro := db.Init()
 	defer dbi.Database.Close()
 	if erro != nil {
 		logs.Errorf("GetAllMails(Usuario)", erro.Error())
 	}
-	seleciona, erro := dbi.Database.Query(`SELECT usuario, email FROM USUARIO`)
-	defer seleciona.Close()
+	seleciona, erro := dbi.Database.Query(`SELECT usuario, email, id FROM USUARIO`)
 	if erro != nil {
 		logs.Errorf("GetAllMails(Usuario)", erro.Error())
 	}
-	var mailList []mail.Target
-	var onemail mail.Target
+	var mailList []entity.Target
+	var onemail entity.Target
 	if erro == nil {
 		for seleciona.Next() {
-			erro := seleciona.Scan(&onemail.Name, &onemail.Mail)
+			erro := seleciona.Scan(&onemail.Name, &onemail.Mail,&onemail.ID)
 			if erro != nil {
 				logs.Errorf("GetAllMails(Usuario)", erro.Error())
 			}

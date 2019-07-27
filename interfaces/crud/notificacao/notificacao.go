@@ -13,9 +13,8 @@ import (
 	"time"
 )
 
-
-//GetNextID get the next Notificacao id
-func GetNextID() int {
+//GetLastID get the Latest
+func GetLastID() int {
 	dbi, err := db.Init()
 	defer dbi.Database.Close()
 	if err != nil {
@@ -36,7 +35,12 @@ func GetNextID() int {
 		}
 		seleciona.Scan(&Response.ID)
 	}
-	return (Response.ID + 1)
+	return (Response.ID)
+}
+
+//GetNextID get the next notificacao id
+func GetNextID() int {
+	return (GetLastID()+1)
 }
 
 //InsertNotificacao insere uma notificaçao

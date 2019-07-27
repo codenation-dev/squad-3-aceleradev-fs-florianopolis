@@ -8,6 +8,7 @@ import (
 	"time"
 	"golang.org/x/crypto/bcrypt"
 	"squad-3-aceleradev-fs-florianopolis/interfaces/crud/usuario"
+	"squad-3-aceleradev-fs-florianopolis/entities"
 	"fmt"
 )
 
@@ -91,7 +92,7 @@ func (a *App) tokenVerify(T tokenSt) (*jwt.Token,error) {
 	return jwt.Parse(T.Token,func(token *jwt.Token) (interface{},error){return a.verifyKey,nil})
 }
 
-func validateMailType(m MailType) bool {
+func validateMailType(m entity.Target) bool {
 	validateEmail := regexp.MustCompile(`^[-a-z0-9~!$%^&*_=+}{\'?]+(\.[-a-z0-9~!$%^&*_=+}{\'?]+)*@([a-z0-9_][-a-z0-9_]*(\.[-a-z0-9_]+)*\.(aero|arpa|biz|com|coop|edu|gov|info|int|mil|museum|name|net|org|pro|travel|mobi|[a-z][a-z])|([0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}))(:[0-9]{1,5})?$`)
 	return validateEmail.MatchString(m.Mail)
 }

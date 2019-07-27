@@ -2,17 +2,20 @@ package api
 
 import ("net/http"
 "encoding/json"
-"github.com/gorilla/context")
+"github.com/gorilla/context"
+"io/ioutil"
+"bytes")
 
 func (a *App) restricted(next http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request){
-		decode := json.NewDecoder(r.Body)
+		data,_ := ioutil.ReadAll(r.Body)
+		defer r.Body.Close()
 		var TempT tokenSt
-		_ = decode.Decode(&TempT)  
+		_ = json.Unmarshal(data,&TempT)  
 		token,err :=  a.tokenVerify(TempT)
-		
 		if (err == nil) {
 			if (token.Valid) {
+				r.Body  = ioutil.NopCloser(bytes.NewBuffer(data))
 				context.Set(r,"token",token)
 				next(w,r)
 			} else {
