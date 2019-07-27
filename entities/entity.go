@@ -39,7 +39,7 @@ type NotificacaoLista struct {
 //EmailEnviado entity
 type EmailEnviado struct {
 	ID    			int `json:"id"`
-	IDNotificacao	int `json:"idnotificacao"`
+	//IDNotificacao	*int `json:"idnotificacao, omitempty"`
 	EmailUsuario    string `json:"emailusuario"`
 	Data  			time.Time `json:"data"`
 }
