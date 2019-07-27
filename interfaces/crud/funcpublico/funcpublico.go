@@ -9,7 +9,7 @@ import (
 	"strings"
 )
 
-//Insert new funcionário público
+//Insert new Funcionário público
 func Insert(person *entity.FuncPublico) error {
 	dbi, erro := db.Init()
 	defer dbi.Database.Close()

@@ -7,7 +7,7 @@ import (
 	"time"
 )
 
-//Insert historico da tabela funcpublico
+//Insert historico da tabela Funcpublico
 func Insert(hist *[]entity.FuncPublico) error {
 	dbi, err := db.Init()
 	if err != nil {

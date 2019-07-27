@@ -9,7 +9,7 @@ import (
 	"strconv"
 )
 
-//Insert new Usuario
+//Insert New Usuario
 func Insert(user *entity.Usuario) error {
 	dbi, erro := db.Init()
 	if erro != nil {

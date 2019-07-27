@@ -6,11 +6,12 @@ import (
 	"squad-3-aceleradev-fs-florianopolis/entities/logs"
 	db "squad-3-aceleradev-fs-florianopolis/interfaces/db"
 	mail "squad-3-aceleradev-fs-florianopolis/services/MailSender/src"
+	utils "squad-3-aceleradev-fs-florianopolis/utils"
 	"strconv"
 	"time"
 )
 
-//GetNextID get the next notificacao id
+//GetNextID get the next Notificacao id
 func GetNextID() int {
 	dbi, err := db.Init()
 	defer dbi.Database.Close()
@@ -93,7 +94,13 @@ func Get(pData time.Time) (*entity.Notificacao, error) {
 		}
 
 		for seleciona.Next() {
+<<<<<<< HEAD
 			seleciona.Scan(&note.ID, &note.Data, &note.Lista)
+=======
+			var d string
+			seleciona.Scan(&note.ID, &d, &note.Lista)
+			note.Data = utils.ConvertDateTimeSQL(d)
+>>>>>>> 0f608b6106c29ec736f4633237e44712da958859
 		}
 	}
 
