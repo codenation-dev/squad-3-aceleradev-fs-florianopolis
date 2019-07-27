@@ -65,12 +65,10 @@ func OpenAndProcessFileCSV() error {
 
 	logs.Info("openFileCSV", "Data stored in DB")
 
-
 	if err != nil {
 		logs.Errorf("openFileCSV", err.Error())
 		return err
 	}
-
 	logs.Info("openFileCSV", "UpdateAllSetTotalLiquido")
 	if numLine > 1 {
 		//Setar todos os TotalLiquido para 0 de todos os clientes que o update=false
@@ -98,7 +96,6 @@ func OpenAndProcessFileCSV() error {
 			return err
 		}
 	}
-
 
 	return err
 }

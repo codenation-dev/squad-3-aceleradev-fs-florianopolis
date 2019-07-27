@@ -31,6 +31,4 @@ func Init() (*MySQLDatabase, error) {
 	}
 	MyDB := &MySQLDatabase{Database: dbConnection}
 	return MyDB, nil
-
 }
-
