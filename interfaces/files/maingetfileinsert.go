@@ -1,11 +1,16 @@
 package main
 
 import (
+	"github.com/robfig/cron"
 	"os"
 	"squad-3-aceleradev-fs-florianopolis/entities/logs"
+	ds "squad-3-aceleradev-fs-florianopolis/use_cases"
 	"sync"
+<<<<<<< HEAD
+=======
 
 	"github.com/robfig/cron"
+>>>>>>> fe97f2a8258918a183bdac32a9cb5d62a565d0f3
 )
 
 const (
@@ -14,7 +19,7 @@ const (
 )
 
 func main() {
-	if true {
+	if !true {
 		logs.Info("Start App", "The application was Started")
 		wg := &sync.WaitGroup{}
 		wg.Add(1)
@@ -33,8 +38,18 @@ func main() {
 //Execute when the time is match
 func Execute() {
 	if DownloadAndExtractFile() {
+<<<<<<< HEAD
+		OpenAndProcessFileCSV()
+		var wg sync.WaitGroup
+		wg.Add(3)
+		go ds.CreateBestMonthsTable(&wg)
+		go ds.CreateBestOrgsTable(&wg)
+		go ds.CreateBestPosTable(&wg)
+		wg.Wait()
+=======
 		//OpenCSVAndInsertCSV()
 		ProcessMultiLinesCSVFile()
+>>>>>>> fe97f2a8258918a183bdac32a9cb5d62a565d0f3
 		CreateNotify()
 	}
 	logs.Info("Execute", "Finished running Execute")
