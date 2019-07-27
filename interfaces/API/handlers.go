@@ -1,23 +1,25 @@
 package api
 
-import("squad-3-aceleradev-fs-florianopolis/entities/logs"
-entity "squad-3-aceleradev-fs-florianopolis/entities"
-"squad-3-aceleradev-fs-florianopolis/interfaces/crud/usuario"
-"squad-3-aceleradev-fs-florianopolis/interfaces/crud/notificacao"
-"squad-3-aceleradev-fs-florianopolis/interfaces/crud/emailenviado"
-"encoding/json"
-"net/http"
-"fmt"
-"encoding/csv"
-"io"
-"io/ioutil"
-"bytes"
-"golang.org/x/crypto/bcrypt"
-"github.com/gorilla/mux"
-"strconv"
-"strings"
-"github.com/gorilla/context"
-jwt "github.com/dgrijalva/jwt-go"
+import(
+	"squad-3-aceleradev-fs-florianopolis/entities/logs"
+	entity "squad-3-aceleradev-fs-florianopolis/entities"
+	"squad-3-aceleradev-fs-florianopolis/interfaces/crud/usuario"
+	"squad-3-aceleradev-fs-florianopolis/interfaces/crud/notificacao"
+	"squad-3-aceleradev-fs-florianopolis/interfaces/crud/emailenviado"
+	utils "squad-3-aceleradev-fs-florianopolis/utils"
+	"encoding/json"
+	"net/http"
+	"fmt"
+	"encoding/csv"
+	"io"
+	"io/ioutil"
+	"bytes"
+	"golang.org/x/crypto/bcrypt"
+	"github.com/gorilla/mux"
+	"strconv"
+	"strings"
+	"github.com/gorilla/context"
+	jwt "github.com/dgrijalva/jwt-go"
 )
 
 func notImplemented(w http.ResponseWriter, r *http.Request) {
@@ -92,7 +94,7 @@ func (a *App) mailEdit(w http.ResponseWriter, r *http.Request)  {
 					if err != nil {
 						responseCodeResult(w, Error, err.Error(), a.GetToken(context.Get(r,"token").(*jwt.Token)))
 					}else{
-						responseCodeResult(w, Success, "Atualizado com Sucesso", .GetToken(context.Get(r,"token").(*jwt.Token)))
+						responseCodeResult(w, Success, "Atualizado com Sucesso", a.GetToken(context.Get(r,"token").(*jwt.Token)))
 					}
 				}
 			}
@@ -136,7 +138,7 @@ func (a *App) mailRegister(w http.ResponseWriter, r *http.Request)  {
 	_ = decode.Decode(&Info)
 	
 	if (validateMailType(Info)){
-		pass := generatePassword()
+		pass := utils.GeneratePassword()
 		crypted,_ := bcrypt.GenerateFromPassword([]byte(pass), 10)
 		User := entity.Usuario{
 			ID: 0,
