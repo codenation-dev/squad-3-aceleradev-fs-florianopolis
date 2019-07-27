@@ -1,3 +1,5 @@
+#!/bin/python3
+
 from collections import OrderedDict
 from operator import itemgetter
 import connectionToDB as db

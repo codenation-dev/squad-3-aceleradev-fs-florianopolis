@@ -1,3 +1,5 @@
+#!/bin/python3
+
 import connectionToDB as db
 import json
 import numpy as np
