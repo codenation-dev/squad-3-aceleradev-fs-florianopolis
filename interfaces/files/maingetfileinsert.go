@@ -17,14 +17,13 @@ func main() {
 	if true {
 		logs.Info("Start App", "The application was Started")
 		wg := &sync.WaitGroup{}
-		wg.Add(1)
+		wg.Add(2)
 		cronJob := cron.New()
 		cronJob.Start()
 		logs.Info("Start App", "Application is Waiting until the time match...")
 		cronJob.AddFunc("30 00 22 10 * ?", Execute) //dia 10 de cada mes as 22:00:30
 		cronJob.AddFunc("30 00 22 25 * ?", Execute) //dia 25 de cada mes as 22:00:30
 		wg.Wait()
-		Execute()
 	} else {
 		Execute()
 	}
