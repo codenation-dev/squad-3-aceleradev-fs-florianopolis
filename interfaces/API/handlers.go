@@ -92,7 +92,13 @@ func (a *App) mailEdit(w http.ResponseWriter, r *http.Request) {
 					responseCodeResult(w, Error, err.Error(), a.GetToken(context.Get(r, "token").(*jwt.Token)))
 				} else {
 					UsuarioRequestUpdate.ID = id
-					err := usuario.Update(&UsuarioRequestUpdate)
+					Temp := UsuarioRequestUpdate.Senha
+					pass, err := bcrypt.GenerateFromPassword([]byte(Temp), 10)
+					if err != nil {
+						responseCodeResult(w, Error, err.Error(), a.GetToken(context.Get(r, "token").(*jwt.Token)))
+					}
+					UsuarioRequestUpdate.Senha  = string(pass)
+					err = usuario.Update(&UsuarioRequestUpdate)
 					if err != nil {
 						responseCodeResult(w, Error, err.Error(), a.GetToken(context.Get(r, "token").(*jwt.Token)))
 					} else {
