@@ -94,13 +94,9 @@ func Get(pData time.Time) (*entity.Notificacao, error) {
 		}
 
 		for seleciona.Next() {
-<<<<<<< HEAD
-			seleciona.Scan(&note.ID, &note.Data, &note.Lista)
-=======
 			var d string
 			seleciona.Scan(&note.ID, &d, &note.Lista)
 			note.Data = utils.ConvertDateTimeSQL(d)
->>>>>>> 0f608b6106c29ec736f4633237e44712da958859
 		}
 	}
 
