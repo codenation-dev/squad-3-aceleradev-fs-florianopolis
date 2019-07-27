@@ -87,3 +87,7 @@ func (a *App) tryLogin(c *credentials) bool {
 func (a *App) tokenVerify(T tokenSt) (*jwt.Token,error) {
 	return jwt.Parse(T.Token,func(token *jwt.Token) (interface{},error){return a.verifyKey,nil})
 }
+
+func validateMailType(m MailType) bool {
+	return true
+}
