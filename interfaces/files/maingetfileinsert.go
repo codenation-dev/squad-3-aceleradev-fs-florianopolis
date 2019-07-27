@@ -4,6 +4,7 @@ import (
 	"os"
 	"squad-3-aceleradev-fs-florianopolis/entities/logs"
 	"sync"
+
 	"github.com/robfig/cron"
 )
 
@@ -24,7 +25,7 @@ func main() {
 		cronJob.AddFunc("30 00 22 25 * ?", Execute) //dia 25 de cada mes as 22:00:30
 		wg.Wait()
 		Execute()
-	}else{
+	} else {
 		Execute()
 	}
 }
@@ -32,7 +33,8 @@ func main() {
 //Execute when the time is match
 func Execute() {
 	if DownloadAndExtractFile() {
-		OpenAndProcessFileCSV()
+		//OpenCSVAndInsertCSV()
+		ProcessMultiLinesCSVFile()
 		CreateNotify()
 	}
 	logs.Info("Execute", "Finished running Execute")
