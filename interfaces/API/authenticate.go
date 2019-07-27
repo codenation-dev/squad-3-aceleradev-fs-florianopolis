@@ -1,12 +1,15 @@
 package api
 
-import (jwt "github.com/dgrijalva/jwt-go"
-"io/ioutil"
-"squad-3-aceleradev-fs-florianopolis/entities/logs"
-"time"
-"golang.org/x/crypto/bcrypt"
-"squad-3-aceleradev-fs-florianopolis/interfaces/crud/usuario"
-"fmt")
+import (
+	jwt "github.com/dgrijalva/jwt-go"
+	"regexp"
+	"io/ioutil"
+	"squad-3-aceleradev-fs-florianopolis/entities/logs"
+	"time"
+	"golang.org/x/crypto/bcrypt"
+	"squad-3-aceleradev-fs-florianopolis/interfaces/crud/usuario"
+	"fmt"
+)
 
 const (
 	pubPath="keys/app.rsa.pub"
@@ -89,5 +92,6 @@ func (a *App) tokenVerify(T tokenSt) (*jwt.Token,error) {
 }
 
 func validateMailType(m MailType) bool {
-	return true
+	validateEmail := regexp.MustCompile(`^[-a-z0-9~!$%^&*_=+}{\'?]+(\.[-a-z0-9~!$%^&*_=+}{\'?]+)*@([a-z0-9_][-a-z0-9_]*(\.[-a-z0-9_]+)*\.(aero|arpa|biz|com|coop|edu|gov|info|int|mil|museum|name|net|org|pro|travel|mobi|[a-z][a-z])|([0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}))(:[0-9]{1,5})?$`)
+	return validateEmail.MatchString(m.Mail)
 }
