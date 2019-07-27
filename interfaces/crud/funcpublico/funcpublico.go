@@ -1,7 +1,6 @@
 package funcpublico
 
 import (
-	"fmt"
 	entity "squad-3-aceleradev-fs-florianopolis/entities"
 	"squad-3-aceleradev-fs-florianopolis/entities/logs"
 	db "squad-3-aceleradev-fs-florianopolis/interfaces/db"
@@ -113,7 +112,6 @@ func GetByName(name string) (*entity.FuncPublico, error) {
 	defer dbi.Database.Close()
 	name = strings.Replace(name, "'", "''", 1) //prevent from single quotes in names (Escape character)
 	squery := `SELECT * FROM FUNCPUBLICO WHERE nome = "` + strings.Trim(name, " ") + `"`
-	fmt.Println(squery)
 	seleciona, erro := dbi.Database.Query(squery)
 	defer seleciona.Close()
 	var person entity.FuncPublico
@@ -126,7 +124,6 @@ func GetByName(name string) (*entity.FuncPublico, error) {
 			}
 		}
 	}
-	fmt.Println(person)
 	return &person, erro
 }
 
