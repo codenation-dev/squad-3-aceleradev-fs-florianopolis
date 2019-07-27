@@ -1,10 +1,10 @@
 package api
 
-import("squad-3-aceleradev-fs-florianopolis/entities/logs"
-entity "squad-3-aceleradev-fs-florianopolis/entities"
+import ("squad-3-aceleradev-fs-florianopolis/entities/logs"
 "squad-3-aceleradev-fs-florianopolis/interfaces/crud/usuario"
 "squad-3-aceleradev-fs-florianopolis/interfaces/crud/notificacao"
 "squad-3-aceleradev-fs-florianopolis/interfaces/crud/emailenviado"
+"squad-3-aceleradev-fs-florianopolis/utils"
 "encoding/json"
 "net/http"
 "fmt"
@@ -18,6 +18,7 @@ entity "squad-3-aceleradev-fs-florianopolis/entities"
 "strings"
 "github.com/gorilla/context"
 jwt "github.com/dgrijalva/jwt-go"
+"squad-3-aceleradev-fs-florianopolis/entities"
 )
 
 func notImplemented(w http.ResponseWriter, r *http.Request) {
@@ -39,13 +40,13 @@ func (a *App) login(w http.ResponseWriter, r *http.Request) {
 		if (E==nil){
 			Response.Result = "Login Success"
 			Response.Token = T
+			Response.Code = Success
 		} else {
 			logs.Errorf("App/Cant create JWT Token",E.Error())
-			Response.Result = "Login Fail! Internal Error"
 			responseCodeResult(w, Error, E.Error())
 		}	
 	} else {
-		Response.Result = "Login Fail! Invalid Credentials"
+		responseCodeResult(w, Error, "Invalid Credentials")
 	}
 	json.NewEncoder(w).Encode(Response)
 }
@@ -133,7 +134,7 @@ func (a *App) mailRegister(w http.ResponseWriter, r *http.Request)  {
 	
 	decode := json.NewDecoder(r.Body)
 
-	var Info MailType
+	var Info entity.Target
 
 	_ = decode.Decode(&Info)
 	
@@ -150,20 +151,23 @@ func (a *App) mailRegister(w http.ResponseWriter, r *http.Request)  {
 		if (err != nil){
 			responseCodeResult(w, Error, err.Error(), a.GetToken(context.Get(r,"token").(*jwt.Token)))
 		}
-		
+		tgt := entity.Target{Name:User.Usuario,
+			Mail:User.Email}
 		u := passT{Subject: "Uati Suporte", 
-		Target: MailType{Name:User.Usuario,
-		Mail:User.Email},
+		Target:tgt,
 		Message:pass}
 		b := new(bytes.Buffer)
 		json.NewEncoder(b).Encode(u)
-		_,es := http.Post("http://127.0.0.1:8225/pass", "application/json; charset=utf-8", b)
+		_,es := http.Post("http://127.0.0.1:8225/pass", "Application/json; charset=utf-8", b)
 		if (es!=nil){
 			logs.Errorf("MailConsumer - SendMailWithPassError",es.Error())
 			responseCodeResult(w, Error, "Cant Send Mail With Password", a.GetToken(context.Get(r,"token").(*jwt.Token)))
-		}
+		} else {
 		responseCodeResult(w, Success, "Success", a.GetToken(context.Get(r,"token").(*jwt.Token)))
-	} else {
+		request := utils.RequestCreator([]entity.Target{tgt},notificacao.GetLastID())
+		utils.SendMailRequest(request)
+	}
+		} else {
 		responseCodeResult(w, Error, "Invalid Data", a.GetToken(context.Get(r,"token").(*jwt.Token)))
 	}
 

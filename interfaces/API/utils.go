@@ -3,9 +3,10 @@ package api
 import (
 	"math/rand"
 	"time"
+	"squad-3-aceleradev-fs-florianopolis/entities"
   )
 
-func validateMailType(m MailType) bool {
+func validateMailType(m entity.Target) bool {
 	return true
 }
  
