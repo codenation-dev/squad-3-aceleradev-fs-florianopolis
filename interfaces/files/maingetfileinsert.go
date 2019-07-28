@@ -1,11 +1,12 @@
 package main
 
 import (
-	"github.com/robfig/cron"
 	"os"
 	"squad-3-aceleradev-fs-florianopolis/entities/logs"
 	ds "squad-3-aceleradev-fs-florianopolis/use_cases"
 	"sync"
+
+	"github.com/robfig/cron"
 )
 
 const (
@@ -39,7 +40,7 @@ func Execute() {
 		go ds.CreateBestOrgsTable(&wg)
 		go ds.CreateBestPosTable(&wg)
 		wg.Wait()
-		ProcessMultiLinesCSVFile()
+		//ProcessMultiLinesCSVFile()
 		CreateNotify()
 	}
 	logs.Info("Execute", "Finished running Execute")

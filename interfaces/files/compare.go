@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bytes"
 	"crypto/sha1"
 	"encoding/csv"
 	"encoding/hex"
@@ -17,7 +18,7 @@ import (
 	"squad-3-aceleradev-fs-florianopolis/interfaces/crud/historico"
 	"strconv"
 	"strings"
-	"bytes"
+	"sync"
 	//"sync"
 )
 
@@ -25,19 +26,23 @@ import (
 type Clients struct {
 	Nome string `json:"nome"`
 }
-type CSVFile struct{
-	Name string
-	FullPath string
+
+//CSVFile gets info from portaldatransparencia csv file
+type CSVFile struct {
+	Name         string
+	FullPath     string
 	TotalOfLines int64
 }
 
-type LineInterval struct{
+//LineInterval defines start/end line for each csvfile part to be processed by goroutines
+type LineInterval struct {
 	Start int64
-	End int64
+	End   int64
 }
 
+//getInfoFromCSVFile gets info from portaldatransparencia csv file
 func getInfoFromCSVFile() (*CSVFile, error) {
-	workPath, err := getFileName() 
+	workPath, err := getFileName()
 	csvFile := new(CSVFile)
 	if err != nil {
 		logs.Errorf("openFileCSV", err.Error())
@@ -47,74 +52,87 @@ func getInfoFromCSVFile() (*CSVFile, error) {
 	fullPath := workPath.Directory + fileName[0]
 	csvFile.FullPath = fullPath
 	csvFile.Name = fileName[0]
-	cmd := exec.Command("bash", "-c", "cat " + fullPath + " | wc -l")
+	cmd := exec.Command("bash", "-c", "cat "+fullPath+" | wc -l")
 	var out bytes.Buffer
 	cmd.Stdout = &out
 	err = cmd.Run()
 	if err != nil {
 		return csvFile, err
 	}
-	
+
 	numberStr := strings.Trim(out.String(), "\"")
 	numberStr = strings.ReplaceAll(numberStr, "\n", "")
 	numLines, err := strconv.ParseInt(numberStr, 10, 64)
 	if err != nil {
 		return nil, err
 	}
-	csvFile.TotalOfLines = numLines -1
+	csvFile.TotalOfLines = numLines - 1
 	return csvFile, nil
 }
 
+//ProcessMultiLinesCSVFile process data from csv in DB
 func ProcessMultiLinesCSVFile() error {
 	var line LineInterval
 	var lines []LineInterval
 	csvFileInfo, err := getInfoFromCSVFile()
 	var linesByGoRotine int64
-	TotalGoRotine := 1
+	//TotalGoRotine := 1 //len(lines)
 	linesByGoRotine = 100000
 	line.Start = 0
-	if csvFileInfo.TotalOfLines > csvFileInfo.TotalOfLines / linesByGoRotine{
-		ToProcess := csvFileInfo.TotalOfLines / linesByGoRotine
+	//Csv file goes from 1, array from 0
+	arrayTotalLines := csvFileInfo.TotalOfLines - 1
+	if arrayTotalLines > arrayTotalLines/linesByGoRotine {
+		ToProcess := arrayTotalLines / linesByGoRotine
 		var i int64
-		for i =0; i <= ToProcess; i++ {
+		for i = 0; i <= ToProcess; i++ {
 			line.End = line.Start + linesByGoRotine - 1
-			if line.End > csvFileInfo.TotalOfLines{
-				line.End = csvFileInfo.TotalOfLines - line.Start
+			if line.End > arrayTotalLines {
+				line.End = arrayTotalLines - line.Start
 				line.End = line.End + line.Start
 			}
-			lines = append(lines,line)
-			line.Start = line.Start + linesByGoRotine 
-			TotalGoRotine++ 
+			lines = append(lines, line)
+			line.Start = line.Start + linesByGoRotine
+			//TotalGoRotine++ //len(lines)
 		}
-	}else{
+	} else {
 		line.End = csvFileInfo.TotalOfLines
-		lines = append(lines,line)
+		lines = append(lines, line)
 	}
-	
-	/*wg := &sync.WaitGroup{}
-	wg.Add(TotalGoRotine)*/
-	for i:=0; i < len(lines); i++{
-	//	PersistLinesInDb(wg, lines[i].Start, lines[i].End)
-		PersistLinesInDb(lines[i].Start, lines[i].End)
+	//fmt.Println(lines)
+	//fmt.Println("len(lines):", len(lines))
+	//fmt.Println("Num Lines CSV File:", csvFileInfo.TotalOfLines)
+	//CSVLines, err := openCSV()
+	//fmt.Println("Num Lines Array:", len(CSVLines))
+	wg := &sync.WaitGroup{}
+	//wg.Add(TotalGoRotines)
+	wg.Add(len(lines))
+	for i := 0; i < len(lines); i++ {
+		//GOROUTINE
+		slog := "Reading from line: " + strconv.FormatInt(lines[i].Start, 10) + " to: " + strconv.FormatInt(lines[i].End, 10)
+		logs.Info("ProcessMultiLineCSVFIle", slog)
+		go PersistLinesInDb(wg, lines[i].Start, lines[i].End)
+		//PersistLinesInDb(lines[i].Start, lines[i].End)
 	}
-	//wg.Wait()
+	wg.Wait()
 	err = AfterProcess()
 	return err
 }
 
-//func PersistLinesInDb(wg *sync.WaitGroup, pStart int64, pEnd int64) {
-func PersistLinesInDb(pStart int64, pEnd int64) {
-	CSVLines, err := openCSV()
-	for j:= pStart; j < pEnd; j++{
-			
+func PersistLinesInDb(wg *sync.WaitGroup, pStart int64, pEnd int64) {
+	//func PersistLinesInDb(pStart int64, pEnd int64) {
+	CSVLines, err := openCSV() //CSVLines is the array of csv data (portaldatransparencia)
+	//iterates through file defined part
+	//for j := pStart; j < pEnd; j++ { (trocado para <= pois precisa ler a última linha do intervalo inclusive)
+	for j := pStart; j <= pEnd; j++ {
 		persistPessoa(CSVLines[j])
 		if err != nil {
 			logs.Errorf("PersistLinesInDb", err.Error())
 		}
 	}
-	//wg.Done()
+	wg.Done()
 }
 
+//openCSV reads data from csv file and stores in array of strings
 func openCSV() ([][]string, error) {
 	workPath, err := getFileName()
 	var lines [][]string
@@ -134,7 +152,7 @@ func openCSV() ([][]string, error) {
 	reader := csv.NewReader(csvfile)
 	reader.Comma = ';'
 	logs.Info("openFileCSV", "Reading file...")
-//	rawdata, err := reader.ReadAll()
+	//	rawdata, err := reader.ReadAll()
 	numLine := 0
 	logs.Info("openFileCSV", "Updating data in DB...")
 	for {
@@ -223,7 +241,6 @@ func OpenCSVAndInsertCSV(intLine int64, endLine int64) error {
 
 	logs.Info("openFileCSV", "Data stored in DB")
 
-
 	if err != nil {
 		logs.Errorf("openFileCSV", err.Error())
 		return err
@@ -256,7 +273,6 @@ func OpenCSVAndInsertCSV(intLine int64, endLine int64) error {
 			return err
 		}
 	}
-
 
 	return err
 }
@@ -302,17 +318,17 @@ func isClient(name string) bool {
 func persistPessoa(column []string) error {
 	Remuneracaodomes, err := strconv.ParseFloat(changeComma(column[3]), 64)
 	if err != nil {
-		logs.Errorf("insertIntoPessoa", err.Error())
+		logs.Errorf("persistPessoa", err.Error())
 		return err
 	}
 	Redutorsalarial, err := strconv.ParseFloat(changeComma(column[8]), 64)
 	if err != nil {
-		logs.Errorf("insertIntoPessoa", err.Error())
+		logs.Errorf("persistPessoa", err.Error())
 		return err
 	}
 	Totalliquido, err := strconv.ParseFloat(changeComma(column[9]), 64)
 	if err != nil {
-		logs.Errorf("insertIntoPessoa", err.Error())
+		logs.Errorf("persistPessoa", err.Error())
 		return err
 	}
 	/*	PONTOS:
@@ -348,7 +364,7 @@ func persistPessoa(column []string) error {
 			//Atualiza no banco
 			erro := funcpublico.Update(Pessoa)
 			if erro != nil {
-				logs.Errorf("insertIntoPessoa", erro.Error())
+				logs.Errorf("persistPessoa", erro.Error())
 				return erro
 			}
 
@@ -357,7 +373,7 @@ func persistPessoa(column []string) error {
 			//Insere no banco
 			erro := funcpublico.Insert(Pessoa)
 			if erro != nil {
-				logs.Errorf("insertIntoPessoa", erro.Error())
+				logs.Errorf("persistPessoa", erro.Error())
 				return erro
 			}
 		}
