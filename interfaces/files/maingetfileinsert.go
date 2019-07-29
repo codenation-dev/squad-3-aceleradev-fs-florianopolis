@@ -3,7 +3,9 @@ package main
 import (
 	"os"
 	"squad-3-aceleradev-fs-florianopolis/entities/logs"
+	ds "squad-3-aceleradev-fs-florianopolis/use_cases"
 	"sync"
+
 	"github.com/robfig/cron"
 )
 
@@ -16,15 +18,14 @@ func main() {
 	if true {
 		logs.Info("Start App", "The application was Started")
 		wg := &sync.WaitGroup{}
-		wg.Add(1)
+		wg.Add(2)
 		cronJob := cron.New()
 		cronJob.Start()
 		logs.Info("Start App", "Application is Waiting until the time match...")
 		cronJob.AddFunc("30 00 22 10 * ?", Execute) //dia 10 de cada mes as 22:00:30
 		cronJob.AddFunc("30 00 22 25 * ?", Execute) //dia 25 de cada mes as 22:00:30
 		wg.Wait()
-		Execute()
-	}else{
+	} else {
 		Execute()
 	}
 }
@@ -32,7 +33,13 @@ func main() {
 //Execute when the time is match
 func Execute() {
 	if DownloadAndExtractFile() {
-		OpenAndProcessFileCSV()
+		ProcessMultiLinesCSVFile()
+		var wg sync.WaitGroup
+		wg.Add(3)
+		go ds.CreateBestMonthsTable(&wg)
+		go ds.CreateBestOrgsTable(&wg)
+		go ds.CreateBestPosTable(&wg)
+		wg.Wait()
 		CreateNotify()
 	}
 	logs.Info("Execute", "Finished running Execute")

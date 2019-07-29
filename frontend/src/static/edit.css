@@ -1,0 +1,21 @@
+div.UpdateForm  {
+    border: 1px solid #999;
+    margin: 0 auto;
+    width: 75%;
+    border-radius: 10px;  
+    text-align: center;
+    padding: 10px;
+}
+
+div.UpdateForm button {
+    margin: 10px auto;
+}
+
+.UpdateForm input {
+    margin: 0 auto;
+    width: 90%;
+    background-color: #dfe0df;
+    border: none;
+    border-radius: 10px;
+    padding: 5px;
+}

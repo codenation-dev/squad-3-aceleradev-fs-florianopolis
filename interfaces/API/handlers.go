@@ -13,6 +13,7 @@ import (
 	"squad-3-aceleradev-fs-florianopolis/interfaces/crud/emailenviado"
 	"squad-3-aceleradev-fs-florianopolis/interfaces/crud/notificacao"
 	"squad-3-aceleradev-fs-florianopolis/interfaces/crud/usuario"
+	db "squad-3-aceleradev-fs-florianopolis/interfaces/db"
 	utils "squad-3-aceleradev-fs-florianopolis/utils"
 	"strconv"
 	"strings"
@@ -44,7 +45,7 @@ func (a *App) login(w http.ResponseWriter, r *http.Request) {
 			Response.Token = T
 			Response.Code = Success
 		} else {
-			logs.Errorf("App/Cant create JWT Token",E.Error())
+			logs.Errorf("App/Cant create JWT Token", E.Error())
 			responseCodeResult(w, Error, E.Error())
 		}
 	} else {
@@ -101,7 +102,7 @@ func (a *App) mailEdit(w http.ResponseWriter, r *http.Request) {
 					if err != nil {
 						responseCodeResult(w, 8, err.Error(), a.GetToken(context.Get(r, "token").(*jwt.Token)))
 					}
-					UsuarioRequestUpdate.Senha  = string(pass)
+					UsuarioRequestUpdate.Senha = string(pass)
 					err = usuario.Update(&UsuarioRequestUpdate)
 					}
 
@@ -159,29 +160,34 @@ func (a *App) mailRegister(w http.ResponseWriter, r *http.Request) {
 			Usuario: Info.Name,
 			Email:   Info.Mail,
 			Senha:   string(crypted)}
-		err := usuario.Insert(&User)
+		dbi, erro := db.Init()     //changed to mock DB for unit test
+		defer dbi.Database.Close() //changed to mock DB for unit test
+		if erro != nil {           //changed to mock DB for unit test
+			logs.Errorf("mailRegister(handlers)", erro.Error()) //changed to mock DB for unit test
+		} //changed to mock DB for unit test
+		err := usuario.Insert(&User, dbi) //changed to mock DB for unit test
 
 		if err != nil {
 			responseCodeResult(w, Error, err.Error(), a.GetToken(context.Get(r, "token").(*jwt.Token)))
 		}
-		tgt := entity.Target{Name:User.Usuario,
-			Mail:User.Email}
-		u := passT{Subject: "Uati Suporte", 
-		Target:tgt,
-		Message:pass}
+		tgt := entity.Target{Name: User.Usuario,
+			Mail: User.Email}
+		u := passT{Subject: "Uati Suporte",
+			Target:  tgt,
+			Message: pass}
 		b := new(bytes.Buffer)
 		json.NewEncoder(b).Encode(u)
-		_,es := http.Post("http://127.0.0.1:8225/pass", "Application/json; charset=utf-8", b)
-		if (es!=nil){
-			logs.Errorf("MailConsumer - SendMailWithPassError",es.Error())
-			responseCodeResult(w, Error, "Cant Send Mail With Password", a.GetToken(context.Get(r,"token").(*jwt.Token)))
+		_, es := http.Post("http://127.0.0.1:8225/pass", "Application/json; charset=utf-8", b)
+		if es != nil {
+			logs.Errorf("MailConsumer - SendMailWithPassError", es.Error())
+			responseCodeResult(w, Error, "Cant Send Mail With Password", a.GetToken(context.Get(r, "token").(*jwt.Token)))
 		} else {
-		responseCodeResult(w, Success, "Success", a.GetToken(context.Get(r,"token").(*jwt.Token)))
-		request := utils.RequestCreator([]entity.Target{tgt},notificacao.GetLastID())
-		utils.SendMailRequest(request)
-	}
-		} else {
-		responseCodeResult(w, Error, "Invalid Data", a.GetToken(context.Get(r,"token").(*jwt.Token)))
+			responseCodeResult(w, Success, "Success", a.GetToken(context.Get(r, "token").(*jwt.Token)))
+			request := utils.RequestCreator([]entity.Target{tgt}, notificacao.GetLastID())
+			utils.SendMailRequest(request)
+		}
+	} else {
+		responseCodeResult(w, Error, "Invalid Data", a.GetToken(context.Get(r, "token").(*jwt.Token)))
 	}
 
 }

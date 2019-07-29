@@ -1,6 +1,7 @@
 package main
 
 import (
+	//"bytes"
 	"crypto/sha1"
 	"encoding/csv"
 	"encoding/hex"
@@ -8,6 +9,7 @@ import (
 	"io"
 	"io/ioutil"
 	"os"
+	//"os/exec"
 	"path/filepath"
 	"sort"
 	entity "squad-3-aceleradev-fs-florianopolis/entities"
@@ -16,6 +18,8 @@ import (
 	"squad-3-aceleradev-fs-florianopolis/interfaces/crud/historico"
 	"strconv"
 	"strings"
+	"sync"
+	//"sync"
 )
 
 //Clients get clients names from csv file
@@ -23,8 +27,131 @@ type Clients struct {
 	Nome string `json:"nome"`
 }
 
+//LineInterval defines start/end line for each csvfile part to be processed by goroutines
+type LineInterval struct {
+	Start int64
+	End   int64
+}
+
+//ProcessMultiLinesCSVFile process data from csv in DB
+func ProcessMultiLinesCSVFile() error {
+	var line LineInterval
+	var lines []LineInterval
+	CSVLines, err := openCSV() //CSVLines is the array of csv data (portaldatransparencia)
+	arrayTotalLines := int64(len(CSVLines))
+	linesByGoRotine := int64(100000)
+	line.Start = 0
+	//Csv file goes from 1, array from 0
+	if arrayTotalLines > arrayTotalLines/linesByGoRotine {
+		ToProcess := int64(arrayTotalLines / linesByGoRotine)
+		for i := int64(0); i <= ToProcess; i++ {
+			line.End = line.Start + linesByGoRotine - 1
+			if line.End > arrayTotalLines {
+				line.End = arrayTotalLines - line.Start - 1
+				line.End = line.End + line.Start
+			}
+			lines = append(lines, line)
+			line.Start = line.Start + linesByGoRotine
+			//TotalGoRotine++ //len(lines)
+		}
+	} else {
+		line.End = arrayTotalLines - 1
+		lines = append(lines, line)
+	}
+	wg := &sync.WaitGroup{}
+	wg.Add(len(lines))
+	for i := 0; i < len(lines); i++ {
+		//GOROUTINE
+		slog := "Reading from line: " + strconv.FormatInt(lines[i].Start, 10) + " to: " + strconv.FormatInt(lines[i].End, 10)
+		logs.Info("ProcessMultiLineCSVFIle", slog)
+		go PersistLinesInDb(wg, CSVLines, lines[i].Start, lines[i].End)
+	}
+	wg.Wait()
+	err = AfterProcess()
+	return err
+}
+
+func PersistLinesInDb(wg *sync.WaitGroup, CSVLines [][]string, pStart int64, pEnd int64) {
+	for j := pStart; j <= pEnd; j++ {
+		err := persistPessoa(CSVLines[j])
+		if err != nil {
+			logs.Errorf("PersistLinesInDb", err.Error())
+		}
+	}
+	wg.Done()
+}
+
+//openCSV reads data from csv file and stores in array of strings
+func openCSV() ([][]string, error) {
+	workPath, err := getFileName()
+	var lines [][]string
+	if err != nil {
+		logs.Errorf("openFileCSV", err.Error())
+		return nil, err
+	}
+	fileName := getLastFiles(workPath.Directory, 1, ".txt")
+	fullPath := workPath.Directory + fileName[0]
+	csvfile, err := os.Open(fullPath)
+	if err != nil {
+		logs.Errorf("openFileCSV", err.Error())
+		return nil, err
+	}
+	defer csvfile.Close()
+	logs.Info("openFileCSV", "Opening file: "+fullPath)
+	reader := csv.NewReader(csvfile)
+	reader.Comma = ';'
+	logs.Info("openFileCSV", "Reading file...")
+	//	rawdata, err := reader.ReadAll()
+	numLine := int64(0)
+	logs.Info("openFileCSV", "Updating data in DB...")
+	for {
+		numLine++
+		record, err := reader.Read()
+		if err == io.EOF {
+			break
+		}
+		if err != nil {
+			logs.Errorf("openFileCSV", err.Error())
+		}
+		if numLine > 1 {
+			if strings.Trim(record[0]," ") != ""{
+				lines = append(lines, record)
+			}
+		}
+	}
+	return lines, err
+}
+
+func AfterProcess() error {
+	//Setar todos os TotalLiquido para 0 de todos os clientes que o update=false
+	//Ou seja, todos os funcionarios públicos que deixaram de ser funcionários
+	err := funcpublico.UpdateAllSetRemuneracaodoMes(0) //CHANGED from totalliquido to remuneracaodomes
+	if err != nil {
+		logs.Errorf("insertIntoPessoa", err.Error())
+		return err
+	}
+
+	//seta updated = false em todos os clientes da tabela após o término do processamento*/
+	err = funcpublico.UpdateAllSetFlagUpdated(false)
+	if err != nil {
+		logs.Errorf("insertIntoPessoa", err.Error())
+		return err
+	}
+	hist, err := funcpublico.GetAllFuncPublico()
+	if err != nil {
+		logs.Errorf("GetAllFuncPublico", err.Error())
+		return err
+	}
+	historico.Insert(hist)
+	if err != nil {
+		logs.Errorf("Insert Historico", err.Error())
+		return err
+	}
+	return err
+}
+
 //OpenAndProcessFileCSV open file csv and insert in DB
-func OpenAndProcessFileCSV() error {
+func OpenCSVAndInsertCSV(intLine int64, endLine int64) error {
 	workPath, err := getFileName()
 	if err != nil {
 		logs.Errorf("openFileCSV", err.Error())
@@ -65,7 +192,6 @@ func OpenAndProcessFileCSV() error {
 
 	logs.Info("openFileCSV", "Data stored in DB")
 
-
 	if err != nil {
 		logs.Errorf("openFileCSV", err.Error())
 		return err
@@ -99,7 +225,6 @@ func OpenAndProcessFileCSV() error {
 		}
 	}
 
-
 	return err
 }
 
@@ -120,7 +245,7 @@ func checkPersonInDB(name string) (bool, int) {
 //func to check if its a client
 func isClient(name string) bool {
 	isClient := false
-	file, erro := ioutil.ReadFile("../API/Clientlist.json")
+	file, erro := ioutil.ReadFile("../API/ClientList.json")
 	if erro != nil {
 		logs.Errorf("isClient", erro.Error())
 	}
@@ -144,17 +269,17 @@ func isClient(name string) bool {
 func persistPessoa(column []string) error {
 	Remuneracaodomes, err := strconv.ParseFloat(changeComma(column[3]), 64)
 	if err != nil {
-		logs.Errorf("insertIntoPessoa", err.Error())
+		logs.Errorf("persistPessoa", err.Error())
 		return err
 	}
 	Redutorsalarial, err := strconv.ParseFloat(changeComma(column[8]), 64)
 	if err != nil {
-		logs.Errorf("insertIntoPessoa", err.Error())
+		logs.Errorf("persistPessoa", err.Error())
 		return err
 	}
 	Totalliquido, err := strconv.ParseFloat(changeComma(column[9]), 64)
 	if err != nil {
-		logs.Errorf("insertIntoPessoa", err.Error())
+		logs.Errorf("persistPessoa", err.Error())
 		return err
 	}
 	/*	PONTOS:
@@ -190,7 +315,7 @@ func persistPessoa(column []string) error {
 			//Atualiza no banco
 			erro := funcpublico.Update(Pessoa)
 			if erro != nil {
-				logs.Errorf("insertIntoPessoa", erro.Error())
+				logs.Errorf("persistPessoa", erro.Error())
 				return erro
 			}
 
@@ -199,7 +324,7 @@ func persistPessoa(column []string) error {
 			//Insere no banco
 			erro := funcpublico.Insert(Pessoa)
 			if erro != nil {
-				logs.Errorf("insertIntoPessoa", erro.Error())
+				logs.Errorf("persistPessoa", erro.Error())
 				return erro
 			}
 		}

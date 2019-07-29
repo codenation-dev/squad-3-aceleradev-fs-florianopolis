@@ -7,7 +7,7 @@ const UnauthRedirect = (props) => {
 }
 
 const mapStateToProps = state => {
-    let Logged = state.value;
+    let Logged = state.Login.value;
     return {Logged:Logged}
 }
 

@@ -39,3 +39,6 @@ interfaces/files/download/*
 interfaces/files/logs/*
 frontend/node_modules/*
 services/MailSender/.cfg/credentials
+interfaces/interfaces
+interfaces/files/files
+services/MailSender/MailSender

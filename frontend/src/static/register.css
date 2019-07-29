@@ -48,3 +48,12 @@ h2 {
     background-color: #ffd351;
     text-align: center;
 }
+
+input {
+    margin: 0 auto;
+    width: 90%;
+    background-color: #dfe0df;
+    border: none;
+    border-radius: 10px;
+    padding: 5px;
+}
