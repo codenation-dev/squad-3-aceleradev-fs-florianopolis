@@ -26,10 +26,9 @@ func Insert(user *entity.Usuario) error {
 			logs.Errorf("Insert(Usuario)", erro.Error())
 		}
 		return erro
-	} else {
-		logs.Info("Insert(Usuario)", "Email from User already exists")
-		return errors.New("Email from User already exists")
-	}
+	} 
+	logs.Info("Insert(Usuario)", "Email from User already exists")
+	return errors.New("Email from User already exists")
 }
 
 //Delete Usuario by ID
@@ -68,7 +67,27 @@ func Update(user *entity.Usuario) error {
 	return erro
 }
 
-//Get Usuario by ID
+//UpdateWithoutPass Usuario by ID
+func UpdateWithoutPass(user *entity.Usuario) error {
+	dbi, erro := db.Init()
+	if erro != nil {
+		logs.Errorf("Update(Usuario)", erro.Error())
+	}
+	defer dbi.Database.Close()
+	logs.Info("Update(Usuario)", "Trying to update user...")
+	//NULLIF Prevents from creating empty string field in table Usuario
+	squery := `UPDATE USUARIO SET usuario = NULLIF("` + user.Usuario + `",""), email = NULLIF("` + user.Email + `","") WHERE id = ` + strconv.Itoa(user.ID)
+	result, erro := dbi.Database.Query(squery)
+	defer result.Close()
+	if erro != nil {
+		logs.Errorf("Update(Usuario)", erro.Error())
+	} else {
+		logs.Info("Update(Usuario)", "User updated successfully!")
+	}
+	return erro
+}
+
+//GetUsuarioByID Usuario by ID
 func GetUsuarioByID(id int) (*entity.Usuario, error) {
 	dbi, erro := db.Init()
 	if erro != nil {
@@ -111,12 +130,11 @@ func checkUsuario(email string) bool {
 	}
 	if email == user.Email {
 		return true
-	} else {
-		return false
 	}
+		return false
 }
 
-//Search user by Mail
+//SearchUsuarioByMail user by Mail
 func SearchUsuarioByMail(email string) (bool, *entity.Usuario) {
 	dbi, erro := db.Init()
 	if erro != nil {
@@ -141,6 +159,7 @@ func SearchUsuarioByMail(email string) (bool, *entity.Usuario) {
 	return false, nil
 }
 
+//GetAllMails get all user mails
 func GetAllMails() []entity.Target {
 	dbi, erro := db.Init()
 	defer dbi.Database.Close()

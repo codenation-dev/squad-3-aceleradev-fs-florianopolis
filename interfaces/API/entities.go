@@ -12,6 +12,15 @@ const (
 	Empty 	= 2
 	//Error Code for response
 	Error   = 3
+	//Unauth Code for response
+	Unauth = 9
+	
+	changesSave = 12
+
+	fileUploadedSuccess = 13
+
+	userRemoveSuccess = 14
+
  )
  
 

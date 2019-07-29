@@ -5,7 +5,6 @@ import (
 	entity "squad-3-aceleradev-fs-florianopolis/entities"
 	"squad-3-aceleradev-fs-florianopolis/entities/logs"
 	db "squad-3-aceleradev-fs-florianopolis/interfaces/db"
-	mail "squad-3-aceleradev-fs-florianopolis/services/MailSender/src"
 
 	utils "squad-3-aceleradev-fs-florianopolis/utils"
   
@@ -44,7 +43,7 @@ func GetNextID() int {
 }
 
 //InsertNotificacao insere uma notificaçao
-func InsertNotificacao(request mail.Mailrequest) error {
+func InsertNotificacao(request entity.Mailrequest) error {
 	dbi, erro := db.Init()
 	defer dbi.Database.Close()
 	var ntf entity.NotificacaoLista

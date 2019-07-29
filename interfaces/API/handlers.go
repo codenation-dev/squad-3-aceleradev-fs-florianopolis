@@ -77,11 +77,11 @@ func (a *App) mailEdit(w http.ResponseWriter, r *http.Request) {
 	idStr := strings.Trim(ids["id"], " ")
 	id, err := strconv.Atoi(idStr)
 	if err != nil {
-		responseCodeResult(w, Error, "Id não é um número", a.GetToken(context.Get(r, "token").(*jwt.Token)))
+		responseCodeResult(w, 5, "Id não é um número", a.GetToken(context.Get(r, "token").(*jwt.Token)))
 	} else {
 		UsuarioOnDataBase, err := usuario.GetUsuarioByID(id)
 		if err != nil {
-			responseCodeResult(w, Error, err.Error(), a.GetToken(context.Get(r, "token").(*jwt.Token)))
+			responseCodeResult(w, 6, err.Error(), a.GetToken(context.Get(r, "token").(*jwt.Token)))
 		} else {
 			if UsuarioOnDataBase == nil {
 				responseCodeResult(w, Empty, "Usuário não encontrado")
@@ -89,18 +89,24 @@ func (a *App) mailEdit(w http.ResponseWriter, r *http.Request) {
 				userJSON := json.NewDecoder(r.Body)
 				err := userJSON.Decode(&UsuarioRequestUpdate)
 				if err != nil {
-					responseCodeResult(w, Error, err.Error(), a.GetToken(context.Get(r, "token").(*jwt.Token)))
+					responseCodeResult(w, 7, err.Error(), a.GetToken(context.Get(r, "token").(*jwt.Token)))
 				} else {
 					UsuarioRequestUpdate.ID = id
 					Temp := UsuarioRequestUpdate.Senha
+					if (Temp=="") {
+					err = usuario.UpdateWithoutPass(&UsuarioRequestUpdate)
+					} else {
+					
 					pass, err := bcrypt.GenerateFromPassword([]byte(Temp), 10)
 					if err != nil {
-						responseCodeResult(w, Error, err.Error(), a.GetToken(context.Get(r, "token").(*jwt.Token)))
+						responseCodeResult(w, 8, err.Error(), a.GetToken(context.Get(r, "token").(*jwt.Token)))
 					}
 					UsuarioRequestUpdate.Senha  = string(pass)
 					err = usuario.Update(&UsuarioRequestUpdate)
+					}
+
 					if err != nil {
-						responseCodeResult(w, Error, err.Error(), a.GetToken(context.Get(r, "token").(*jwt.Token)))
+						responseCodeResult(w, 9, err.Error(), a.GetToken(context.Get(r, "token").(*jwt.Token)))
 					} else {
 						responseCodeResult(w, Success, "Atualizado com Sucesso", a.GetToken(context.Get(r, "token").(*jwt.Token)))
 					}

@@ -10,7 +10,7 @@ import (
 
 func main() {
 	R := api.Initialize() 
-	allowedHeaders := handlers.AllowedHeaders([]string{"X-Requested-With", "Content-Type"})
+	allowedHeaders := handlers.AllowedHeaders([]string{"X-Requested-With", "Content-Type","Access-Token"})
 	allowedOrigins := handlers.AllowedOrigins([]string{"*"})
 	allowedMethods := handlers.AllowedMethods([]string{"GET", "HEAD", "POST", "PUT", "DELETE", "OPTIONS"})
 	logs.Errorf("Router ", fmt.Sprintf("Server dead %s", http.ListenAndServe(":8921", handlers.CORS(allowedHeaders,allowedMethods,allowedOrigins)(R.Router)).Error()))
