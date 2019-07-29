@@ -15,7 +15,7 @@ const (
 )
 
 func main() {
-	if !true {
+	if true {
 		logs.Info("Start App", "The application was Started")
 		wg := &sync.WaitGroup{}
 		wg.Add(2)
@@ -40,7 +40,6 @@ func Execute() {
 		go ds.CreateBestOrgsTable(&wg)
 		go ds.CreateBestPosTable(&wg)
 		wg.Wait()
-		//ProcessMultiLinesCSVFile()
 		CreateNotify()
 	}
 	logs.Info("Execute", "Finished running Execute")
