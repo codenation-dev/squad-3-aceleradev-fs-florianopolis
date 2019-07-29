@@ -1,7 +1,7 @@
 package main
 
 import (
-	"bytes"
+	//"bytes"
 	"crypto/sha1"
 	"encoding/csv"
 	"encoding/hex"
@@ -9,7 +9,7 @@ import (
 	"io"
 	"io/ioutil"
 	"os"
-	"os/exec"
+	//"os/exec"
 	"path/filepath"
 	"sort"
 	entity "squad-3-aceleradev-fs-florianopolis/entities"
@@ -41,7 +41,7 @@ type LineInterval struct {
 }
 
 //getInfoFromCSVFile gets info from portaldatransparencia csv file
-func getInfoFromCSVFile() (*CSVFile, error) {
+/*func getInfoFromCSVFile() (*CSVFile, error) {
 	workPath, err := getFileName()
 	csvFile := new(CSVFile)
 	if err != nil {
@@ -68,26 +68,24 @@ func getInfoFromCSVFile() (*CSVFile, error) {
 	}
 	csvFile.TotalOfLines = numLines - 1
 	return csvFile, nil
-}
+}*/
 
 //ProcessMultiLinesCSVFile process data from csv in DB
 func ProcessMultiLinesCSVFile() error {
 	var line LineInterval
 	var lines []LineInterval
-	csvFileInfo, err := getInfoFromCSVFile()
-	var linesByGoRotine int64
-	//TotalGoRotine := 1 //len(lines)
-	linesByGoRotine = 100000
+	//csvFileInfo, err := getInfoFromCSVFile()
+	CSVLines, err := openCSV() //CSVLines is the array of csv data (portaldatransparencia)
+	arrayTotalLines := int64(len(CSVLines))
+	linesByGoRotine := int64(100000)
 	line.Start = 0
 	//Csv file goes from 1, array from 0
-	arrayTotalLines := csvFileInfo.TotalOfLines - 1
 	if arrayTotalLines > arrayTotalLines/linesByGoRotine {
-		ToProcess := arrayTotalLines / linesByGoRotine
-		var i int64
-		for i = 0; i <= ToProcess; i++ {
+		ToProcess := int64(arrayTotalLines / linesByGoRotine)
+		for i := int64(0); i <= ToProcess; i++ {
 			line.End = line.Start + linesByGoRotine - 1
 			if line.End > arrayTotalLines {
-				line.End = arrayTotalLines - line.Start
+				line.End = arrayTotalLines - line.Start - 1
 				line.End = line.End + line.Start
 			}
 			lines = append(lines, line)
@@ -95,7 +93,7 @@ func ProcessMultiLinesCSVFile() error {
 			//TotalGoRotine++ //len(lines)
 		}
 	} else {
-		line.End = csvFileInfo.TotalOfLines
+		line.End = arrayTotalLines
 		lines = append(lines, line)
 	}
 	//fmt.Println(lines)
@@ -110,21 +108,19 @@ func ProcessMultiLinesCSVFile() error {
 		//GOROUTINE
 		slog := "Reading from line: " + strconv.FormatInt(lines[i].Start, 10) + " to: " + strconv.FormatInt(lines[i].End, 10)
 		logs.Info("ProcessMultiLineCSVFIle", slog)
-		go PersistLinesInDb(wg, lines[i].Start, lines[i].End)
-		//PersistLinesInDb(lines[i].Start, lines[i].End)
+		go PersistLinesInDb(wg, CSVLines, lines[i].Start, lines[i].End)
 	}
 	wg.Wait()
 	err = AfterProcess()
 	return err
 }
 
-func PersistLinesInDb(wg *sync.WaitGroup, pStart int64, pEnd int64) {
+func PersistLinesInDb(wg *sync.WaitGroup, CSVLines [][]string, pStart int64, pEnd int64) {
 	//func PersistLinesInDb(pStart int64, pEnd int64) {
-	CSVLines, err := openCSV() //CSVLines is the array of csv data (portaldatransparencia)
 	//iterates through file defined part
 	//for j := pStart; j < pEnd; j++ { (trocado para <= pois precisa ler a última linha do intervalo inclusive)
 	for j := pStart; j <= pEnd; j++ {
-		persistPessoa(CSVLines[j])
+		err := persistPessoa(CSVLines[j])
 		if err != nil {
 			logs.Errorf("PersistLinesInDb", err.Error())
 		}
@@ -153,7 +149,7 @@ func openCSV() ([][]string, error) {
 	reader.Comma = ';'
 	logs.Info("openFileCSV", "Reading file...")
 	//	rawdata, err := reader.ReadAll()
-	numLine := 0
+	numLine := int64(0)
 	logs.Info("openFileCSV", "Updating data in DB...")
 	for {
 		numLine++
@@ -165,7 +161,9 @@ func openCSV() ([][]string, error) {
 			logs.Errorf("openFileCSV", err.Error())
 		}
 		if numLine > 1 {
-			lines = append(lines, record)
+			if strings.Trim(record[0]," ") != ""{
+				lines = append(lines, record)
+			}
 		}
 	}
 	return lines, err
@@ -294,7 +292,7 @@ func checkPersonInDB(name string) (bool, int) {
 //func to check if its a client
 func isClient(name string) bool {
 	isClient := false
-	file, erro := ioutil.ReadFile("../API/Clientlist.json")
+	file, erro := ioutil.ReadFile("../API/ClientList.json")
 	if erro != nil {
 		logs.Errorf("isClient", erro.Error())
 	}
