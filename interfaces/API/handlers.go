@@ -155,7 +155,7 @@ func (a *App) mailEdit(w http.ResponseWriter, r *http.Request) {
 							responseCodeResult(w, 8, err.Error(), a.GetToken(context.Get(r, "token").(*jwt.Token)))
 						}
 						UsuarioRequestUpdate.Senha = string(pass)
-						//err = usuario.Update(&UsuarioRequestUpdate)
+						
 						dbi, erro := db.Init() //changed to mock DB for unit test
 						if erro != nil {       //changed to mock DB for unit test
 							logs.Errorf("mailEdit(handlers)", erro.Error()) //changed to mock DB for unit test
