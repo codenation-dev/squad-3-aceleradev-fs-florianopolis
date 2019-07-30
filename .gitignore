@@ -35,10 +35,11 @@
 
 # End of https://www.gitignore.io/api/go,visualstudiocode
 interfaces/files/download/*
-!interfaces/files/download/.gitkeep 
-interfaces/files/logs/*
+!interfaces/files/download/.gitkeep
 frontend/node_modules/*
 services/MailSender/.cfg/credentials
 interfaces/interfaces
 interfaces/files/files
+adduser/adduser
 services/MailSender/MailSender
+*.log
