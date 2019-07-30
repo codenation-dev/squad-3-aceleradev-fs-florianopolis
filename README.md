@@ -56,10 +56,10 @@ Add environment variables into your ~/.bash file or ~/.zshrc  <br />
   export MYSQL_PASSWORD={YourUserDbPassword}  <br />
   export MYSQL_DATABASE={YourDbName}  <br />
   export LOG_PATH={YourLogPath}  <br />
-Git clone https://github.com/codenation-dev/squad-3-aceleradev-fs-florianopolis.git
-Open the project folder on your machine
-Run ./install.sh to install the application
-Run ./run.sh to run the appliation, it will open in your browser
-Run ./stopall.sh to stop the application
-Run ./stopall.sh -d if you want to delete executable files 
+Git clone https://github.com/codenation-dev/squad-3-aceleradev-fs-florianopolis.git <br />
+Open the project folder on your local machine <br />
+Run ./install.sh to install the application <br />
+Run ./run.sh to run the appliation, it will open in your browser <br />
+Run ./stopall.sh to stop the application <br />
+Run ./stopall.sh -d if you want to delete executable files <br />
 
