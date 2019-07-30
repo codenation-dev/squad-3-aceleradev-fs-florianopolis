@@ -40,5 +40,6 @@ frontend/node_modules/*
 services/MailSender/.cfg/credentials
 interfaces/interfaces
 interfaces/files/files
+adduser/adduser
 services/MailSender/MailSender
 *.log
