@@ -3,6 +3,7 @@ path=`pwd`
 goGetFile="/interfaces/files/"
 goAPI="/interfaces/"
 goEmailSender="/services/MailSender/"
+reactpath="/frontend/"
 
 cd $path$goGetFile
 if [ ! -e "./files" ]; then
@@ -34,4 +35,14 @@ if [ ! -e "./MailSender" ]; then
 else
   echo "Running Email Sender on :8225"
   ./MailSender &
+fi
+
+cd $path$reactpath
+if [ ! -e "node_modules" ]; then 
+  echo "Install node_modules react..."
+  npm install
+  npm start 
+else
+  echo "Running react on :3000"
+  npm start 
 fi
