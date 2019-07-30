@@ -74,8 +74,28 @@ func Delete(id int) error {
 	return erro
 }
 
-//Get notificacao by ID
+//GetByID notificacao by ID
+func GetByID(id int) (*entity.Notificacao, error) {
+	var note entity.Notificacao
+	dbi, erro := db.Init()
+	if erro != nil {
+		logs.Errorf("get(EMAILENVIADO)", erro.Error())
+	}
+	defer dbi.Database.Close()
+		squery := `select * from NOTIFICACAO where id = "` + strconv.Itoa(id) + `" limit 1;`
+		seleciona, err := dbi.Database.Query(squery)
+		defer seleciona.Close()
+		if err != nil {
+			return nil, err
+		}
+		for seleciona.Next() {
+			seleciona.Scan(&note.ID, &note.Data, &note.Lista)
+		}
+		return &note, nil
+} 
 
+
+//Get notificacao by data
 func Get(pData time.Time) (*entity.Notificacao, error) {
 	var Data time.Time
 	var note entity.Notificacao
