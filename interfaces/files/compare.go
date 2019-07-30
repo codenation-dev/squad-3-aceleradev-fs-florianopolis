@@ -258,7 +258,7 @@ func isClient(name string) bool {
 
 	for _, value := range data {
 		if strings.Trim(name, " ") == value.Nome {
-			//fmt.Println(value.Nome + "=" + name)
+			//fmt.Println(value.Nome + "=" + name)aler
 			isClient = true
 		}
 	}
