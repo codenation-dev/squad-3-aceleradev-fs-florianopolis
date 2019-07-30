@@ -43,20 +43,33 @@ func Insert(user *entity.Usuario, dbi *db.MySQLDatabase) error {
 			logs.Errorf("Insert(Usuario)", erro.Error())
 		}
 		return erro
-	} 
+	}
 	logs.Info("Insert(Usuario)", "Email from User already exists")
 	return errors.New("Email from User already exists")
 }
 
 //Delete Usuario by ID
-func Delete(id int) error {
-	dbi, erro := db.Init()
+func Delete(id int, dbi *db.MySQLDatabase) error {
+	tx, err := dbi.Database.Begin()
+	if err != nil {
+		return err
+	}
+	defer func() {
+		switch err {
+		case nil:
+			err = tx.Commit()
+		default:
+			tx.Rollback()
+		}
+	}()
+	/*dbi, erro := db.Init()
 	if erro != nil {
 		logs.Errorf("Delete(Usuario)", erro.Error())
 	}
 	defer dbi.Database.Close()
 	result, erro := dbi.Database.Query(`DELETE FROM USUARIO WHERE id = ` + strconv.Itoa(id))
-	defer result.Close()
+	defer result.Close()*/
+	_, erro := tx.Exec(`DELETE FROM USUARIO WHERE id = ?`, id)
 	if erro != nil {
 		logs.Errorf("Delete(Usuario)", erro.Error())
 	}
@@ -64,18 +77,32 @@ func Delete(id int) error {
 }
 
 //Update Usuario by ID
-func Update(user *entity.Usuario) error {
-	dbi, erro := db.Init()
+func Update(user *entity.Usuario, dbi *db.MySQLDatabase) error {
+	tx, err := dbi.Database.Begin()
+	if err != nil {
+		return err
+	}
+	defer func() {
+		switch err {
+		case nil:
+			err = tx.Commit()
+		default:
+			tx.Rollback()
+		}
+	}()
+	/*dbi, erro := db.Init()
 	if erro != nil {
 		logs.Errorf("Update(Usuario)", erro.Error())
 	}
-	defer dbi.Database.Close()
+	defer dbi.Database.Close()*/
 	logs.Info("Update(Usuario)", "Trying to update user...")
 	//NULLIF Prevents from creating empty string field in table Usuario
-	squery := `UPDATE USUARIO SET usuario = NULLIF("` + user.Usuario + `",""), senha = NULLIF("` + user.Senha +
+	/*squery := `UPDATE USUARIO SET usuario = NULLIF("` + user.Usuario + `",""), senha = NULLIF("` + user.Senha +
 		`",""), email = NULLIF("` + user.Email + `","") WHERE id = ` + strconv.Itoa(user.ID)
 	result, erro := dbi.Database.Query(squery)
-	defer result.Close()
+	defer result.Close()*/
+	_, erro := tx.Exec(`UPDATE USUARIO SET usuario = NULLIF(?,""), senha = NULLIF(?,""), email = NULLIF(?,"") WHERE id = ?`,
+		user.Usuario, user.Senha, user.Email, user.ID)
 	if erro != nil {
 		logs.Errorf("Update(Usuario)", erro.Error())
 	} else {
@@ -148,7 +175,7 @@ func CheckUsuario(email string) (bool, error) {
 	if email == user.Email {
 		return true, erro
 	}
-		return false, erro
+	return false, erro
 }
 
 //SearchUsuarioByMail user by Mail

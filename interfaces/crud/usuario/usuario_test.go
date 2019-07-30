@@ -36,25 +36,73 @@ func TestInsert(t *testing.T) {
 	}
 
 	// we make sure that all expectations were met
-	/*if err := mock.ExpectationsWereMet(); err != nil {
+	if err := mock.ExpectationsWereMet(); err != nil {
 		t.Errorf("there were unfulfilled expectations: %s", err)
-	}*/
-}
-
-func TestUpdate(t *testing.T) {
-	//needs mocking! crud
+	}
 }
 
 func TestDelete(t *testing.T) {
-	//needs mocking! crud
+	// Creates sqlmock database connection and a mock to manage expectations
+	dbm, mock, err := sqlmock.New()
+	defer dbm.Close()
+	if err != nil {
+		t.Fatalf("an error '%s' was not expected when opening a stub database connection", err)
+	}
+	ID := 1
+	// before we actually execute our api function, we need to expect required DB actions
+	_ = sqlmock.NewRows([]string{"id", "usuario", "senha", "email"}).
+		AddRow(1, "test1", "111", "test1@test.com")
+	mock.ExpectBegin()
+	mock.ExpectExec("DELETE FROM USUARIO").WithArgs(ID).WillReturnResult(sqlmock.NewResult(1, 1))
+	mock.ExpectCommit()
+
+	var dbs db.MySQLDatabase
+	dbs.Database = dbm
+
+	// now we execute our method
+	if err = Delete(ID, &dbs); err != nil {
+		t.Errorf("error was not expected while updating stats: %s", err)
+	}
+
+	// we make sure that all expectations were met
+	if err := mock.ExpectationsWereMet(); err != nil {
+		t.Errorf("there were unfulfilled expectations: %s", err)
+	}
+}
+
+func TestUpdate(t *testing.T) {
+	// Creates sqlmock database connection and a mock to manage expectations
+	dbm, mock, err := sqlmock.New()
+	defer dbm.Close()
+	if err != nil {
+		t.Fatalf("an error '%s' was not expected when opening a stub database connection", err)
+	}
+	User := entity.Usuario{
+		Usuario: "new",
+		Email:   "new@new.com",
+		Senha:   "222"}
+	// before we actually execute our api function, we need to expect required DB actions
+	_ = sqlmock.NewRows([]string{"id", "usuario", "senha", "email"}).
+		AddRow(1, "test1", "111", "test1@test.com")
+	mock.ExpectBegin()
+	mock.ExpectExec("UPDATE USUARIO").WithArgs(User.Usuario, User.Senha, User.Email, User.ID).WillReturnResult(sqlmock.NewResult(1, 1))
+	mock.ExpectCommit()
+
+	var dbs db.MySQLDatabase
+	dbs.Database = dbm
+	// now we execute our method
+	if err = Update(&User, &dbs); err != nil {
+		t.Errorf("error was not expected while updating stats: %s", err)
+	}
+
+}
+
+func TestUpdateWithoutPass(t *testing.T) {
+	//needs mocking
 }
 
 func TestGetUsuarioByID(t *testing.T) {
-	var user *entity.Usuario
-	//application has at least one user
-	user, err := GetUsuarioByID(1)
-	assert.Equal(t, user.ID, 1)
-	assert.Nil(t, err)
+	//needs mocking
 }
 
 func TestCheckUsuario(t *testing.T) {
