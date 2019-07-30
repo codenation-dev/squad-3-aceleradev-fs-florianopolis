@@ -15,7 +15,7 @@ const (
 )
 
 func main() {
-	if true {
+	if !true {
 		logs.Info("Start App", "The application was Started")
 		wg := &sync.WaitGroup{}
 		wg.Add(2)
@@ -35,7 +35,8 @@ func Execute() {
 	if DownloadAndExtractFile() {
 		ProcessMultiLinesCSVFile()
 		var wg sync.WaitGroup
-		wg.Add(3)
+		wg.Add(4)
+		go ds.CreateMostCommonTable(&wg)
 		go ds.CreateBestMonthsTable(&wg)
 		go ds.CreateBestOrgsTable(&wg)
 		go ds.CreateBestPosTable(&wg)
