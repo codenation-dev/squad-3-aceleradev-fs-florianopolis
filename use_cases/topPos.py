@@ -7,29 +7,21 @@ import json
 import numpy as np
 
 # Connects to DB.
-rows = db.getHistorico()
+rows = db.getFuncPublicoBy("cargo")
 
-# Reads the json, groups the entries by the 'cargo' field and calculates the
+# Reads the DB, groups the entries by the 'cargo' field and calculates the
 # median of the 'remuneracaodomes' field for each 'cargo'.
-jsons = []
-for row in rows:
-    jsonData = json.loads(row[2])
-    jsons.append(jsonData)
-
 posList = []
 posMedian = {}
-
-for data in jsons:
-    for entry in data:
-        if entry['cargo'] not in posList:
-            posList.append(entry['cargo'])
-            posRem = []
-            for data2 in jsons:
-                for entry2 in data2:
-                    if entry2['cargo'] == entry['cargo']:
-                        posRem.append(entry2['remuneracaodomes'])
-            median = np.median(posRem)
-            posMedian[entry['cargo']] = median
+for row in rows:
+    if row[0] not in posList:
+        posList.append(row[0])
+        posRem = []
+        for row2 in rows:
+            if row2[0] == row[0]:
+                posRem.append(row2[1])
+        median = np.median(posRem)
+        posMedian[row[0]] = median
 
 # Sorts list by from the highest 'remuneracaodomes' to the lowest.
 sortedList = OrderedDict(sorted(posMedian.items(), key=itemgetter(1),
