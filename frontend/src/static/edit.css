@@ -1,14 +1,39 @@
+div.SuperBox {
+    display: flex;
+    align-content: center;
+    justify-content: center;
+}
+
+div.none {
+    display: none;
+}
+
+div.none * {
+    display: none;
+}
+
 div.UpdateForm  {
+    z-index: 8;
+    overflow: hidden;
+    position: fixed;
     border: 1px solid #999;
     margin: 0 auto;
     width: 75%;
     border-radius: 10px;  
     text-align: center;
-    padding: 10px;
+    padding: 20px;
+    background-color: #fff;
+    top: 5%;
+    max-height: 90%;
 }
 
 div.UpdateForm button {
     margin: 10px auto;
+}
+
+div.Options {
+    display: flex;
+    justify-content: space-between;
 }
 
 .UpdateForm input {

@@ -13,6 +13,10 @@ const Nav = props => {
   const handleClick = () => {
      setExpander(!expander);}
 
+	const handleUploaderModal = () => {
+
+	} 
+
   const Collapser = (value) => (value?"Expand":"")
   
   const FirstLoginAnimation = (normal,value) => (value?`${normal} FirstLoginAnimation`:normal)
@@ -39,6 +43,9 @@ const Nav = props => {
 				<div className={FirstLoginAnimation("navLinks",loginAnim)}>
 					<span onClick={handleClick} className="Expander"><Link to="#" >Opções</Link></span>
           <ul className={Collapser(expander)}>
+			<Link onClick={handleClick} to="#">
+				<li onClick={props.UploaderOpen}> Upload A CSV</li>
+			</Link>
             <Link onClick={handleClick} to="/dashboard">
 						<li>Dashboard</li>
             </Link >
@@ -68,13 +75,17 @@ Nav.propTypes = {
 
 const mapDispatchToProps = dispatch => {
 	return { Logout: () => dispatch({ type: "REQUEST_LOGOUT" }),
-			 LogConfirm: () => dispatch({type:"REFRESH_LOGIN"}) };
+			 LogConfirm: () => dispatch({type:"REFRESH_LOGIN"}),
+			 UploaderOpen: () => dispatch({type:"OPEN_UPLOADER"}),
+			UploaderClose: () => dispatch({type:"CLOSE_UPLOADER"}) };
 };
 
 const mapStateToProps = state => {
 	const Logged = state.Login;
+	const Uploader = state.Uploader.Classer;
 	return {
-		isLogged: Logged
+		isLogged: Logged,
+		Uploader: Uploader
 	};
 };
 

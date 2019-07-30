@@ -1,0 +1,53 @@
+.uploader.visible {
+    z-index: 10;
+    overflow: hidden;
+    border: 1px solid #000;
+    border-radius: 10px;
+    position: absolute;
+    margin: 0 auto;
+    display: flex;
+    padding: 20px;
+    width: 80%;
+    height: auto;
+    flex-direction: column;
+    justify-content: flex-start;
+    background-color: #fff;
+    color: #000;
+}
+
+.uploader.none {
+    display: none;
+}
+
+.uploader.visible input[type=file] {
+    display: none;
+}
+
+.uploader.visible div.Body {
+    background-color: #ccc;
+    border-radius: 15px;
+}
+
+.uploader.visible div.Body p {
+    margin: 0;
+    padding: 4px;
+}
+
+.uploader.visible div.Body span {
+    cursor: pointer;
+    padding: 4px;
+    margin: 0;
+    background-color: #ffad26;
+    color: #5e4118;
+    border: 1px solid #5e4118;
+    border-radius: 0 15px 15px 0;
+}
+
+.uploader.visible button {
+}
+
+.uploader.visible div{
+    margin: 10px 0;
+    display: flex;
+    justify-content: space-between;
+}

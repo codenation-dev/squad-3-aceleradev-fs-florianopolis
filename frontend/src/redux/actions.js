@@ -9,6 +9,7 @@ export const REQUEST_FETCH = "REQUEST_FETCH";
 export const REQUEST_RESULT = "REQUEST_RESULT";
 export const REQUEST_FAIL = "REQUEST_FAIL";
 export const REQUEST_CLEAR = "REQUEST_CLEAR";
+export const UPLOAD_FILE = "UPLOAD_CSV_FILE";
 
 export const ActionRequestLogin = () => ({type:REQUEST_LOGIN});
 export const ActionFailLogin = () => ({type:FAIL_LOGIN})

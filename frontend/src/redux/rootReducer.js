@@ -29,6 +29,8 @@ const APIData = (state = {}, action) => {
         return {...action.data,Loading:false}
     case "REQUEST_FETCH":
         return {Loading:true}
+    case "REQUEST_CLEAR":
+        return {}
     default:
         return state
     }
@@ -37,7 +39,24 @@ const APIData = (state = {}, action) => {
 const User = (state = {}, action) => {
     switch (action.type) {
         case "LOAD_USER":
-            return action.data 
+            let temp = Object.assign({},state)
+            temp = Object.assign(temp,action.data)
+            return temp
+        case "USER_MODAL":
+            let modal = {EditModal:false,RemoveModal:false}
+            switch(action.modal) {
+                case "EditModal":
+                    modal.EditModal = true
+                    break
+                case "RemoveModal":
+                    modal.RemoveModal = true
+                    break
+                default:
+                    break
+            } 
+            return modal
+        case "REQUEST_CLEAR":
+            return {}
         default:
             return state
     }
@@ -58,5 +77,18 @@ const Notifier = (state = [], action) => {
     }
 }
 
-export const rootReducer = combineReducers({Login:Logged,API:APIData,User: User,Notifier: Notifier})
+const Uploader = (state = {Classer:false}, action) => {
+    switch(action.type) {
+        case "OPEN_UPLOADER":
+            return {Classer:true}
+        case "CLOSE_UPLOADER":
+            return {Classer:false}
+        case "REQUEST_CLEAR":
+            return {Classer:false}
+        default:
+            return state
+    }
+}
+
+export const rootReducer = combineReducers({Login:Logged,API:APIData,User: User,Notifier: Notifier,Uploader: Uploader})
     
