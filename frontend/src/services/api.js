@@ -2,6 +2,7 @@ import axios from "axios";
 
 const BASE_URL = "http://localhost:8921";
 
+
 export const login = async (LoginFields) => {
     let URL = (BASE_URL+"/auth")
     let tryIt = await axios.post(`${URL}`,{
@@ -29,6 +30,10 @@ export const request = async (token,endpoint,...args) => {
             break;
         case 'Delete':
             Addr = `/mails/${args[0].id}/delete`
+            break;
+        case 'DataScience':
+            Addr = '/tables';
+            break;
         default:
             break;
     }

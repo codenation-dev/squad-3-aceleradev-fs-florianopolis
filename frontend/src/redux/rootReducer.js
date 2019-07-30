@@ -90,5 +90,15 @@ const Uploader = (state = {Classer:false}, action) => {
     }
 }
 
+const DataScience = (state = {}, action) => {
+    switch(action.type) {
+        case "SET_DS":
+            return action.DataScience
+        default:
+            return state
+    }
+
+}
+
 export const rootReducer = combineReducers({Login:Logged,API:APIData,User: User,Notifier: Notifier,Uploader: Uploader})
     

@@ -60,8 +60,8 @@ const Register = props => {
 			<Edit />
             <Remove />
 			<div class="row">
-				<div class="col-12 col-md-6">
-					<h2>Registro de email</h2>
+				<div class="col">
+					<h2 class="boxTitle">Registro de email</h2>
 					<form>
 						<label for="Nome">Nome</label>
 						<input onChange={handleChange} required type="text" id="Nome" />
@@ -78,8 +78,8 @@ const Register = props => {
 						</button>
 					</form>
 				</div>
-				<div class="col-12 col-md-6" id="Registred">
-					<h2>Emails Ja Registrados</h2>
+				<div class="col" id="Registred">
+					<h2 class="boxTitle">Emails Ja Registrados</h2>
 					<table>
 						<thead>
 							<th>Nome</th>

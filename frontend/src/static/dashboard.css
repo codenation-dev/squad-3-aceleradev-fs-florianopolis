@@ -1,15 +1,18 @@
 div.Dash {
     display: flex;
-    align-content: space-around;
 }
 
 div.options {
-    text-align: center;
-    width: 40%;
+    text-align: left;
+    width: 25%;
     color: #444;
-    border: #ccc 1px solid;
-    border-radius: 5px;
+    border-right: #CCC 1px solid;
     display: inline-block;
+    padding-bottom: 5px;
+}
+
+div.options h1 {
+    padding-left: 10px;
 }
 
 div.options ul {
@@ -22,11 +25,12 @@ div.options ul li:hover {
 }
 
 div.options ul li {
-    width: 100%;
     list-style: none;
+    padding-left: 15px;
 }
 
 div.options ul li.active {
+    width: calc( 100% - 15px);
     background-color: #ffd351;
     color: #222;
 }
@@ -37,11 +41,11 @@ span.selected {
 
 div.FilterContainer {
     margin-top: 0;
-    width: 55%;
-    margin-left: 5%;
-    border: #ccc 1px solid;
+    width: 75%;
     border-radius: 5px;
     display: inline-block;
+    padding-left: 2.5%;
+    padding-right: 2.5%;
 }
 
 div.FilterContainer .FilterItem {
@@ -50,6 +54,36 @@ div.FilterContainer .FilterItem {
 
 div.FilterContainer .ActiveItem {
     display: block;
+}
+
+h2 {
+    width: 100%;
+    padding: 15px;
+    text-align: center;
+    font-size: 150%;
+}
+
+p.desc {
+    background-color: #ccc;
+    width: calc( 100% - 10px);
+    margin: 10px 0;
+}
+
+span.desc {
+    background-color: #ffd351;
+    color: #222;
+}
+
+div.Charter * {
+    font-size: 98%;
+}
+
+div.Charter {
+    margin: 0 auto;
+}
+
+*.desc {
+    display: inline-block;
 }
 
 @media (max-width: 768px) {
@@ -73,6 +107,9 @@ div.FilterContainer .ActiveItem {
 
     span.selected {
         display: block;
+        text-align: center;
+        width: auto;
+        background-color: #ccc;
     }
 
     div.options ul.Expand {
@@ -83,9 +120,24 @@ div.FilterContainer .ActiveItem {
         width: 50%;
     }
 
+    div.options ul li {
+        padding-left: 0;
+        width: 100%;
+    }
+    
+    div.options ul li.active {
+        width: 100%;
+    }
+
     div.FilterContainer {
         margin-top: 25px;
         width: 100%;
         margin-left: 0;
     }
+}
+
+@media (min-width: 768px) {
+    div.options {
+    height: calc( 100vh - 80px);
+ }
 }

@@ -24,7 +24,8 @@ const Uploader = (props) => {
     }
 
     return (
-        <div className={props.Uploader?"uploader visible":"uploader none"}>
+        <div className={props.Uploader?"SuperBox":"none"}>
+        <div className="uploader">
             <div className="Head">
             <h3>Upload Client List</h3>
             <span onClick={props.closeUploader}>{CloseIcon()}</span>
@@ -34,6 +35,7 @@ const Uploader = (props) => {
             <input id="FileSelecter" onChange={handleFile} type="file" name="file" />
             </div>
             <button onClick={()=> {props.loadFile(buffer)}}>Upload Client List </button>
+        </div>
         </div>
     )
 }

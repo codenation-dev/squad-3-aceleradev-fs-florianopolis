@@ -1,69 +1,99 @@
 div#Registred {
-    margin: 0 auto;
-    text-align: left;
+	margin: 0 auto;
+	text-align: left;
 }
 
 div#Registred table {
-    margin: 0 auto;
-    border: 1px solid;
-    width: 95%;
+	margin: 10px auto;
+	border: 1px solid;
+	width: 95%;
 }
 
 div#Registred table th {
-    color: 000;
+	color: 000;
 }
 
 .col-12 {
-    margin-bottom: 15px;
+	margin-bottom: 15px;
 }
 
-th, td {
-    padding: 10px;
-    text-align: left;
+th,
+td {
+	padding: 10px;
+	text-align: left;
 }
 
 form {
-    margin: 0 auto;
-    font-size: 115%;
-    text-align: center;
+	margin: 0 auto;
+	font-size: 115%;
+	text-align: center;
 }
 
 form * {
-    display: block;
-    margin: 5px auto;
+	display: block;
+	margin: 5px auto;
 }
 
 form input {
-    width: 90%;
+	width: 90%;
 }
 
 form button {
-    width: 40%;
-    margin: 0 auto;
+	width: 40%;
+    margin: 15px auto;
+    
 }
 
-h2 {
-    width: 100%;
-    padding: 15px;
+h2.boxTitle {
     background-color: #ffd351;
-    text-align: center;
+    padding-left: 0;
+    padding-right: 0;
+    border-radius: 10px 10px 0 0;
 }
 
 input {
-    margin: 0 auto;
-    width: 90%;
-    background-color: #dfe0df;
-    border: none;
-    border-radius: 10px;
-    padding: 5px;
+	margin: 0 auto;
+	width: 90%;
+	background-color: #dfe0df;
+	border: none;
+	border-radius: 10px;
+	padding: 5px;
 }
 
 td span {
-    padding: 5px;
-    background-color: #006b60;
-    color: #fff;
-    border: #006672 1px solid;
-    border-radius: 5px;
-    font-size: 75%;
+    overflow: hidden;
+	padding: 5px;
+	border-radius: 5px;
+	font-size: 75%;
     margin: 1px;
+    color: #723800;
+}
+
+td span:hover {
+    color: #ffad26;
+}
+
+.row {
+    padding-top: 5px;
+    width: 100%;
+    display: flex;
+}
+
+@media (max-width:768px) {
+    
+    .col {
+        width: 100%;
+    }
+
+    .row {
+        flex-wrap: wrap;
+    }
+}
+
+@media (min-width:768px) {
+    .col {
+        display: inline-block;
+        width: 48%;
+        margin: 0 1%;
+    }
 }

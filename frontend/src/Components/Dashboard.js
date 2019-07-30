@@ -1,5 +1,9 @@
-import React,{useState, Fragment} from 'react';
+import React,{useState,useEffect, Fragment} from 'react';
 import '../static/dashboard.css';
+import {connect} from 'react-redux';
+import { REQUEST_FETCH } from "../redux/actions";
+import Charter from './Charts';
+import Loading from '../Helpers/Loading'
 
 const Selecter = (props) => {
     let selfHandler = () => {
@@ -14,7 +18,7 @@ const SelecterList = (props) => {
     return (<ul className={expander()}>{itensList}</ul>)}
 
 const ItemList = (props) => {
-    let itensList = props.Options.map(x=><Item selected={props.Selected===x.value} Render={<h2>example {x.value}</h2>}/>)
+    let itensList = props.Options.map(x=><Item selected={props.Selected===x.value} Render={<Fragment><h2>{x.value}</h2><p className="desc"><span className="desc">Descrição :&nbsp;</span> {x.desc}</p><div className="Charter"><Charter type={x.type} data={x.dsmap} /></div></Fragment>}/>)
     return (<div className="FilterContainer">{itensList}</div>)
 }    
 
@@ -25,7 +29,9 @@ const Item = (props) => {
 
 const Dashboard = (props) => {
     
-    const [select, setSelect] = useState("None")
+    let selectOptions = () => (props.DataScience?[{value:"Media Mensal",dsmap:props.DataScience.months,type:"Line",desc:"Media mensal de pagamento"},{value:"Organizações Mais Caras",type:"",dsmap:props.DataScience.orgs,desc:"Media das organizações com a folha de pagamento mais alta"},{value:"Cargos Mais Bem Pagos",dsmap:props.DataScience.pos,type:"",desc:"Cargos com maior remuneração"}]:[])
+
+    const [select, setSelect] = useState("Selecione um grafico para exibir")
 
     const [expander, setExpander] = useState(false)
 
@@ -41,12 +47,35 @@ const Dashboard = (props) => {
         console.log(expander)
     }
 
-    return (<div className="Dash"><div className="options"><h1>Filter</h1>
+    useEffect(()=>{
+        if (props.DataScience === undefined){
+            if (props.Loading === false || props.Loading === undefined) {
+                props.GetDS()
+            }
+        }
+    })
+
+    const RenderMe = () => (<div className="Dash"><div className="options"><h1>Graficos</h1>
     <span onClick={handleExpander} className="selected">{select}</span>
-    <SelecterList Expanded={expander} Selected={select} onPress={handleClick} Options={[{value:"Test1"},{value:"Test2"},{value:"Test3"}]}/>
+    <SelecterList Expanded={expander} Selected={select} onPress={handleClick} Options={selectOptions()}/>
     </div>
-    <ItemList Selected={select} Options={[{value:"Test1"},{value:"Test2"},{value:"Test3"}]}/>
-    </div>);
+    <ItemList Selected={select} Options= {selectOptions()}/>
+    </div>)
+
+    return (<Loading Loaded={RenderMe}/>)
 }
 
-export default Dashboard;
+const mapStateToProps = state => {
+    return {
+        DataScience: state.API.DataResum,
+        Loading: state.API.Loading
+    }
+}
+
+const mapDispatchToProps = dispatch => {
+    return {
+        GetDS: () => dispatch({type: REQUEST_FETCH, endpoint: "DataScience"})
+    }
+}
+
+export default connect(mapStateToProps,mapDispatchToProps)(Dashboard);

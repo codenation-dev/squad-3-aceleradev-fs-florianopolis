@@ -1,7 +1,6 @@
 
 nav {
     background-color: #ffad26;
-    width: 100%;
     height: auto;
     border-bottom: 1px solid #5e4118;
     padding: 10px 10%;
@@ -60,6 +59,10 @@ nav h1 {
     padding: 0;
     margin: 0;
     align-content: center;
+}
+
+div.navLinks {
+    margin: auto 0;
 }
 
 .Expander {
