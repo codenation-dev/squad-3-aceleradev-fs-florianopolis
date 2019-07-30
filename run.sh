@@ -4,6 +4,18 @@ goGetFile="/interfaces/files/"
 goAPI="/interfaces/"
 goEmailSender="/services/MailSender/"
 reactpath="/frontend/"
+uiAddUser="/adduser/"
+
+cd $path$uiAddUser
+if [ ! -e "./adduser" ]; then
+  echo "Build adduser..."
+  go build ./
+  echo "Running adduser"
+  ./adduser
+else
+  echo "Running adduser"
+  ./adduser
+fi
 
 cd $path$goGetFile
 if [ ! -e "./files" ]; then
