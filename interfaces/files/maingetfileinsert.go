@@ -15,7 +15,7 @@ const (
 )
 
 func main() {
-	if !true {
+	if true {
 		logs.Info("Start App", "The application was Started")
 		wg := &sync.WaitGroup{}
 		wg.Add(2)
