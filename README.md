@@ -17,40 +17,41 @@ This project use:
 ## 1. FrontEnd
   "axios": "^0.19.0", <br />
   "react": "^16.8.6", <br />
-  "react-dom": "^16.8.6",
-  "react-redux": "^7.1.0",
-  "react-redux-es": "^4.4.5",
-  "react-router": "^5.0.1",
-  "react-router-dom": "^5.0.1",
-  "react-scripts": "3.0.1",
-  "recharts": "^1.6.2",
-  "redux": "^4.0.4",
-  "redux-persist": "^5.10.0",
-  "redux-saga": "^1.0.5",
-  "saga": "^4.0.0-alpha"
+  "react-dom": "^16.8.6", <br />
+  "react-redux": "^7.1.0", <br />
+  "react-redux-es": "^4.4.5",  <br />
+  "react-router": "^5.0.1",  <br />
+  "react-router-dom": "^5.0.1",  <br />
+  "react-scripts": "3.0.1",  <br />
+  "recharts": "^1.6.2",  <br />
+  "redux": "^4.0.4",  <br />
+  "redux-persist": "^5.10.0",  <br />
+  "redux-saga": "^1.0.5",  <br />
+  "saga": "^4.0.0-alpha"  <br />
 ## 2.1. BackEnd GO
-  "github.com/dgrijalva/jwt-go"
-	"github.com/gorilla/context"
-	"github.com/gorilla/mux"
-  "github.com/gorilla/handlers"
-	"golang.org/x/crypto/bcrypt"
-  "github.com/howeyc/gopass"
-  "github.com/stretchr/testify/assert"
-  "github.com/go-sql-driver/mysql"
-  "github.com/robfig/cron"
+  "github.com/dgrijalva/jwt-go"  <br />
+  "github.com/gorilla/context"  <br />
+  "github.com/gorilla/mux"  <br />
+  "github.com/gorilla/handlers"  <br />
+  "golang.org/x/crypto/bcrypt"  <br />
+  "github.com/howeyc/gopass"  <br />
+  "github.com/stretchr/testify/assert"  <br />
+  "github.com/go-sql-driver/mysql"  <br />
+  "github.com/robfig/cron"  <br />
 ## 2.2. BackEnd Python 3
-  mysql.connector
-  numpy
-  collections
-  operator
-## 2.3. DataBase Mysql
+  mysql.connector  <br />
+  numpy  <br />
+  collections  <br />
+  operator  <br />
+## 2.3. MySQL Database
   MySQL 8.0.10 or MariaDB 10.3 or Latest versions
   
 ## How to install
-Add environment variables into your ~/.bash file or ~/.zshrc 
-  export MYSQL_HOST=127.0.0.1
-  export MYSQL_PORT=3306
-  export MYSQL_USER={YourUserDbName}
-  export MYSQL_PASSWORD={YourUserDbPassword}
-  export MYSQL_DATABASE={YourDbName}
-  export LOG_PATH={YourLogPath}
+Add environment variables into your ~/.bash file or ~/.zshrc  <br />
+  export MYSQL_HOST=127.0.0.1  <br />
+  export MYSQL_PORT=3306  <br />
+  export MYSQL_USER={YourUserDbName}  <br />
+  export MYSQL_PASSWORD={YourUserDbPassword}  <br />
+  export MYSQL_DATABASE={YourDbName}  <br />
+  export LOG_PATH={YourLogPath}  <br />
+Git clone https://github.com/codenation-dev/squad-3-aceleradev-fs-florianopolis.git
