@@ -29,7 +29,7 @@ const Item = (props) => {
 
 const Dashboard = (props) => {
     
-    let selectOptions = () => (props.DataScience?[{value:"Media Mensal",dsmap:props.DataScience.months,type:"Line",desc:"Media mensal de pagamento"},{value:"Organizações Mais Caras",type:"",dsmap:props.DataScience.orgs,desc:"Media das organizações com a folha de pagamento mais alta"},{value:"Cargos Mais Bem Pagos",dsmap:props.DataScience.pos,type:"",desc:"Cargos com maior remuneração"}]:[])
+    let selectOptions = () => (props.DataScience?[{value:"Media Mensal",dsmap:props.DataScience.months,type:"Line",desc:"Media mensal de pagamento"},{value:"Organizações Mais Caras",type:"",dsmap:props.DataScience.orgs,desc:"Media das organizações com a folha de pagamento mais alta"},{value:"Cargos Mais Bem Pagos",dsmap:props.DataScience.pos,type:"",desc:"Cargos com maior remuneração"},{value:"Faixa Salarial",dsmap:props.DataScience.hist,type:"Specific",desc:"Quantidade por faixa salarial"}]:[])
 
     const [select, setSelect] = useState("Selecione um grafico para exibir")
 
