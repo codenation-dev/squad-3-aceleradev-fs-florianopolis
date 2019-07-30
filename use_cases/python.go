@@ -7,6 +7,24 @@ import (
 	"sync"
 )
 
+// Runs python script that generates the mostCommon.json file which contais
+// data necessary for plotting the histogram.
+func CreateMostCommonTable(wg *sync.WaitGroup) {
+	logs.Info("Python", "Starting mostCommon.py script.")
+
+	cmd := exec.Command("../../use_cases/mostCommon.py")
+
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
+
+	err := cmd.Run()
+	if err != nil {
+		logs.Errorf("Python", err.Error())
+	}
+
+	defer wg.Done()
+}
+
 // Runs python script that generates the topmonths.json file containing a table
 // of the months in which the public servers earned more.
 func CreateBestMonthsTable(wg *sync.WaitGroup) {
