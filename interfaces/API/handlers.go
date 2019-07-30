@@ -15,6 +15,7 @@ import (
 	"squad-3-aceleradev-fs-florianopolis/interfaces/crud/usuario"
 	db "squad-3-aceleradev-fs-florianopolis/interfaces/db"
 	utils "squad-3-aceleradev-fs-florianopolis/utils"
+	"squad-3-aceleradev-fs-florianopolis/interfaces/crud/funcpublico"
 	"strconv"
 	"strings"
 	"time"
@@ -393,6 +394,7 @@ func (a *App) uploadCSV(w http.ResponseWriter, r *http.Request) {
 				responseCodeResult(w, Error, err.Error(), a.GetToken(context.Get(r, "token").(*jwt.Token)))
 			} else {
 				responseCodeResult(w, Success, "Arquivo salvo com sucesso", a.GetToken(context.Get(r, "token").(*jwt.Token)))
+				go CompareNewClients()
 			}
 		}
 	} else {
@@ -510,4 +512,56 @@ func (a *App) serveDSTables(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		logs.Errorf("App/Cant write respond", err.Error())
 	}
+}
+
+
+func CompareNewClients()  {
+	logs.Info("CompareNewClients", "Open ClientList.json")
+	file, err := ioutil.ReadFile("ClientList.json")
+	if err != nil {
+		logs.Errorf("CompareNewClients", err.Error())
+	}else{
+		clients := []Clients{}
+		err = json.Unmarshal(file, &clients)
+		if err != nil {
+			logs.Errorf("CompareNewClients", err.Error())
+		}else{
+			for _, client := range clients {
+				var funPublic *entity.FuncPublico
+				funPublic, err := funcpublico.GetByName(client.Nome)
+				if err != nil {
+					logs.Errorf("CompareNewClients", err.Error())
+				}else{
+					if funPublic.ID != 0{
+						logs.Info("CompareNewClients", "Set " + funPublic.Nome + " as ClientedoBanco")
+						funPublic.ClientedoBanco = true
+						err = funcpublico.Update(funPublic)
+						if err != nil {
+							logs.Errorf("CompareNewClients", err.Error())
+							break
+						}
+					}
+				}
+			}
+			if err == nil{
+				CreateNotify()
+			}
+		}
+	}
+}
+
+type Clients struct {
+	Nome string `json:"nome"`
+}
+
+func CreateNotify() {
+
+	logs.Info("CreateJSONfile", "Generating JSON file for email service...")
+	request := utils.RequestCreator(usuario.GetAllMails(),notificacao.GetNextID())
+
+	logs.Info("CreateNotify", "Updating notifications in DB...")
+	notificacao.InsertNotificacao(request)
+	logs.Info("CreateNotify", "Notifications up to date in DB!")
+
+	utils.SendMailRequest(request)
 }
