@@ -1,7 +1,7 @@
 # UATI BANK CLIENT/PROSPECT FINDER
 
 ## PURPOSE
-Finds public workers from the state of São Paulo that classify as a good
+Finds public servants from the state of São Paulo that classify as a good
 potential client, matches them to existing clients, if relevant, and notifies
 the user by e-mail.
 
@@ -13,7 +13,7 @@ Project being made as a part of an education course on Fullstack Technology by
 Codenation.dev. The UATI bank referenced in this project is fictitious.
 
 ## DEPENDENCIES
-This project use:
+This project uses:
 ## 1. FrontEnd
   "axios": "^0.19.0", <br />
   "react": "^16.8.6", <br />
