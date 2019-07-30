@@ -67,12 +67,12 @@ Nav.propTypes = {
 };
 
 const mapDispatchToProps = dispatch => {
-	return { Logout: () => dispatch({ type: "LOGOUT" }),
-LogConfirm: () => dispatch({type:"LOGGED"}) };
+	return { Logout: () => dispatch({ type: "REQUEST_LOGOUT" }),
+			 LogConfirm: () => dispatch({type:"REFRESH_LOGIN"}) };
 };
 
 const mapStateToProps = state => {
-	const Logged = state;
+	const Logged = state.Login;
 	return {
 		isLogged: Logged
 	};

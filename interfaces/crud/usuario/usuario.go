@@ -9,27 +9,43 @@ import (
 )
 
 //Insert New Usuario
-func Insert(user *entity.Usuario) error {
-	dbi, erro := db.Init()
+func Insert(user *entity.Usuario, dbi *db.MySQLDatabase) error {
+	tx, err := dbi.Database.Begin()
+	if err != nil {
+		return err
+	}
+	defer func() {
+		switch err {
+		case nil:
+			err = tx.Commit()
+		default:
+			tx.Rollback()
+		}
+	}()
+	/*dbi, erro := db.Init() //changed to mock DB for unit test
 	if erro != nil {
 		logs.Errorf("Insert(Usuario)", erro.Error())
 	}
-	defer dbi.Database.Close()
-	if !checkUsuario(user.Email) {
+	defer dbi.Database.Close()*/
+	userAlreadyExists, erro := CheckUsuario(user.Email)
+	if erro != nil {
+		logs.Errorf("Insert(Usuario)", erro.Error())
+	}
+	if !userAlreadyExists {
 		logs.Info("Insert(Usuario)", "Trying to register new ur...")
 		//NULLIF Prevents from creating empty string field in table Usuariose
-		squery := `INSERT INTO USUARIO (usuario, senha, email) VALUES(NULLIF("` + user.Usuario + `",""), NULLIF("` +
-			user.Senha + `",""), NULLIF("` + user.Email + `",""));`
-		result, erro := dbi.Database.Query(squery)
-		defer result.Close()
+		/*squery := `INSERT INTO USUARIO (usuario, senha, email) VALUES(NULLIF("` + user.Usuario + `",""), NULLIF("` +
+		user.Senha + `",""), NULLIF("` + user.Email + `",""));`*/
+		//result, erro := dbi.Database.Query(squery)
+		_, erro := tx.Exec(`INSERT INTO USUARIO (usuario, senha, email) VALUES(NULLIF(?,""), NULLIF(?,""), NULLIF(?,""));`, user.Usuario, user.Senha, user.Email)
+		//defer result.Close()
 		if erro != nil {
 			logs.Errorf("Insert(Usuario)", erro.Error())
 		}
 		return erro
-	} else {
-		logs.Info("Insert(Usuario)", "Email from User already exists")
-		return errors.New("Email from User already exists")
-	}
+	} 
+	logs.Info("Insert(Usuario)", "Email from User already exists")
+	return errors.New("Email from User already exists")
 }
 
 //Delete Usuario by ID
@@ -68,7 +84,27 @@ func Update(user *entity.Usuario) error {
 	return erro
 }
 
-//Get Usuario by ID
+//UpdateWithoutPass Usuario by ID
+func UpdateWithoutPass(user *entity.Usuario) error {
+	dbi, erro := db.Init()
+	if erro != nil {
+		logs.Errorf("Update(Usuario)", erro.Error())
+	}
+	defer dbi.Database.Close()
+	logs.Info("Update(Usuario)", "Trying to update user...")
+	//NULLIF Prevents from creating empty string field in table Usuario
+	squery := `UPDATE USUARIO SET usuario = NULLIF("` + user.Usuario + `",""), email = NULLIF("` + user.Email + `","") WHERE id = ` + strconv.Itoa(user.ID)
+	result, erro := dbi.Database.Query(squery)
+	defer result.Close()
+	if erro != nil {
+		logs.Errorf("Update(Usuario)", erro.Error())
+	} else {
+		logs.Info("Update(Usuario)", "User updated successfully!")
+	}
+	return erro
+}
+
+//GetUsuarioByID Usuario by ID
 func GetUsuarioByID(id int) (*entity.Usuario, error) {
 	dbi, erro := db.Init()
 	if erro != nil {
@@ -90,11 +126,11 @@ func GetUsuarioByID(id int) (*entity.Usuario, error) {
 	return &user, erro
 }
 
-//Check if user already exists before inserting new user (Get Usuario by Email)
-func checkUsuario(email string) bool {
+//CheckUsuario checks if user already exists before inserting new user (Get Usuario by Email)
+func CheckUsuario(email string) (bool, error) {
 	dbi, erro := db.Init()
 	if erro != nil {
-		logs.Errorf("checkUsuario(Usuario)", erro.Error())
+		logs.Errorf("CheckUsuario(Usuario)", erro.Error())
 	}
 	defer dbi.Database.Close()
 	squery := `SELECT * FROM USUARIO WHERE email = "` + email + `";`
@@ -105,18 +141,17 @@ func checkUsuario(email string) bool {
 		for seleciona.Next() {
 			erro := seleciona.Scan(&user.ID, &user.Usuario, &user.Senha, &user.Email)
 			if erro != nil {
-				logs.Errorf("checkUsuario(Usuario)", erro.Error())
+				logs.Errorf("CheckUsuario(Usuario)", erro.Error())
 			}
 		}
 	}
 	if email == user.Email {
-		return true
-	} else {
-		return false
+		return true, erro
 	}
+		return false, erro
 }
 
-//Search user by Mail
+//SearchUsuarioByMail user by Mail
 func SearchUsuarioByMail(email string) (bool, *entity.Usuario) {
 	dbi, erro := db.Init()
 	if erro != nil {
@@ -141,6 +176,7 @@ func SearchUsuarioByMail(email string) (bool, *entity.Usuario) {
 	return false, nil
 }
 
+//GetAllMails get all user mails
 func GetAllMails() []entity.Target {
 	dbi, erro := db.Init()
 	defer dbi.Database.Close()
@@ -155,7 +191,7 @@ func GetAllMails() []entity.Target {
 	var onemail entity.Target
 	if erro == nil {
 		for seleciona.Next() {
-			erro := seleciona.Scan(&onemail.Name, &onemail.Mail,&onemail.ID)
+			erro := seleciona.Scan(&onemail.Name, &onemail.Mail, &onemail.ID)
 			if erro != nil {
 				logs.Errorf("GetAllMails(Usuario)", erro.Error())
 			}

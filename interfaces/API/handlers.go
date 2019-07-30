@@ -14,6 +14,7 @@ import (
 	"squad-3-aceleradev-fs-florianopolis/interfaces/crud/emailenviado"
 	"squad-3-aceleradev-fs-florianopolis/interfaces/crud/notificacao"
 	"squad-3-aceleradev-fs-florianopolis/interfaces/crud/usuario"
+	db "squad-3-aceleradev-fs-florianopolis/interfaces/db"
 	utils "squad-3-aceleradev-fs-florianopolis/utils"
 	"strconv"
 	"strings"
@@ -78,11 +79,11 @@ func (a *App) mailEdit(w http.ResponseWriter, r *http.Request) {
 	idStr := strings.Trim(ids["id"], " ")
 	id, err := strconv.Atoi(idStr)
 	if err != nil {
-		responseCodeResult(w, Error, "Id não é um número", a.GetToken(context.Get(r, "token").(*jwt.Token)))
+		responseCodeResult(w, 5, "Id não é um número", a.GetToken(context.Get(r, "token").(*jwt.Token)))
 	} else {
 		UsuarioOnDataBase, err := usuario.GetUsuarioByID(id)
 		if err != nil {
-			responseCodeResult(w, Error, err.Error(), a.GetToken(context.Get(r, "token").(*jwt.Token)))
+			responseCodeResult(w, 6, err.Error(), a.GetToken(context.Get(r, "token").(*jwt.Token)))
 		} else {
 			if UsuarioOnDataBase == nil {
 				responseCodeResult(w, Empty, "Usuário não encontrado")
@@ -90,18 +91,24 @@ func (a *App) mailEdit(w http.ResponseWriter, r *http.Request) {
 				userJSON := json.NewDecoder(r.Body)
 				err := userJSON.Decode(&UsuarioRequestUpdate)
 				if err != nil {
-					responseCodeResult(w, Error, err.Error(), a.GetToken(context.Get(r, "token").(*jwt.Token)))
+					responseCodeResult(w, 7, err.Error(), a.GetToken(context.Get(r, "token").(*jwt.Token)))
 				} else {
 					UsuarioRequestUpdate.ID = id
 					Temp := UsuarioRequestUpdate.Senha
+					if (Temp=="") {
+					err = usuario.UpdateWithoutPass(&UsuarioRequestUpdate)
+					} else {
+					
 					pass, err := bcrypt.GenerateFromPassword([]byte(Temp), 10)
 					if err != nil {
-						responseCodeResult(w, Error, err.Error(), a.GetToken(context.Get(r, "token").(*jwt.Token)))
+						responseCodeResult(w, 8, err.Error(), a.GetToken(context.Get(r, "token").(*jwt.Token)))
 					}
 					UsuarioRequestUpdate.Senha = string(pass)
 					err = usuario.Update(&UsuarioRequestUpdate)
+					}
+
 					if err != nil {
-						responseCodeResult(w, Error, err.Error(), a.GetToken(context.Get(r, "token").(*jwt.Token)))
+						responseCodeResult(w, 9, err.Error(), a.GetToken(context.Get(r, "token").(*jwt.Token)))
 					} else {
 						responseCodeResult(w, Success, "Atualizado com Sucesso", a.GetToken(context.Get(r, "token").(*jwt.Token)))
 					}
@@ -154,7 +161,12 @@ func (a *App) mailRegister(w http.ResponseWriter, r *http.Request) {
 			Usuario: Info.Name,
 			Email:   Info.Mail,
 			Senha:   string(crypted)}
-		err := usuario.Insert(&User)
+		dbi, erro := db.Init()     //changed to mock DB for unit test
+		defer dbi.Database.Close() //changed to mock DB for unit test
+		if erro != nil {           //changed to mock DB for unit test
+			logs.Errorf("mailRegister(handlers)", erro.Error()) //changed to mock DB for unit test
+		} //changed to mock DB for unit test
+		err := usuario.Insert(&User, dbi) //changed to mock DB for unit test
 
 		if err != nil {
 			responseCodeResult(w, Error, err.Error(), a.GetToken(context.Get(r, "token").(*jwt.Token)))

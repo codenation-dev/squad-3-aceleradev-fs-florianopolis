@@ -3,20 +3,25 @@ import ReactDOM from 'react-dom';
 import { BrowserRouter as Router } from "react-router-dom";
 import './index.css';
 import App from './App';
-import {createStore} from 'redux';
+import {createStore, applyMiddleware, compose} from 'redux';
 import {Provider} from 'react-redux';
-import Logged from './redux/rootReducer';
+import { rootReducer } from './redux/rootReducer';
 import { persistStore, persistReducer } from 'redux-persist';
 import storage from 'redux-persist/es/storage';
 import { PersistGate } from 'redux-persist/integration/react';
+import  createSagaMiddleware from 'redux-saga'
+import {rootSaga} from './redux/sagas';
 
 const persitConfig = {key:'root',
     storage}
 
-const pReducer = persistReducer(persitConfig, Logged)
+const sagaMiddleware = createSagaMiddleware()
+const pReducer = persistReducer(persitConfig, rootReducer)
 
-const store = createStore(pReducer);//createStore(Logged);
+const store = createStore(pReducer, applyMiddleware(sagaMiddleware));//createStore(Logged);
 const persistor = persistStore(store);
+
+sagaMiddleware.run(rootSaga)
 
 store.subscribe(() => console.log(store.getState()))
 

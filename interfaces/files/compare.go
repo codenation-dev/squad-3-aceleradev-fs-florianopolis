@@ -27,54 +27,16 @@ type Clients struct {
 	Nome string `json:"nome"`
 }
 
-//CSVFile gets info from portaldatransparencia csv file
-type CSVFile struct {
-	Name         string
-	FullPath     string
-	TotalOfLines int64
-}
-
 //LineInterval defines start/end line for each csvfile part to be processed by goroutines
 type LineInterval struct {
 	Start int64
 	End   int64
 }
 
-//getInfoFromCSVFile gets info from portaldatransparencia csv file
-/*func getInfoFromCSVFile() (*CSVFile, error) {
-	workPath, err := getFileName()
-	csvFile := new(CSVFile)
-	if err != nil {
-		logs.Errorf("openFileCSV", err.Error())
-		return csvFile, err
-	}
-	fileName := getLastFiles(workPath.Directory, 1, ".txt")
-	fullPath := workPath.Directory + fileName[0]
-	csvFile.FullPath = fullPath
-	csvFile.Name = fileName[0]
-	cmd := exec.Command("bash", "-c", "cat "+fullPath+" | wc -l")
-	var out bytes.Buffer
-	cmd.Stdout = &out
-	err = cmd.Run()
-	if err != nil {
-		return csvFile, err
-	}
-
-	numberStr := strings.Trim(out.String(), "\"")
-	numberStr = strings.ReplaceAll(numberStr, "\n", "")
-	numLines, err := strconv.ParseInt(numberStr, 10, 64)
-	if err != nil {
-		return nil, err
-	}
-	csvFile.TotalOfLines = numLines - 1
-	return csvFile, nil
-}*/
-
 //ProcessMultiLinesCSVFile process data from csv in DB
 func ProcessMultiLinesCSVFile() error {
 	var line LineInterval
 	var lines []LineInterval
-	//csvFileInfo, err := getInfoFromCSVFile()
 	CSVLines, err := openCSV() //CSVLines is the array of csv data (portaldatransparencia)
 	arrayTotalLines := int64(len(CSVLines))
 	linesByGoRotine := int64(100000)
@@ -93,16 +55,10 @@ func ProcessMultiLinesCSVFile() error {
 			//TotalGoRotine++ //len(lines)
 		}
 	} else {
-		line.End = arrayTotalLines
+		line.End = arrayTotalLines - 1
 		lines = append(lines, line)
 	}
-	//fmt.Println(lines)
-	//fmt.Println("len(lines):", len(lines))
-	//fmt.Println("Num Lines CSV File:", csvFileInfo.TotalOfLines)
-	//CSVLines, err := openCSV()
-	//fmt.Println("Num Lines Array:", len(CSVLines))
 	wg := &sync.WaitGroup{}
-	//wg.Add(TotalGoRotines)
 	wg.Add(len(lines))
 	for i := 0; i < len(lines); i++ {
 		//GOROUTINE
@@ -116,9 +72,6 @@ func ProcessMultiLinesCSVFile() error {
 }
 
 func PersistLinesInDb(wg *sync.WaitGroup, CSVLines [][]string, pStart int64, pEnd int64) {
-	//func PersistLinesInDb(pStart int64, pEnd int64) {
-	//iterates through file defined part
-	//for j := pStart; j < pEnd; j++ { (trocado para <= pois precisa ler a última linha do intervalo inclusive)
 	for j := pStart; j <= pEnd; j++ {
 		err := persistPessoa(CSVLines[j])
 		if err != nil {

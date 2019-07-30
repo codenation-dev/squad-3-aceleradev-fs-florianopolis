@@ -1,33 +1,87 @@
-import React,{Fragment} from 'react';
+import React,{useEffect,useState,Fragment} from 'react';
 import '../static/register.css';
+import {connect} from 'react-redux';
+import {REQUEST_FETCH} from '../redux/actions'
+import {withRouter} from 'react-router-dom';
+import Loading from '../Helpers/Loading';
 
-const Register = () => {
-    return(<Fragment>
+const Register = (props) => {
+
+    let [name,setName] = useState("")
+    let [email,setEmail] = useState("")
+    let [ctr,setCtr] = useState(false)
+    
+    useEffect(() => {
+        if (ctr===false){
+            setCtr(true)
+            props.userMailList()
+        }
+    })
+
+    const handleChange = e => {
+        switch (e.target.id) {
+            case "Nome":
+                setName(e.target.value)
+                break;
+            case "Email":
+                setEmail(e.target.value)
+                break;
+            default:
+                break;
+        }
+    }
+
+    const handleClick = x => {
+        props.userSelect(x)
+        props.history.push('/mailedit')
+    }
+   
+    let RenderMails = () => (props.Users?props.Users.map(x=>(<tr><td>{x.Name}</td><td>{x.Mail}</td><td><button onClick={()=>handleClick(x)}>Actions</button></td></tr>)):"")
+
+    let Fields = {Name:name,Mail:email}
+    const RenderMe = () => (<Fragment>
         <div class="row">
         <div class="col-12 col-md-6">
         <h2>Registro de email</h2>
         <form>
             <label for="Nome">Nome</label>
-            <input type="text" id="Nome"/>
+            <input onChange={handleChange} required type="text" id="Nome"/>
             <label for="email">E-mail</label>
-            <input type="email" id="Email"/>
-            <label for="Senha">Senha</label>
-            <input type="password" id="Senha"/>
-            <button type="submit">Register</button>
+            <input onChange={handleChange} required type="email" id="Email"/>
+            <button type="submit" onClick={e => {e.preventDefault(); props.userRegister(Fields)}}>Register</button>
         </form>
         </div>
         <div class="col-12 col-md-6" id="Registred">
         <h2>Emails Ja Registrados</h2> 
         <table>
-          <tr>
+          <thead>
           <th>Nome</th>
           <th>Email</th>
           <th>Ações</th> 
-          </tr> 
+          </thead> 
+          <tbody>
+          {RenderMails()}
+          </tbody>
         </table>
         </div>
         </div>
     </Fragment>)
+    return (<Loading Loaded={RenderMe}/>)
 }
 
-export default Register;
+const mapStateToProps = state => {
+    return {
+        Users: state.API.UsermailList,
+        Loading: state.API.Loading
+    }
+}
+
+const mapDispatchToProps = dispatch => {
+    return {
+        userMailList: () => dispatch({type:REQUEST_FETCH,endpoint:"Users"}),
+        userRegister: (Fields) => dispatch({type:REQUEST_FETCH,endpoint:"UserAdd",args: Fields}),
+        userSelect: (x) => dispatch({type:"LOAD_USER",data:x})
+    }
+}
+
+export default connect(mapStateToProps,mapDispatchToProps)(withRouter(Register));
