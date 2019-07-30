@@ -245,7 +245,7 @@ func checkPersonInDB(name string) (bool, int) {
 //func to check if its a client
 func isClient(name string) bool {
 	isClient := false
-	file, erro := ioutil.ReadFile("../API/ClientList.json")
+	file, erro := ioutil.ReadFile("../ClientList.json")
 	if erro != nil {
 		logs.Errorf("isClient", erro.Error())
 	}
