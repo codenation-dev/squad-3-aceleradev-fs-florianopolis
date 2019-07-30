@@ -1,3 +1,23 @@
+// API
+//
+// This aplication compares a given list of clients to data taken from the open
+// API about public servers of the state of São Paulo, Brazil, and serves
+// alerts and analytics to the users.
+//
+//	Schemes: http
+//	Host: localhost:8921
+//	Version: 0.0.1
+//	License: MIT http://opensource.org/liceses/MIT
+//	Contact: Rafael<rfmf@protonmail.com>
+//
+//	Consumes:
+//	- text/plain
+//
+//	Produces:
+//	- text/plain
+//
+//	swagger:meta
+
 package api
 
 import (

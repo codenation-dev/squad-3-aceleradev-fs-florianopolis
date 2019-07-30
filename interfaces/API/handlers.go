@@ -25,10 +25,25 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-func notImplemented(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintf(w, "NotImplemented But Success")
-}
-
+// swagger:operation POST /auth
+//
+// Checks the user credentials and returns a token.
+//
+// consumes:
+// - text/plain
+// produces:
+// - text/plain
+// parameter:
+// - Username: user name
+// - Password: user password
+// responses:
+//  '200':
+//		Result: result of request.
+//		Code: code of response.
+//		Token: The session token.
+//  '401':
+//		Result: Unauthorized Access.
+//		Code: 9
 func (a *App) login(w http.ResponseWriter, r *http.Request) {
 
 	decode := json.NewDecoder(r.Body)
@@ -55,6 +70,24 @@ func (a *App) login(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(Response)
 }
 
+// swagger:operation POST /mails
+//
+// Returns all e-mails registered.
+// ---
+// consumes:
+// - text/plain
+// produces:
+// - text/plain
+// parameters:
+// responses:
+//  '200':
+//   Result: result of request.
+//   Code: code of response.
+//   token: session token.
+//   UsermailList: list of registered e-mails.
+//  '401':
+//   Result: Unauthorized Access.
+//   Code: 9
 func (a *App) mailGeneral(w http.ResponseWriter, r *http.Request) {
 	usersEmails := usuario.GetAllMails()
 	if usersEmails != nil {
@@ -73,6 +106,24 @@ func (a *App) mailGeneral(w http.ResponseWriter, r *http.Request) {
 
 }
 
+// swagger:operation POST /mails/{id}/update id
+//
+// Updates user data.
+// ---
+// consumes:
+// - text/plain
+// produces:
+// - text/plain
+// parameters:
+// - id: user's id
+// responses:
+//  '200':
+//   Result: result of request.
+//   Code: code of response.
+//   token: session token.
+//  '401':
+//   Result: Unauthorized Access.
+//   Code: 9
 func (a *App) mailEdit(w http.ResponseWriter, r *http.Request) {
 	var UsuarioRequestUpdate entity.Usuario
 	ids := mux.Vars(r)
@@ -104,13 +155,7 @@ func (a *App) mailEdit(w http.ResponseWriter, r *http.Request) {
 							responseCodeResult(w, 8, err.Error(), a.GetToken(context.Get(r, "token").(*jwt.Token)))
 						}
 						UsuarioRequestUpdate.Senha = string(pass)
-						//err = usuario.Update(&UsuarioRequestUpdate)
-						dbi, erro := db.Init() //changed to mock DB for unit test
-						if erro != nil {       //changed to mock DB for unit test
-							logs.Errorf("mailEdit(handlers)", erro.Error()) //changed to mock DB for unit test
-						} //changed to mock DB for unit test
-						defer dbi.Database.Close()                       //changed to mock DB for unit test
-						err = usuario.Update(&UsuarioRequestUpdate, dbi) //changed to mock DB for unit test
+						err = usuario.Update(&UsuarioRequestUpdate)
 					}
 
 					if err != nil {
@@ -125,6 +170,24 @@ func (a *App) mailEdit(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+// swagger:operation POST /mails/{id}/delete id
+//
+// Delete user data.
+// ---
+// consumes:
+// - text/plain
+// produces:
+// - text/plain
+// parameters:
+// - id: user's id
+// responses:
+//  '200':
+//   Result: result of request.
+//   Code: code of response
+//   token: session token.
+//  '401':
+//   Result: Unauthorized Access.
+//   Code: 9
 func (a *App) mailDelete(w http.ResponseWriter, r *http.Request) {
 	ids := mux.Vars(r)
 	idStr := strings.Trim(ids["id"], " ")
@@ -139,13 +202,7 @@ func (a *App) mailDelete(w http.ResponseWriter, r *http.Request) {
 			if UsuarioOnDataBase == nil {
 				responseCodeResult(w, Empty, "Usuário não encontrado", a.GetToken(context.Get(r, "token").(*jwt.Token)))
 			} else {
-				//err := usuario.Delete(id)
-				dbi, erro := db.Init() //changed to mock DB for unit test
-				if erro != nil {       //changed to mock DB for unit test
-					logs.Errorf("mailDelete(handlers)", erro.Error()) //changed to mock DB for unit test
-				} //changed to mock DB for unit test
-				defer dbi.Database.Close()     //changed to mock DB for unit test
-				err := usuario.Delete(id, dbi) //changed to mock DB for unit test
+				err := usuario.Delete(id)
 				if err != nil {
 					responseCodeResult(w, Error, err.Error(), a.GetToken(context.Get(r, "token").(*jwt.Token)))
 				} else {
@@ -157,6 +214,24 @@ func (a *App) mailDelete(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+// swagger:operation POST /mails/add
+//
+// Register user.
+// ---
+// consumes:
+// - text/plain
+// produces:
+// - text/plain
+// parameters:
+// - id: user's id
+// responses:
+//  '200':
+//   Result: result of request.
+//   Code: code of response
+//   token: session token.
+//  '401':
+//   Result: Unauthorized Access.
+//   Code: 9
 func (a *App) mailRegister(w http.ResponseWriter, r *http.Request) {
 
 	decode := json.NewDecoder(r.Body)
@@ -205,6 +280,24 @@ func (a *App) mailRegister(w http.ResponseWriter, r *http.Request) {
 
 }
 
+// swagger:operation POST /warn
+//
+// Provides warnings to the user.
+// ---
+// consumes:
+// - text/plain
+// produces:
+// - text/plain
+// parameters:
+// - id: user's id
+// responses:
+//  '200':
+//   Result: result of request.
+//   Code: code of response
+//   token: session token.
+//  '401':
+//   Result: Unauthorized Access.
+//   Code: 9
 func (a *App) warnGeneral(w http.ResponseWriter, r *http.Request) {
 	var DataStruct DataEmailUsuario
 	dateJSON := json.NewDecoder(r.Body)
@@ -234,6 +327,24 @@ func (a *App) warnGeneral(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+// swagger:operation POST /upload
+//
+// Allows the user to upload a client list to the server.
+// ---
+// consumes:
+// - text/plain
+// produces:
+// - text/plain
+// parameters:
+// - id: user's id
+// responses:
+//  '200':
+//   Result: result of request.
+//   Code: code of response
+//   token: session token.
+//  '401':
+//   Result: Unauthorized Access.
+//   Code: 9
 func (a *App) uploadCSV(w http.ResponseWriter, r *http.Request) {
 	list := csv.NewReader(r.Body)
 	var structuredList []ListaClientes
@@ -280,12 +391,26 @@ func responseCodeResult(w http.ResponseWriter, code int, msg string, tk ...strin
 	}
 }
 
-/* function serveDSTables ------------------------------
-* Purpose: Feeds the data generated by the server to the
-*					 client.
-* Params: http.ResponseWriter. *http.Request
-* Returns: json
- */
+// swagger:operation POST /tables
+//
+// Serves the client tables for analysis.
+// ---
+// consumes:
+// - text/plain
+// produces:
+// - text/plain
+// parameters:
+// - id: user's id
+// responses:
+//  '200':
+//   months: percent diference between the month's salary median and the
+//   overall median.
+//   hist: number of public servers divided by salary ranges.
+//   orgs: best paying public organizations.
+//   pos: best paying positions.
+//  '401':
+//   Result: Unauthorized Access.
+//   Code: 9
 func (a *App) serveDSTables(w http.ResponseWriter, r *http.Request) {
 
 	cp, _ := os.Getwd()
