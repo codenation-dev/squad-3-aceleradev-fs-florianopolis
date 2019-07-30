@@ -8,30 +8,22 @@ import numpy as np
 
 
 # Connects to DB
-rows = db.getHistorico()
+rows = db.getFuncPublicoBy("orgao")
 
 
-# Read the json, groups the entries by the 'orgao' field and calculates the
+# Read the DB, groups the entries by the 'orgao' field and calculates the
 # median of 'remuneracaodomes' for the each 'orgao'.
-jsons = []
-for row in rows:
-    jsonData = json.loads(row[2])
-    jsons.append(jsonData)
-
 orgList = []
 orgMedian = {}
-
-for data in jsons:
-    for entry in data:
-        if entry['orgao'] not in orgList:
-            orgList.append(entry['orgao'])
-            orgRem = []
-            for data2 in jsons:
-                for entry2 in data2:
-                    if entry2['orgao'] == entry['orgao']:
-                        orgRem.append(entry2['remuneracaodomes'])
-            median = np.median(orgRem)
-            orgMedian[entry['orgao']] = median
+for row in rows:
+    if row[0] not in orgList:
+        orgList.append(row[0])
+        orgRem = []
+        for row2 in rows:
+            if row2[0] == row[0]:
+                orgRem.append(row2[1])
+        median = np.median(orgRem)
+        orgMedian[row[0]] = median
 
 # Sorts list from the highest 'remuneracaodomes' to the lowest.
 sortedList = OrderedDict(sorted(orgMedian.items(), key=itemgetter(1),
