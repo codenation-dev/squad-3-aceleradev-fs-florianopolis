@@ -12,7 +12,6 @@ import (
 func TestInsert(t *testing.T) {
 	// Creates sqlmock database connection and a mock to manage expectations
 	dbm, mock, err := sqlmock.New()
-	//dbm, mock, err := New()
 	defer dbm.Close()
 	if err != nil {
 		t.Fatalf("an error '%s' was not expected when opening a stub database connection", err)

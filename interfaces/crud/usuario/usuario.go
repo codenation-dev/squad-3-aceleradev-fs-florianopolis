@@ -8,7 +8,7 @@ import (
 	"strconv"
 )
 
-//Insert New Usuario
+//Insert New Usuario in DB
 func Insert(user *entity.Usuario, dbi *db.MySQLDatabase) error {
 	tx, err := dbi.Database.Begin()
 	if err != nil {
