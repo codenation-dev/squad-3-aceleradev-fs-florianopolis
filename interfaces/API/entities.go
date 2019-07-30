@@ -34,6 +34,7 @@ type App struct {
 
 //DataEmailUsuario define json struct
 type DataEmailUsuario struct{
+	ID	  int		 `json:"id"`
 	Data  time.Time   `json:"data"`
 }
 

@@ -1,6 +1,7 @@
 package api
 
 import (
+	"time"
 	"bytes"
 	"encoding/csv"
 	"encoding/json"
@@ -300,13 +301,23 @@ func (a *App) mailRegister(w http.ResponseWriter, r *http.Request) {
 //   Code: 9
 func (a *App) warnGeneral(w http.ResponseWriter, r *http.Request) {
 	var DataStruct DataEmailUsuario
+	var Data time.Time
 	dateJSON := json.NewDecoder(r.Body)
 	err := dateJSON.Decode(&DataStruct)
 	if err != nil && err != io.EOF {
 		responseCodeResult(w, Error, err.Error())
 	} else {
 		var warn Warn
-		Notificacao, err := notificacao.Get(DataStruct.Data)
+		var Notificacao *entity.Notificacao
+		if DataStruct.Data != Data {
+			Notificacao, err = notificacao.Get(DataStruct.Data)
+		}else{
+			if DataStruct.ID != 0 {
+				Notificacao, err = notificacao.GetByID(DataStruct.ID)
+			}else{
+				Notificacao, err = notificacao.Get(DataStruct.Data)
+			}
+		}
 		if err != nil {
 			responseCodeResult(w, Error, err.Error())
 		}
