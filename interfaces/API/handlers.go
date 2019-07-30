@@ -167,7 +167,7 @@ func (a *App) mailEdit(w http.ResponseWriter, r *http.Request) {
 					if err != nil {
 						responseCodeResult(w, 9, err.Error(), a.GetToken(context.Get(r, "token").(*jwt.Token)))
 					} else {
-						responseCodeResult(w, Success, "Atualizado com Sucesso", a.GetToken(context.Get(r, "token").(*jwt.Token)))
+						responseCodeResult(w, 12, "Atualizado com Sucesso", a.GetToken(context.Get(r, "token").(*jwt.Token)))
 					}
 				}
 			}
@@ -218,7 +218,7 @@ func (a *App) mailDelete(w http.ResponseWriter, r *http.Request) {
 				if err != nil {
 					responseCodeResult(w, Error, err.Error(), a.GetToken(context.Get(r, "token").(*jwt.Token)))
 				} else {
-					responseCodeResult(w, Success, "Deletado com Sucesso", a.GetToken(context.Get(r, "token").(*jwt.Token)))
+					responseCodeResult(w, 14, "Deletado com Sucesso", a.GetToken(context.Get(r, "token").(*jwt.Token)))
 				}
 			}
 		}

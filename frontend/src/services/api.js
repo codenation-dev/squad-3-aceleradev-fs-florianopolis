@@ -2,7 +2,6 @@ import axios from "axios";
 
 const BASE_URL = "http://localhost:8921";
 
-
 export const login = async (LoginFields) => {
     let URL = (BASE_URL+"/auth")
     let tryIt = await axios.post(`${URL}`,{

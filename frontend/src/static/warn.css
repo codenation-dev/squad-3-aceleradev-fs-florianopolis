@@ -1,0 +1,19 @@
+div.GeneralDiv {
+    display: flex;
+}
+
+#WarnG {
+    border: 1px solid #ccc;
+    padding: 15px;
+    width: 75%;
+}
+
+.FilterWarn {
+    border: 1px solid #ccc;
+    padding: 5px;
+    width: 25%;
+}
+
+.FilterWarn * {
+    margin: 8px;
+}

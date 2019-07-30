@@ -22,13 +22,15 @@ const Logged = (state = {value:false,firstLogin:false,token:""}, action) => {
 }
 
 const APIData = (state = {}, action) => {
+    let temp = Object.assign({},state)
+    temp = Object.assign(temp,action.data)
     switch (action.type) {
     case "REQUEST_RESULT":
-        return {...action.data,Loading:false}
+        return {...temp,Loading:false}
     case"REQUEST_FAIL":
-        return {...action.data,Loading:false}
+        return {...temp,Loading:false}
     case "REQUEST_FETCH":
-        return {Loading:true}
+        return {...temp,Loading:true}
     case "REQUEST_CLEAR":
         return {}
     default:

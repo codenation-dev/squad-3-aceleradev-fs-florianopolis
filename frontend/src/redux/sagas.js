@@ -64,13 +64,14 @@ function* APICall(action) {
 					yield put(
 						AddNotify({ type: "Info", message: "Mudanças Salvas Com Sucesso" })
 					);
+					yield put({ type: REQUEST_FETCH, endpoint: "Users" });
 					break;
 				case 14:
 					yield put(ActionRefreshLogin(data.token));
 					yield put(
 						AddNotify({ type: "Info", message: "Usuario removido com Sucesso" })
 					);
-
+					yield put({ type: REQUEST_FETCH, endpoint: "Users" });
 					break;
 				default:
 					yield put(APIFetchFail(data));
