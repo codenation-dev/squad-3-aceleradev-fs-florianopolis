@@ -347,13 +347,6 @@ func (a *App) serveDSTables(w http.ResponseWriter, r *http.Request) {
 		jsonFile.Close()
 	}
 
-	type finalDSJson struct {
-		Hist   map[string]int     `json:"hist"`
-		Months map[string]float64 `json:"months"`
-		Orgs   map[string]float64 `json:"orgs"`
-		Pos    map[string]float64 `json:"pos"`
-	}
-
 	jsonToServe := finalDSJson{
 		Hist:   mostCommon,
 		Months: bestMonths,
@@ -361,10 +354,13 @@ func (a *App) serveDSTables(w http.ResponseWriter, r *http.Request) {
 		Pos:    bestPos,
 	}
 
-	marsh, err := json.Marshal(jsonToServe)
+	var Response Result
+	Response.DataResum = &jsonToServe
+	Response.Code = Success
+	Response.Result = "Success Fetch DataScience Info"
+	Response.Token = a.GetToken(context.Get(r, "token").(*jwt.Token))
+	err := json.NewEncoder(w).Encode(Response)
 	if err != nil {
-		logs.Errorf("Can't marshal DS Tables.", err.Error())
+		logs.Errorf("App/Cant write respond", err.Error())
 	}
-
-	w.Write(marsh)
 }

@@ -14,7 +14,7 @@ const (
 	Error   = 3
 	//Unauth Code for response
 	Unauth = 9
-	
+
 	changesSave = 12
 
 	fileUploadedSuccess = 13
@@ -50,13 +50,21 @@ type Result struct {
 	Token     string   `json:"token,omitempty"`
 	Warn      *Warn     `json:"Warn,omitempty"`
 	Mail      *entity.Target `json:"Mail,omitempty"`
-	DataResum *Resum    `json:"DataResum,omitempty"`
+	DataResum *finalDSJson    `json:"DataResum,omitempty"`
 	Usermails *[]entity.Target `json:"UsermailList,omitempty"`
 }
 
 //ListaClientes define json struct
 type ListaClientes struct {
 	Nome string `json:"nome,omitempty"`
+}
+
+
+type finalDSJson struct {
+	Hist   map[string]int     `json:"hist"`
+	Months map[string]float64 `json:"months"`
+	Orgs   map[string]float64 `json:"orgs"`
+	Pos    map[string]float64 `json:"pos"`
 }
 
 type Resum entity.Resum
