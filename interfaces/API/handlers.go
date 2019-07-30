@@ -95,16 +95,16 @@ func (a *App) mailEdit(w http.ResponseWriter, r *http.Request) {
 				} else {
 					UsuarioRequestUpdate.ID = id
 					Temp := UsuarioRequestUpdate.Senha
-					if (Temp=="") {
-					err = usuario.UpdateWithoutPass(&UsuarioRequestUpdate)
+					if Temp == "" {
+						err = usuario.UpdateWithoutPass(&UsuarioRequestUpdate)
 					} else {
-					
-					pass, err := bcrypt.GenerateFromPassword([]byte(Temp), 10)
-					if err != nil {
-						responseCodeResult(w, 8, err.Error(), a.GetToken(context.Get(r, "token").(*jwt.Token)))
-					}
-					UsuarioRequestUpdate.Senha = string(pass)
-					err = usuario.Update(&UsuarioRequestUpdate)
+
+						pass, err := bcrypt.GenerateFromPassword([]byte(Temp), 10)
+						if err != nil {
+							responseCodeResult(w, 8, err.Error(), a.GetToken(context.Get(r, "token").(*jwt.Token)))
+						}
+						UsuarioRequestUpdate.Senha = string(pass)
+						err = usuario.Update(&UsuarioRequestUpdate)
 					}
 
 					if err != nil {
@@ -289,6 +289,7 @@ func (a *App) serveDSTables(w http.ResponseWriter, r *http.Request) {
 	bestMonths := make(map[string]float64)
 	bestOrgs := make(map[string]float64)
 	bestPos := make(map[string]float64)
+	mostCommon := make(map[string]int)
 
 	for _, file := range files {
 		logs.Info("API/serveDSTables", "Opening json file.")
@@ -323,18 +324,26 @@ func (a *App) serveDSTables(w http.ResponseWriter, r *http.Request) {
 			if err != nil {
 				logs.Errorf("Can't unmarshal DS Table.", err.Error())
 			}
+		case "mostCommon.json":
+			logs.Info("API/serveDSTable", "Unmarshaling mostCommon.json")
+			err := json.Unmarshal(byt, &mostCommon)
+			if err != nil {
+				logs.Errorf("Can't unmarshal DS Table.", err.Error())
+			}
 		}
 
 		jsonFile.Close()
 	}
 
 	type finalDSJson struct {
+		Hist   map[string]int     `json:"hist"`
 		Months map[string]float64 `json:"months"`
 		Orgs   map[string]float64 `json:"orgs"`
 		Pos    map[string]float64 `json:"pos"`
 	}
 
 	jsonToServe := finalDSJson{
+		Hist:   mostCommon,
 		Months: bestMonths,
 		Orgs:   bestOrgs,
 		Pos:    bestPos,
