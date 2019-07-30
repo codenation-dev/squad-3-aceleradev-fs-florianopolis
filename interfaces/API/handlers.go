@@ -104,12 +104,7 @@ func (a *App) mailEdit(w http.ResponseWriter, r *http.Request) {
 							responseCodeResult(w, 8, err.Error(), a.GetToken(context.Get(r, "token").(*jwt.Token)))
 						}
 						UsuarioRequestUpdate.Senha = string(pass)
-						dbi, erro := db.Init() //changed to mock DB for unit test
-						if erro != nil {       //changed to mock DB for unit test
-							logs.Errorf("mailEdit(handlers)", erro.Error()) //changed to mock DB for unit test
-						} //changed to mock DB for unit test
-						defer dbi.Database.Close()                       //changed to mock DB for unit test
-						err = usuario.Update(&UsuarioRequestUpdate, dbi) //changed to mock DB for unit test
+						err = usuario.Update(&UsuarioRequestUpdate)
 					}
 
 					if err != nil {
@@ -138,12 +133,7 @@ func (a *App) mailDelete(w http.ResponseWriter, r *http.Request) {
 			if UsuarioOnDataBase == nil {
 				responseCodeResult(w, Empty, "Usuário não encontrado", a.GetToken(context.Get(r, "token").(*jwt.Token)))
 			} else {
-				dbi, erro := db.Init() //changed to mock DB for unit test
-				if erro != nil {       //changed to mock DB for unit test
-					logs.Errorf("mailDelete(handlers)", erro.Error()) //changed to mock DB for unit test
-				} //changed to mock DB for unit test
-				defer dbi.Database.Close()     //changed to mock DB for unit test
-				err := usuario.Delete(id, dbi) //changed to mock DB for unit test
+				err := usuario.Delete(id)
 				if err != nil {
 					responseCodeResult(w, Error, err.Error(), a.GetToken(context.Get(r, "token").(*jwt.Token)))
 				} else {
