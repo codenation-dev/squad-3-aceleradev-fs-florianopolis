@@ -10,6 +10,7 @@ import (
 	"squad-3-aceleradev-fs-florianopolis/interfaces/crud/usuario"
 	"squad-3-aceleradev-fs-florianopolis/entities"
 	"fmt"
+	"strings"
 )
 
 const (
@@ -93,6 +94,6 @@ func (a *App) tokenVerify(T tokenSt) (*jwt.Token,error) {
 }
 
 func validateMailType(m entity.Target) bool {
-	validateEmail := regexp.MustCompile(`^[-a-z0-9~!$%^&*_=+}{\'?]+(\.[-a-z0-9~!$%^&*_=+}{\'?]+)*@([a-z0-9_][-a-z0-9_]*(\.[-a-z0-9_]+)*\.(aero|arpa|biz|com|coop|edu|gov|info|int|mil|museum|name|net|org|pro|travel|mobi|[a-z][a-z])|([0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}))(:[0-9]{1,5})?$`)
-	return validateEmail.MatchString(m.Mail)
+	validateEmail := regexp.MustCompile(`^[-a-z0-9_}{\'?]+(\.[-a-z0-9_}{\'?]+)*@([a-z0-9_][-a-z0-9_]*(\.[-a-z0-9_]+)*\.(aero|arpa|biz|com|coop|edu|gov|info|int|mil|museum|name|net|org|pro|travel|mobi|[a-z][a-z])|([0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}))(:[0-9]{1,5})?$`)
+	return validateEmail.MatchString(strings.ToLower(strings.Trim(m.Mail," ")))
 }
