@@ -110,12 +110,12 @@ CREATE TABLE `EMAILENVIADO` (
 );
 </pre>
 
-2) Execute git clone or download this project <br />
+3) Execute git clone or download this project <br />
 Git clone https://github.com/codenation-dev/squad-3-aceleradev-fs-florianopolis.git <br />
-3) Enter in the project folder on your local machine <br />
-4) Run ./install.sh to install all dependecies from the application <br />
-5) Run ./run.sh to run the appliation, it will open in your browser <br />
-6) If you want to stop all application run ./stopall.sh to stop the application <br />
-7) If you want change the source code, you need to delete the executables files, for this, run ./stopall.sh -d <br />
+4) Enter in the project folder on your local machine <br />
+5) Run ./install.sh to install all dependecies from the application <br />
+6) Run ./run.sh to run the appliation, it will open in your browser <br />
+7) If you want to stop all application run ./stopall.sh to stop the application <br />
+8) If you want change the source code, you need to delete the executables files, for this, run ./stopall.sh -d <br />
 To build the executables files again, execute ./run.sh again
 
