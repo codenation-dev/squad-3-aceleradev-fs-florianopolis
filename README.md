@@ -49,17 +49,19 @@ This project uses:
   MySQL 8.0.10 or MariaDB 10.3 or Latest versions
   
 ## How to install
-Add environment variables into your ~/.bash file or ~/.zshrc  <br />
+1) You need to add environment variables into your ~/.bash file or ~/.zshrc  <br />
   export MYSQL_HOST=127.0.0.1  <br />
   export MYSQL_PORT=3306  <br />
   export MYSQL_USER={YourUserDbName}  <br />
   export MYSQL_PASSWORD={YourUserDbPassword}  <br />
   export MYSQL_DATABASE={YourDbName}  <br />
   export LOG_PATH={YourLogPath}  <br />
+2) Execute git clone or download this project <br />
 Git clone https://github.com/codenation-dev/squad-3-aceleradev-fs-florianopolis.git <br />
-Open the project folder on your local machine <br />
-Run ./install.sh to install the application <br />
-Run ./run.sh to run the appliation, it will open in your browser <br />
-Run ./stopall.sh to stop the application <br />
-Run ./stopall.sh -d if you want to delete executable files <br />
+3) Enter in the project folder on your local machine <br />
+4) Run ./install.sh to install all dependecies from the application <br />
+5) Run ./run.sh to run the appliation, it will open in your browser <br />
+6) If you want to stop all application run ./stopall.sh to stop the application <br />
+7) If you want change the source code, you need to delete the executables files, for this, run ./stopall.sh -d <br />
+To build the executables files again, execute ./run.sh again
 
