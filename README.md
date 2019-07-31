@@ -58,8 +58,8 @@ This project uses:
   export LOG_PATH={YourLogPath}  <br />
 2) After add enviroment variables, execute this query to create your tables:
 <pre>
-CREATE DATABASE bancouati;
-
+/*SUGGESTION NAME FOR YOUR DATABASE*/
+CREATE DATABASE bancouati; 
 USE bancouati;
 
 CREATE TABLE `FUNCPUBLICO` (
