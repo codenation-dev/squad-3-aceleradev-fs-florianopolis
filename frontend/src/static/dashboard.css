@@ -1,0 +1,143 @@
+div.Dash {
+    display: flex;
+}
+
+div.options {
+    text-align: left;
+    width: 25%;
+    color: #444;
+    border-right: #CCC 1px solid;
+    display: inline-block;
+    padding-bottom: 5px;
+}
+
+div.options h1 {
+    padding-left: 10px;
+}
+
+div.options ul {
+    display: block;
+}
+
+div.options ul li:hover {
+    cursor: pointer;
+    background-color: #dfe0df;
+}
+
+div.options ul li {
+    list-style: none;
+    padding-left: 15px;
+}
+
+div.options ul li.active {
+    width: calc( 100% - 15px);
+    background-color: #ffd351;
+    color: #222;
+}
+
+span.selected {
+    display: none;
+}
+
+div.FilterContainer {
+    margin-top: 0;
+    width: 75%;
+    border-radius: 5px;
+    display: inline-block;
+    padding-left: 2.5%;
+    padding-right: 2.5%;
+}
+
+div.FilterContainer .FilterItem {
+    display: none;
+}
+
+div.FilterContainer .ActiveItem {
+    display: block;
+}
+
+h2 {
+    width: 100%;
+    padding: 15px;
+    text-align: center;
+    font-size: 150%;
+}
+
+p.desc {
+    background-color: #ccc;
+    width: calc( 100% - 10px);
+    margin: 10px 0;
+}
+
+span.desc {
+    background-color: #ffd351;
+    color: #222;
+}
+
+div.Charter * {
+    font-size: 98%;
+}
+
+div.Charter {
+    margin: 0 auto;
+}
+
+*.desc {
+    display: inline-block;
+}
+
+@media (max-width: 768px) {
+
+    div.Dash {
+        display: block;
+    }
+
+    div.options {
+        margin-top: 50px;
+        width: 100%;
+        border: none;
+        border-top: 1px solid #ccc;
+        border-bottom: 1px solid #ccc;
+        text-align: center;
+    }
+
+    div.options ul {
+        display: none;
+    }
+
+    span.selected {
+        display: block;
+        text-align: center;
+        width: auto;
+        background-color: #ccc;
+    }
+
+    div.options ul.Expand {
+        display: block;
+        position: absolute;
+        padding: 0;
+        left: 25%;
+        width: 50%;
+    }
+
+    div.options ul li {
+        padding-left: 0;
+        width: 100%;
+    }
+    
+    div.options ul li.active {
+        width: 100%;
+    }
+
+    div.FilterContainer {
+        margin-top: 25px;
+        width: 100%;
+        margin-left: 0;
+    }
+}
+
+@media (min-width: 768px) {
+    div.options {
+    height: calc( 100vh - 80px);
+ }
+}

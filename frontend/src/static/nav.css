@@ -1,0 +1,113 @@
+
+nav {
+    background-color: #ffad26;
+    height: auto;
+    border-bottom: 1px solid #5e4118;
+    padding: 10px 10%;
+    text-align: center;
+}
+
+nav a:hover {
+    text-decoration: none;
+    color: #5e4118;
+}
+
+nav a {
+    display: flex;
+    text-decoration: none;
+    color: #5e4118;
+}
+
+nav a.Brand {
+    display: inline;
+}
+
+nav a.FirstLoginAnimation {
+    animation: LoadedPos 1s;
+}
+
+nav.Logged {
+    display: flex;
+    justify-content: space-between;
+}
+
+nav div.FirstLoginAnimation {
+    animation: LoadedOpacity 1.5s;
+}
+
+nav ul {
+    display: flex;
+    align-content: center;
+    margin: 0;
+} 
+
+nav li {
+    margin: 0 5px;
+    text-align: right;
+    display: inline;
+    padding: 5px;
+    border: 1px solid #5e4118;
+    border-radius: 5px;
+}
+
+nav li:hover {
+    cursor: pointer;
+    background-color: #ffd351;
+}
+
+nav h1 {
+    padding: 0;
+    margin: 0;
+    align-content: center;
+}
+
+div.navLinks {
+    margin: auto 0;
+}
+
+.Expander {
+    display: none;
+}
+
+@keyframes LoadedOpacity {
+    from {opacity: 0}
+    to {opacity: 1}
+}
+
+@keyframes LoadedPos {
+    from {padding-left: 50%}
+    to {padding-left: 0;}
+}
+
+@media (max-width: 768px) {
+
+    nav ul {
+        display: none;
+    }
+
+    .Expander {
+        display: block;
+        text-align: right;
+        padding: 5px;
+    }
+
+    .Expand {
+        z-index: 2;
+        display: block;
+        position: absolute;
+        background-color: #ffad26;
+        padding: 5px;
+        width: auto;
+        text-align: center;
+        right: 5%;
+    }
+
+    .Expand li {
+        display: block;
+        width: 100%;
+        border: none;
+        text-align: center;
+        border-bottom: #5e4118;
+    }
+
+}

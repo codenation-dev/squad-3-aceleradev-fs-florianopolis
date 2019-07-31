@@ -1,0 +1,59 @@
+.uploader {
+    z-index: 10;
+    overflow: hidden;
+    border: 1px solid #000;
+    border-radius: 10px;
+    position: fixed;
+    top: 50%;
+    transform: translateY(-50%);
+    margin: 2px auto;
+    display: flex;
+    padding: 20px;
+    width: 80%;
+    height: 200px;
+    flex-direction: column;
+    justify-content: flex-start;
+    background-color: #fff;
+    color: #000;
+}
+
+.uploader.none {
+    display: none;
+}
+
+.uploader input[type=file] {
+    display: none;
+}
+
+.uploader div.Body {
+    background-color: #ccc;
+    border-radius: 15px;
+}
+
+.uploaderdiv.Body p {
+    margin: 0;
+    padding: 4px;
+}
+
+.uploader div.Body span {
+    cursor: pointer;
+    padding: 4px;
+    margin: 0;
+    background-color: #ffad26;
+    color: #5e4118;
+    border: 1px solid #5e4118;
+    border-radius: 0 15px 15px 0;
+}
+
+.uploader button {
+}
+
+.uploader div{
+    margin: 10px 0;
+    display: flex;
+    justify-content: space-between;
+}
+
+.SuperBox {
+    overflow: auto;
+}

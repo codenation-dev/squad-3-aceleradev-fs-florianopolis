@@ -1,0 +1,46 @@
+div.GeneralDiv {
+    display: flex;
+}
+
+#WarnG {
+    border: 1px solid #ccc;
+    padding: 15px;
+    width: 75%;
+}
+
+.FilterWarn {
+    border: 1px solid #ccc;
+    padding: 5px;
+    width: 25%;
+}
+
+#WarnG * {
+    margin: 2px;
+}
+
+#WarnG span {
+    font-size: 115%;
+}
+
+#WarnG li {
+    font-size: 75%;
+    list-style: none;
+}
+
+.FilterWarn * {
+    margin: 8px;
+}
+
+@media (max-width:768px) {
+    .FilterWarn {
+        width: 100%;
+    }
+
+    #WarnG {
+        width: 100%;
+    }
+
+    div.GeneralDiv {
+        display: block;
+    }
+}
