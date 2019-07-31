@@ -56,6 +56,59 @@ This project uses:
   export MYSQL_PASSWORD={YourUserDbPassword}  <br />
   export MYSQL_DATABASE={YourDbName}  <br />
   export LOG_PATH={YourLogPath}  <br />
+2) After add enviroment variables, execute this query to create your tables:
+<code>
+CREATE DATABASE bancouati;
+
+USE bancouati;
+
+CREATE TABLE `FUNCPUBLICO` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `nome` varchar(100) NOT NULL,
+  `cargo` varchar(100) NOT NULL,
+  `orgao` varchar(45) NOT NULL,
+  `remuneracaodomes` double NOT NULL,
+  `redutorsalarial` double DEFAULT NULL,
+  `totalliquido` double DEFAULT NULL,
+  `updated` tinyint(1) DEFAULT '0',
+  `clientedobanco` tinyint(1) DEFAULT '0',
+  PRIMARY KEY (`id`)
+);
+
+CREATE TABLE `USUARIO` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `usuario` varchar(30) NOT NULL,
+  `senha` char(60) NOT NULL,
+  `email` varchar(100) NOT NULL,
+  PRIMARY KEY (`id`)
+);
+
+CREATE INDEX idx_email
+ON `USUARIO` (`email`);
+
+CREATE TABLE `NOTIFICACAO` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `data` datetime NOT NULL,
+  `lista` json NOT NULL,
+  PRIMARY KEY (`id`)
+);
+
+CREATE TABLE `HISTORICO` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `data` datetime NOT NULL,
+  `json` json NOT NULL,
+  PRIMARY KEY (`id`)
+);
+
+CREATE TABLE `EMAILENVIADO` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `idnotificacao` INT NOT NULL,
+  `emailusuario` VARCHAR(100) NOT NULL,
+  `data` DATETIME NOT NULL,
+  PRIMARY KEY (`id`),
+  FOREIGN KEY (`idnotificacao`) REFERENCES NOTIFICACAO(`id`)
+);
+</code>
 2) Execute git clone or download this project <br />
 Git clone https://github.com/codenation-dev/squad-3-aceleradev-fs-florianopolis.git <br />
 3) Enter in the project folder on your local machine <br />
