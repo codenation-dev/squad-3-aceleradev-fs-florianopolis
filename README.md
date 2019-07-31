@@ -57,7 +57,7 @@ This project uses:
   export MYSQL_DATABASE={YourDbName}  <br />
   export LOG_PATH={YourLogPath}  <br />
 2) After add enviroment variables, execute this query to create your tables:
-<code><pre>
+<pre>
 CREATE DATABASE bancouati;
 
 USE bancouati;
@@ -107,8 +107,9 @@ CREATE TABLE `EMAILENVIADO` (
   `data` DATETIME NOT NULL,
   PRIMARY KEY (`id`),
   FOREIGN KEY (`idnotificacao`) REFERENCES NOTIFICACAO(`id`)
-);</pre>
-</code>
+);
+</pre>
+
 2) Execute git clone or download this project <br />
 Git clone https://github.com/codenation-dev/squad-3-aceleradev-fs-florianopolis.git <br />
 3) Enter in the project folder on your local machine <br />
