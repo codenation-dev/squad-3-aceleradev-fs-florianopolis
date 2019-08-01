@@ -9,7 +9,6 @@ uiAddUser="/adduser/"
 killall MailSender
 killall interfaces
 killall files
-killall adduser
 
 case $1 in
    "-d") 
