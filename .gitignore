@@ -43,3 +43,4 @@ interfaces/files/files
 adduser/adduser
 services/MailSender/MailSender
 *.log
+historic/*
