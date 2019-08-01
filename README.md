@@ -56,6 +56,10 @@ This project uses:
   export MYSQL_PASSWORD={YourUserDbPassword}  <br />
   export MYSQL_DATABASE={YourDbName}  <br />
   export LOG_PATH={YourLogPath}  <br />
+1.1) To use email service, you need to create a folder called ".cfg", inside that folder you must to create a file called: credentials
+The full path will be look like this: squad-3-aceleradev-fs-florianopolis/services/MailSender/.cfg/credentials
+1.2) Inside the credentials, add your email account and your password separated by comma, like this: test@gmail.com,1234
+
 2) After add enviroment variables, execute this query to create your tables:
 <pre>
 /*SUGGESTION NAME FOR YOUR DATABASE*/
